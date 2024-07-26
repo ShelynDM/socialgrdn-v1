@@ -24,7 +24,7 @@ export default function Register() {
                 name="email" 
                 className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'/>
               <input 
-                type="text" 
+                type="password" 
                 placeholder="Password" 
                 id="password" 
                 name="password"
@@ -97,9 +97,9 @@ export default function Register() {
           <div className='flex flex-col items-center justify-center gap-4 pb-6 w-full'>
               <LongButton buttonName='Sign up' 
                 onClick={() => alert('Sign Up Clicked')} 
-                className='p-2 w-full border border-black rounded-lg shadow-lg bg-green-600 text-white font-bold' />
+                className='p-2 w-full  rounded shadow-lg bg-green-600 text-white font-bold' />
               <LongButton buttonName='Already a member?' 
-                className='p-2 w-full border border-black rounded-lg shadow-lg bg-green-200 font-bold'
+                className='p-2 w-full rounded shadow-lg bg-green-200 font-bold'
                 pagePath="/SignIn"/>
           </div>
       </div>
