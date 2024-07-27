@@ -10,7 +10,7 @@ export default function Listing() {
                 <div className='p-2 fixed top-0 left-0 w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3'>
                     <img src={InAppLogo} alt="Social Grdn Logo" className="w-auto h-auto"/>
                 </div>
-                Hello, Profile!
+                Hello, My Reservations!
             </div>
             <NavBar SproutPath={GreenSprout} />
         </div>

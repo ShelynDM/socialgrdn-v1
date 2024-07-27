@@ -11,7 +11,7 @@ export default function MapSearch() {
                     <img src={InAppLogo} alt="Social Grdn Logo" className="w-auto h-auto"/>
                 </div>
 
-                Hello, World!
+                Hello, maps!
 
             </div>
             <NavBar EarthColor={"#00B761"} SproutPath={Sprout} />
