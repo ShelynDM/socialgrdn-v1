@@ -7,6 +7,8 @@ import Search from './pages/Search';
 import Profile from './pages/Profile';
 import MapSearch from './pages/MapSearch';
 import Listing from './pages/Listing';
+import ForgotPassword from './pages/ForgotPassword';
+
 
 
 export default function App() {
@@ -22,6 +24,8 @@ export default function App() {
           <Route path="/Profile" element={<Profile />} />
           <Route path="/MapSearch" element={<MapSearch />} />
           <Route path="/Listing" element={<Listing />} />
+          <Route path="/ForgotPassword" element={<ForgotPassword/>} />
+          
         </Routes>
       </Router>
     );

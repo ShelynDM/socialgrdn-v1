@@ -1,6 +1,7 @@
 import React from 'react';
 import logo from '../assets/SocialGrdnLogo.png';
 import LongButton from '../components/longButton';
+import { Link } from 'react-router-dom';
 
 export default function SignIn() {
     return (
@@ -15,7 +16,9 @@ export default function SignIn() {
                 <input type="email" placeholder="Email" id="email" name="email" className='p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'/>
                 <input type="password" placeholder="Password" id="password" name="password"className='p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'/>
               </form>
-              <p className='flex justify-end font-bold my-2 mb-4' style={{ color: '#00811C' }}>Forgot your password?</p>
+              <Link to="/ForgotPassword" className='flex justify-end font-bold my-2 mb-4' style={{ color: '#00811C' }}>
+    Forgot your password?
+</Link>
             </div>
             <LongButton buttonName='Sign in' 
                 onClick={() => alert('Sign in Clicked')} 
