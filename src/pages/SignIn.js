@@ -1,13 +1,13 @@
 import React from 'react';
-import logo from '../assets/SocialGrdnLogo.png';
 import LongButton from '../components/longButton';
 import { Link } from 'react-router-dom';
+import InAppLogo from '../components/inAppLogo';
 
 export default function SignIn() {
     return (
         <div className='bg-main-background'>
+          <InAppLogo />
           <div className="flex flex-col items-center justify-center min-h-screen m-2 pb-20">
-            <img src={logo} alt="Social Grdn Logo" className="w-auto h-auto m-4" />
             <div className='m-4'>
               <h1 className='text-4xl font-bold'>Welcome back!</h1>
             </div>

@@ -1,14 +1,14 @@
 import React from 'react';
-import logo from '../assets/SocialGrdnLogo.png';
 import { FaUserCircle } from 'react-icons/fa';
 import LongButton from '../components/longButton';
+import InAppLogo from '../components/inAppLogo';
 
 
 export default function Register() {
   return (
     <div className='bg-main-background relative'>
+      <InAppLogo />
       <div className="flex flex-col items-center justify-center gap-2 min-h-screen m-2 pb-20">
-          <img src={logo} alt="Social Grdn Logo" className="m-2 block w-1/4 sm:w-1/6 md:w-1/6 lg:w-1/6 xl:w-1/12" />
           <div>
               <strong className=' text-3xl'>Welcome!</strong>
           </div>
