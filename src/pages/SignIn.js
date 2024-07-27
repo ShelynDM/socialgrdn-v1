@@ -14,7 +14,7 @@ export default function SignIn() {
             <div className='px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3'>
               <form className="flex flex-col flex-grow w-full gap-4">
                 <input type="email" placeholder="Email" id="email" name="email" className='p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'/>
-                <input type="text" placeholder="Password" id="password" name="password"className='p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'/>
+                <input type="password" placeholder="Password" id="password" name="password"className='p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'/>
               </form>
               <Link to="/ForgotPassword" className='flex justify-end font-bold my-2 mb-4' style={{ color: '#00811C' }}>
     Forgot your password?

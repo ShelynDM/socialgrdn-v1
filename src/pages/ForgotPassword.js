@@ -1,5 +1,5 @@
 import React from "react";
-import BackButton from "../components/backbutton";
+import BackButton from "../components/backButton";
 import LongButton from "../components/longButton";
 
 export default function ForgotPassword() {

@@ -2,7 +2,7 @@ import React from "react";
 import InAppLogo from "../components/inAppLogo";
 import NavBar from "../components/navbar";
 import Sprout from "../assets/sprout.png";
-import BackButton from "../components/backbutton";
+import BackButton from "../components/backButton";
 import { SlArrowRight } from "react-icons/sl";
 import { FaRegUser, FaRegUserCircle, FaPhone, FaUserTie, FaLock, FaUserCircle } from "react-icons/fa";
 import { FaLocationDot, FaRegEnvelope } from "react-icons/fa6";
