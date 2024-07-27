@@ -9,6 +9,7 @@ import { FaLocationDot, FaRegEnvelope } from "react-icons/fa6";
 import { IoRibbonOutline } from "react-icons/io5";
 import { GrMapLocation } from "react-icons/gr";
 import LongButton from "../components/longButton";
+import { Link } from 'react-router-dom';
 
 
 export default function Profile() {
@@ -63,7 +64,10 @@ export default function Profile() {
                 <SlArrowRight className="ml-auto text-xl" />
             </div>
             <div className="flex justify-center ">
-                <button className="text-red-500 text-lg font-extrabold">Log Out</button>
+                <Link to="/LandingPage" className='text-red-500 text-lg font-extrabold' >
+                Log Out
+              </Link>
+
             </div>
             </div>
             <NavBar ProfileColor={"#00B761"} SproutPath={Sprout} />
