@@ -8,10 +8,10 @@ export default function LandingPage() {
       <img src={logo} alt="Social Grdn Logo" className="w-auto h-auto" />
       <div className="flex flex-col items-center justify-center gap-4 pb-6 w-full">
           <LongButton buttonName='Sign up' 
-              className='p-2 w-full border border-black rounded-lg shadow-lg bg-green-600 text-white font-bold'
+              className='p-2 w-full rounded shadow-lg bg-green-600 text-white font-bold'
               pagePath="/Register"/>
           <LongButton buttonName='Log in' 
-            className='p-2 w-full border border-black rounded-lg shadow-lg bg-green-200 font-bold'
+            className='p-2 w-full rounded shadow-lg bg-green-200 font-bold'
             pagePath="/SignIn"/>
       </div>
     </div>
