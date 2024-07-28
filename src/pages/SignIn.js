@@ -32,6 +32,9 @@ export default function SignIn() {
         console.log(error);
       }
     }
+    else {
+      setError("Please enter a valid email and password.");
+    }
   };
 
   return (
