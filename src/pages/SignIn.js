@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import logo from '../assets/SocialGrdnLogo.png';
 import LongButton from '../components/longButton';
-import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../_utils/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -37,6 +36,11 @@ export default function SignIn() {
     }
   };
 
+  const handleReset =  () => {
+    navigate('/ForgotPassword');
+
+  }
+
   return (
     <div className='bg-main-background'>
       <div className="flex flex-col items-center justify-center min-h-screen m-2 pb-20">
@@ -70,11 +74,11 @@ export default function SignIn() {
             {error && <p className="text-red-500">{error}</p>}
             
           </form>
-          <Link to="/ForgotPassword" className='flex justify-end font-bold my-2 mb-4' style={{ color: '#00811C' }}>
-            Forgot your password?
-          </Link>
+          <div className='flex justify-end '>
+          <button className=" text-red-500 text-base font-bold"onClick= {handleReset} >Forgot Password?</button>
+          </div>
         </div>
-        <div className='my-4'>
+        <div className='my-3'>
           <p>Don't have an account?</p>
         </div>
         <div className='px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3'>
