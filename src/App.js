@@ -29,6 +29,7 @@ export default function App() {
             <Route path="/MapSearch" element={<ProtectedRoute><MapSearch /></ProtectedRoute>} />
             <Route path="/Listing" element={<ProtectedRoute><Listing /></ProtectedRoute>} />
             <Route path="/Register" element={<Register />} />
+            <Route path="/VerifyEmail" element={<VerifyEmail />} />
             <Route path="/ForgotPassword" element={<ForgotPassword />} />
           </>
         ) : (
