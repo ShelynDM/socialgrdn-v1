@@ -7,8 +7,10 @@ export default function Listing() {
     return (
         <div className='bg-main-background relative'>
             <InAppLogo />
-            <div className="flex flex-col items-center justify-center gap-4 pb-6 w-full">
-            Hello, My Reservations!
+            <div className="flex flex-col items-center justify-center gap-2 min-h-screen m-2 pb-20">
+
+                Hello, Reservation!
+
             </div>
             <NavBar SproutPath={GreenSprout} />
         </div>

@@ -65,12 +65,13 @@ export default function Profile() {
                     <IoRibbonOutline className="text-1" />
                     <h1 className="text-lg">November 2021</h1>
                 </div>
-            </div>
-            <div className='flex flex-col items-center justify-center gap-4 pb-6 w-full'>
+                <div className='flex flex-col items-center justify-center gap-4 pb-6 w-full'>
               <LongButton buttonName='Edit Profile' 
-                onClick={() => alert('Edit Profile')} 
-                className='p-2 w-full  rounded shadow-lg bg-green-500 text-white font-bold' />
+                onClick={() => alert('Edit Profile')}
+                className='p-2 w-full  rounded shadow-lg bg-green-600 text-white font-bold' />
             </div>
+            </div>
+
             <div className="flex items-center space-x-4 p-2  mb-2">
                 <GrMapLocation className="text-1" />
                 <button className="text-xl font-semibold">I am a landowner</button>
@@ -79,6 +80,7 @@ export default function Profile() {
             <div className="flex justify-center ">
                 <button className="text-red-500 text-lg font-extrabold" onClick={handleLogOut}>Log Out</button>
             </div>
+            
             </div>
             <NavBar ProfileColor={"#00B761"} SproutPath={Sprout} />
         </div>
