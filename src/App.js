@@ -24,6 +24,9 @@ export default function App() {
         {currentUser ? (
           <>
             <Route path="/" element={<Navigate to="/Search" />} />
+            <Route path="/LandingPage" element={<LandingPage />} />
+            <Route path="/SignIn" element={<SignIn />} />
+            <Route path="/SignUp" element={<SignUp />} />
             <Route path="/Search" element={<ProtectedRoute><Search /></ProtectedRoute>} />
             <Route path="/Profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/MapSearch" element={<ProtectedRoute><MapSearch /></ProtectedRoute>} />
