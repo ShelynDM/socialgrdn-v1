@@ -2,7 +2,6 @@ import React from "react";
 import InAppLogo from "../components/inAppLogo";
 import NavBar from "../components/navbar";
 import Sprout from "../assets/sprout.png";
-import InAppLogo from '../components/inAppLogo';
 
 export default function MapSearch() {
     return (
