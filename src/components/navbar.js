@@ -31,5 +31,6 @@ export default function NavBar({SproutPath, SearchColor, EarthColor, ProfileColo
             </ul>
         </nav>
         
+        
     );
 };

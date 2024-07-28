@@ -1,7 +1,7 @@
 import React from "react";
+import InAppLogo from "../components/inAppLogo";
 import NavBar from "../components/navbar";
 import Sprout from "../assets/sprout.png";
-import InAppLogo from "../components/inAppLogo";
 
 import SearchBar from "../components/searchbar.js";
 
@@ -15,5 +15,6 @@ export default function Search() {
             </div>
             <NavBar SearchColor={"#00B761"} SproutPath={Sprout} />
         </div>
+        
     );
 }

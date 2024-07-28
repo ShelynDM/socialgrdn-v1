@@ -2,17 +2,30 @@ import React from "react";
 import InAppLogo from "../components/inAppLogo";
 import NavBar from "../components/navbar";
 import Sprout from "../assets/sprout.png";
-import BackButton from "../components/backButton";
 import { SlArrowRight } from "react-icons/sl";
 import { FaRegUser, FaRegUserCircle, FaPhone, FaUserTie, FaLock, FaUserCircle } from "react-icons/fa";
 import { FaLocationDot, FaRegEnvelope } from "react-icons/fa6";
 import { IoRibbonOutline } from "react-icons/io5";
 import { GrMapLocation } from "react-icons/gr";
 import LongButton from "../components/longButton";
-import { Link } from 'react-router-dom';
+import BackButton from "../components/backButton";
+import { signOut } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../_utils/firebase";
+
 
 
 export default function Profile() {
+    const navigate = useNavigate();
+
+    const handleLogOut = async () => {
+        try {
+            await signOut(auth);
+            navigate("/SignIn"); // Redirect to SignIn page after logging out
+        } catch (error) {
+            console.error("Error logging out:", error);
+        }
+    }
     return (
         <div className='bg-main-background relative'>
             <InAppLogo />
@@ -64,13 +77,11 @@ export default function Profile() {
                 <SlArrowRight className="ml-auto text-xl" />
             </div>
             <div className="flex justify-center ">
-                <Link to="/LandingPage" className='text-red-500 text-lg font-extrabold' >
-                Log Out
-              </Link>
-
+                <button className="text-red-500 text-lg font-extrabold" onClick={handleLogOut}>Log Out</button>
             </div>
             </div>
             <NavBar ProfileColor={"#00B761"} SproutPath={Sprout} />
         </div>
+        
     );
 }
