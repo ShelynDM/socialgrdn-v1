@@ -1,27 +1,60 @@
-import React from "react";
+import React, { useState } from "react";
 import LongButton from "../components/longButton";
 import BackButton from "../components/backButton";
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "../_utils/firebase";
+import { useNavigate } from "react-router-dom";
 
 export default function ForgotPassword() {
-  return (
+  const navigate = useNavigate();
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState(""); // success or error
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const emailVal = e.target.email.value;
+    sendPasswordResetEmail(auth, emailVal)
+      .then((data) => {
+        setMessageType("success");
+        setMessage("Check your email for a password reset link");
+        setTimeout(() => navigate('/SignIn'), 3000); // Navigate after 3 seconds
+      })
+      .catch((error) => {
+        setMessageType("error");
+        setMessage("Invalid email. Please try again.");
+      });
+  };
+
+  return (
     <div className="flex flex-col pt-11 h-screen bg-main-background relative">
-      <BackButton/>
-      <div className="flex flex-col items-center justify-center gap-4 pb-6 w-full">
+      <BackButton />
+      <div className="flex flex-col items-center justify-center gap-4 pb-6 w-full mt-40">
         <h1 className="text-3xl font-semibold mb-6 text-center">Forgot Password?</h1>
-        <p className="mx-auto w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 text-gray-600 mb-6 px-2 text-center">Enter your account's email to receive instructions to reset your password</p>
-          <div className="mb-4 px-4 mx-auto w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3">
-            <input type="text" placeholder="Email" className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-green-500"/>
+        <p className="mx-auto w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 text-gray-600 mb-6 px-2 text-center">
+          Enter your account's email to receive instructions to reset your password
+        </p>
+        <form
+          className="mb-4 px-4 mx-auto w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3"
+          onSubmit={(e) => handleSubmit(e)}
+        >
+          <input
+            name="email"
+            type="text"
+            placeholder="Email"
+            className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-green-500 mb-3"
+          />
+          <LongButton
+            buttonName="Send Email"
+            type="submit"
+            className="w-full rounded shadow-lg bg-green-600 text-white font-bold"
+          />
+        </form>
+        {message && (
+          <div className={`mt-3 text-center ${messageType === "success" ? "text-green-600 font-bold " : "text-red-600 font-bold"}`}>
+            {message}
           </div>
-          <div className='px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3'>
-          <LongButton buttonName='Send Email' 
-              onClick={() => alert('Send Email')} 
-              className='p-2 w-full rounded shadow-lg bg-green-600 text-white font-bold'
-              pagePath="/SignUp"/>
-              
-        </div> 
+        )}
       </div>
     </div>
   );
 }
-
