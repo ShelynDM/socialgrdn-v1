@@ -13,24 +13,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../frontend/build')));
+app.use(express.static(path.join(__dirname, '../build')));
 
 // MySQL connection configuration
 const db = mysql.createConnection({
-  host: "localhost", // Replace with your MySQL host
+  host: "mysocialgrdn.cxec4yk4254a.us-east-2.rds.amazonaws.com", // Replace with your MySQL host
   user: "admin", // MySQL username
-  password: "password", // MySQL password
+  password: "!SocialGrdn1!", // MySQL password
   database: "mysocialgrdn" // MySQL database name
 });
 
-// Connect to MySQL
-db.connect((err) => {
-  if (err) {
-    console.error('Error connecting to MySQL: ', err);
-    return;
-  }
-  console.log('Connected to MySQL');
-});
 
 // Define routes
 app.get('/api', (req, res) => {
@@ -48,14 +40,16 @@ app.get('/api/data', (req, res) => {
 });
 
 app.post('/api/register', (req, res) => {
-  const { email, password, firstname, lastname, username, profession, phoneNumber, userAddress, userCity, userProvince, userPostalCode } = req.body;
+  const { firstname, lastname, username, profession, phoneNumber, userAddress, userCity, userProvince, userPostalCode } = req.body;
 
-  if (!email || !password || !firstname || !lastname || !username) {
-    return res.status(400).send('Email, password, first name, last name, and username are required');
+  // Check if required fields are present
+  if (!firstname || !lastname || !username) {
+    return res.status(400).send('First name, last name, and username are required');
   }
 
-  const query = 'INSERT INTO userprofile (email, password, first_name, last_name, username, profession, phone_number, address_line1, city, province, postal_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-  const values = [email, password, firstname, lastname, username, profession, phoneNumber, userAddress, userCity, userProvince, userPostalCode];
+  // Update SQL query and values to exclude email and password
+  const query = 'INSERT INTO userprofile (first_name, last_name, username, profession, phone_number, address_line1, city, province, postal_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  const values = [firstname, lastname, username, profession, phoneNumber, userAddress, userCity, userProvince, userPostalCode];
 
   db.query(query, values, (err, results) => {
     if (err) {
@@ -66,27 +60,11 @@ app.post('/api/register', (req, res) => {
   });
 });
 
-app.post('/api/addUserProfile', (req, res) => {
-  const { firstname, lastname, username, profession, phoneNumber, userAddress, userCity, userProvince, userPostalCode } = req.body;
-
-  if (!firstname || !lastname || !username || !profession || !phoneNumber || !userAddress || !userCity || !userProvince || !userPostalCode) {
-    return res.status(400).send('All fields are required');
-  }
-
-  const query = 'INSERT INTO userprofile (first_name, last_name, username, profession, phone_number, address_line1, city, province, postal_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-  db.query(query, [firstname, lastname, username, profession, phoneNumber, userAddress, userCity, userProvince, userPostalCode], (err, results) => {
-    if (err) {
-      res.status(500).send(err);
-    } else {
-      res.status(201).send('User profile added successfully');
-    }
-  });
-});
 
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/build/index.html'));
+  res.sendFile(path.join(__dirname, '../build/index.html'));
 });
 
 app.listen(port, (err) => {

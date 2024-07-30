@@ -41,8 +41,9 @@ export default function Register() {
           userPostalCode,
         };
 
-        const response = await fetch('http://localhost:3001/addUserProfile', {
+        const response = await fetch('http://localhost:3000/api/register', {
           method: 'POST',
+          credentials:'include',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -58,6 +59,8 @@ export default function Register() {
         setError(error.message);
         console.log(error);
       }
+    } else {
+      setError('All fields are required');
     }
   }
 
@@ -136,15 +139,10 @@ export default function Register() {
               value={userPostalCode}
               onChange={(e) => setUserPostalCode(e.target.value)}
               className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
+            <LongButton buttonName='Register'
+              onClick={handleRegister}
+              className='p-2 w-full  rounded shadow-lg bg-green-600 text-white font-bold' />
           </form>
-        </div>
-        {/* <div className='px-6 text-sm'>
-            <p>By signing up, you agree to the <strong>Terms, Conditions</strong> and <strong>Privacy Policy</strong>.</p>
-          </div> */}
-        <div className='flex flex-col items-center justify-center gap-4 pb-6 w-full'>
-          <LongButton buttonName='Register'
-            onClick={handleRegister}
-            className='p-2 w-full  rounded shadow-lg bg-green-600 text-white font-bold' />
         </div>
         {error && <p className="text-red-500 mt-2">{error}</p>}
       </div>
