@@ -15,13 +15,6 @@ app.use(cors());
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '../build')));
 
-// MySQL connection configuration
-const db = mysql.createConnection({
-  host: process.env.MYSQL_HOST, // Replace with your MySQL host
-  user: process.env.MYSQL_USER, // MySQL username
-  password: process.env.MYSQL_PASSWORD, // MySQL password
-  database: process.env.MYSQL_DATABASE // MySQL database name
-});
 
 // Define routes
 app.get('/api', (req, res) => {
