@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState} from "react";
 import InAppLogo from "../components/inAppLogo";
 import NavBar from "../components/navbar";
 import Sprout from "../assets/sprout.png";
@@ -16,7 +16,21 @@ import { auth } from "../_utils/firebase";
 
 
 export default function Profile() {
+    const [firstname, setFirstName] = useState('');
+    const [lastname, setLastName] = useState('');
+    const [username, setUsername] = useState('');
+    const [userAddress, setUserAddress] = useState('');
+    const [userCity, setUserCity] = useState('');
+    const [userProvince, setUserProvince] = useState('');
+    const [userPostalCode, setUserPostalCode] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [profession, setProfession] = useState('');
+    const [email, setEmail] = useState('');
+    const [createdAt, setCreatedAt] = useState('');
+
     const navigate = useNavigate();
+
+
 
     const handleLogOut = async () => {
         try {
