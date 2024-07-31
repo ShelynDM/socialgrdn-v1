@@ -11,7 +11,8 @@ export default function BackButton() {
                 onClick={() => navigate(-1)} 
                 className="flex text-gray-500 hover:text-black focus:outline-none"
             >
-                <SlArrowLeft />
+                <SlArrowLeft /> 
+                
             </button>
         </div>
     );

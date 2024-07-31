@@ -7,6 +7,9 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "cors": "^2.8.5",
+    "firebase": "^10.12.4",
+    "mysql2": "^3.11.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.2.1",
@@ -28,10 +31,13 @@
     "workbox-streams": "^6.6.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node backend/index.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "dev:react": "react-scripts start",
+    "dev:backend": "nodemon backend/index.js",
+    "dev": "concurrently \"npm run dev:react\" \"npm run dev:backend\""
   },
   "eslintConfig": {
     "extends": [
@@ -52,6 +58,8 @@
     ]
   },
   "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.1.4",
     "tailwindcss": "^3.4.6"
   }
 }
