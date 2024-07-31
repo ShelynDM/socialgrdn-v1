@@ -17,12 +17,11 @@ app.use(express.static(path.join(__dirname, '../build')));
 
 // MySQL connection configuration
 const db = mysql.createConnection({
-  host: "mysocialgrdn.cxec4yk4254a.us-east-2.rds.amazonaws.com", // Replace with your MySQL host
-  user: "admin", // MySQL username
-  password: "!SocialGrdn1!", // MySQL password
-  database: "mysocialgrdn" // MySQL database name
+  host: process.env.MYSQL_HOST, // Replace with your MySQL host
+  user: process.env.MYSQL_USER, // MySQL username
+  password: process.env.MYSQL_PASSWORD, // MySQL password
+  database: process.env.MYSQL_DATABASE // MySQL database name
 });
-
 
 // Define routes
 app.get('/api', (req, res) => {
