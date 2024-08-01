@@ -18,14 +18,12 @@ export default function Register() {
   const [error, setError] = useState('');
 
   const navigate = useNavigate();
-  const handleRegister = async (event) => {
-    event.preventDefault();
-  
+
+  const handleRegister = async () => {
     if (firstname && lastname && username) {
       try {
         const user = auth.currentUser;
   
-        // Ensure user is authenticated and email is verified
         if (user && user.emailVerified) {
           const userData = {
             email: user.email,
@@ -40,7 +38,6 @@ export default function Register() {
             userPostalCode,
           };
   
-          // Store additional user data in SQL database
           const response = await fetch('http://localhost:3000/api/register', {
             method: 'POST',
             credentials: 'include',
@@ -51,7 +48,7 @@ export default function Register() {
           });
   
           if (response.ok) {
-            navigate('/Search'); // Redirect after successful registration
+            navigate('/Search');
           } else {
             const errorText = await response.text();
             setError(`User registration failed: ${errorText}`);
@@ -79,8 +76,8 @@ export default function Register() {
           <FaUserCircle className='text-7xl' style={{ color: '#00B761' }} />
         </div>
         <div className='p-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3'>
-          <form className="flex flex-col flex-grow w-full gap-4" onSubmit={handleRegister}>
-            <p>Email: {auth.currentUser.email}</p>
+          <div className="flex flex-col flex-grow w-full gap-4">
+            <p>Email: {auth.currentUser?.email}</p>
             <input
               type="text"
               placeholder="First Name"
@@ -144,10 +141,12 @@ export default function Register() {
               value={userPostalCode}
               onChange={(e) => setUserPostalCode(e.target.value)}
               className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
-            <LongButton buttonName='Register'
-              //onClick={handleRegister}
-              className='p-2 w-full  rounded shadow-lg bg-green-600 text-white font-bold' />
-          </form>
+            <LongButton 
+              buttonName='Register'
+              onClick={handleRegister}
+              className='p-2 w-full rounded shadow-lg bg-green-600 text-white font-bold' 
+            />
+          </div>
         </div>
         {error && <p className="text-red-500 mt-2">{error}</p>}
       </div>

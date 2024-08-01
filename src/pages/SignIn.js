@@ -20,6 +20,9 @@ export default function SignIn() {
         },
         body: JSON.stringify({ email }),
       });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
       const result = await response.json();
       return result.exists;
     } catch (error) {
@@ -35,10 +38,10 @@ export default function SignIn() {
       try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        
+
         // Check if the user exists in the database
         const userExists = await checkUserExists(email);
-        
+
         if (userExists) {
           if (user.emailVerified) {
             navigate('/Search');
@@ -60,7 +63,6 @@ export default function SignIn() {
   const handleReset = () => {
     navigate('/ForgotPassword');
   };
-
 
   return (
     <div className='bg-main-background'>
@@ -93,10 +95,9 @@ export default function SignIn() {
               className='p-2 w-full rounded shadow-lg bg-green-600 font-bold text-white'
               />
             {error && <p className="text-red-500">{error}</p>}
-            
           </form>
           <div className='flex justify-end '>
-          <button className=" text-red-500 text-base font-bold"onClick= {handleReset} >Forgot Password?</button>
+            <button className="text-red-500 text-base font-bold" onClick={handleReset}>Forgot Password?</button>
           </div>
         </div>
         <div className='my-3'>

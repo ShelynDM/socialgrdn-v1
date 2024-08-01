@@ -62,6 +62,51 @@ app.post('/api/register', (req, res) => {
     }
   });
 });
+// ==========================//===========================//======================
+// This is an API endpoint that will be used to check if a user exists in the database
+app.post('/api/check-user', async (req, res) => {
+  const { email } = req.body;
+  console.log('Checking for user with email:', email); // Debugging
+  try {
+    const result = await db.query('SELECT * FROM UserProfile WHERE email = ?', [email]);
+    console.log('Query result:', result); // Debugging
+    if (result.length > 0) {
+      return res.status(200).json({ exists: true });
+    }
+    return res.status(200).json({ exists: false });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Database error' });
+  }
+});
+
+// ==========================//===========================//======================
+
+// API endpoint to get user profile based on email
+app.get('/api/profile', (req, res) => {
+    const { email } = req.query;
+    console.log('Received email:', email); // Debugging
+
+    if (!email) {
+        return res.status(400).send('Email is required');
+    }
+
+    const query = 'SELECT * FROM UserProfile WHERE email = ?';
+    db.query(query, [email], (err, results) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.status(500).send(err);
+        }
+        console.log('Query results:', results); // Debugging
+        if (results.length === 0) {
+            return res.status(404).send('User not found');
+        } else {
+            return res.status(200).json(results[0]);
+        }
+    });
+});
+
+
 
 // This is an API endpoint that will be used to check if a user exists in the database
 app.post('/api/check-user', async (req, res) => {
@@ -92,7 +137,7 @@ app.listen(port, (err) => {
   if (err) {
     console.error('Error starting the server:', err);
   } else {
-    console.log(`Server running at http://localhost:${port}/`);
+    console.log(`Server running at http://localhost:${port}/LandingPage`);
 
     // Establish MySQL connection
     const db = mysql.createConnection({
