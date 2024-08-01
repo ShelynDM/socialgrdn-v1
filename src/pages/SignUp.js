@@ -21,6 +21,8 @@ export default function SignUp() {
               const user = userCredential.user;
               await sendEmailVerification(user);
               setEmailMessage('Verification email sent! Please check your inbox.');
+
+
               navigate('/VerifyEmail');
           } catch (error) {
               setError(error.message);
@@ -53,6 +55,7 @@ export default function SignUp() {
                 </div>
                 <div className='w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 text-left px-4'>
                     <p className='font-bold'>Sign up to get started</p>
+                    <p>hello</p>
                 </div>
                 <div className='px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3'>
                     <form className="flex flex-col flex-grow w-full gap-4" onSubmit={handleSignUp}>

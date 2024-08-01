@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import logo from '../assets/SocialGrdnLogo.png';
 import LongButton from '../components/longButton';
-import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../_utils/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -12,29 +11,57 @@ export default function SignIn() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  const checkUserExists = async (email) => {
+    try {
+      const response = await fetch('/api/check-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const result = await response.json();
+      return result.exists;
+    } catch (error) {
+      console.error('Error checking user existence:', error);
+      setError('Error checking user existence. Please try again.');
+      return false;
+    }
+  };
+
   const handleSignIn = async (event) => {
     event.preventDefault();
     if (email && password) {
       try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        if (user.emailVerified) {
-          if (!user.displayName) {
-            navigate('/Register');
-          } else {
+
+        // Check if the user exists in the database
+        const userExists = await checkUserExists(email);
+
+        if (userExists) {
+          if (user.emailVerified) {
             navigate('/Search');
+          } else {
+            navigate('/VerifyEmail');
           }
         } else {
-          navigate('/VerifyEmail');
+          navigate('/Register');
         }
       } catch (error) {
-        setError("Invalid Credentials. Please try again or Sign Up.");
+        setError('Invalid Credentials. Please try again or Sign Up.');
         console.log(error);
       }
+    } else {
+      setError('Please enter a valid email and password.');
     }
-    else {
-      setError("Please enter a valid email and password.");
-    }
+  };
+
+  const handleReset = () => {
+    navigate('/ForgotPassword');
   };
 
   return (
@@ -68,13 +95,12 @@ export default function SignIn() {
               className='p-2 w-full rounded shadow-lg bg-green-600 font-bold text-white'
               />
             {error && <p className="text-red-500">{error}</p>}
-            
           </form>
-          <Link to="/ForgotPassword" className='flex justify-end font-bold my-2 mb-4' style={{ color: '#00811C' }}>
-            Forgot your password?
-          </Link>
+          <div className='flex justify-end '>
+            <button className="text-red-500 text-base font-bold" onClick={handleReset}>Forgot Password?</button>
+          </div>
         </div>
-        <div className='my-4'>
+        <div className='my-3'>
           <p>Don't have an account?</p>
         </div>
         <div className='px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3'>
