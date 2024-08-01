@@ -11,35 +11,56 @@ export default function SignIn() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  const checkUserExists = async (email) => {
+    try {
+      const response = await fetch('/api/check-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+      const result = await response.json();
+      return result.exists;
+    } catch (error) {
+      console.error('Error checking user existence:', error);
+      setError('Error checking user existence. Please try again.');
+      return false;
+    }
+  };
+
   const handleSignIn = async (event) => {
     event.preventDefault();
     if (email && password) {
       try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        if (user.emailVerified) {
-          if (!user.displayName) {
-            navigate('/Register');
-          } else {
+        
+        // Check if the user exists in the database
+        const userExists = await checkUserExists(email);
+        
+        if (userExists) {
+          if (user.emailVerified) {
             navigate('/Search');
+          } else {
+            navigate('/VerifyEmail');
           }
         } else {
-          navigate('/VerifyEmail');
+          navigate('/Register');
         }
       } catch (error) {
-        setError("Invalid Credentials. Please try again or Sign Up.");
+        setError('Invalid Credentials. Please try again or Sign Up.');
         console.log(error);
       }
-    }
-    else {
-      setError("Please enter a valid email and password.");
+    } else {
+      setError('Please enter a valid email and password.');
     }
   };
 
-  const handleReset =  () => {
+  const handleReset = () => {
     navigate('/ForgotPassword');
+  };
 
-  }
 
   return (
     <div className='bg-main-background'>

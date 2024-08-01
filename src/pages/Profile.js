@@ -30,6 +30,8 @@ export default function Profile() {
 
     const navigate = useNavigate();
 
+    
+    
 
 
     const handleLogOut = async () => {
@@ -49,7 +51,7 @@ export default function Profile() {
             <div className="flex flex-col items-start justify-start">
                 <div className="flex items-center space-x-4 p-3 ">
                     <FaRegUser className="text-2" />
-                    <h1 className="text-lg ">James Smith</h1>
+                    <h1 className="text-lg ">{firstname} {lastname}</h1>
                 </div>
                 <div className="flex items-center space-x-4 p-3">
                     <FaRegUserCircle className="text-1" />
@@ -73,11 +75,11 @@ export default function Profile() {
                 </div>
                 <div className="flex items-center space-x-4 p-3">
                     <FaRegEnvelope className="text-1" />
-                    <h1 className="text-lg">james_smith@gmail.com</h1>
+                    <h1 className="text-lg">{auth.currentUser.email}</h1>
                 </div>
                 <div className="flex items-center space-x-4 p-3 mb-4">
                     <IoRibbonOutline className="text-1" />
-                    <h1 className="text-lg">November 2021</h1>
+                    <h1 className="text-lg">{auth.currentUser.cre}</h1>
                 </div>
                 <div className='flex flex-col items-center justify-center gap-4 pb-6 w-full'>
               <LongButton buttonName='Edit Profile' 

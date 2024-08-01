@@ -16,12 +16,12 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, '../build')));
 
 // MySQL connection configuration
-const db = mysql.createConnection({
-  host: process.env.MYSQL_HOST, // Replace with your MySQL host
-  user: process.env.MYSQL_USER, // MySQL username
-  password: process.env.MYSQL_PASSWORD, // MySQL password
-  database: process.env.MYSQL_DATABASE // MySQL database name
-});
+// const db = mysql.createConnection({
+//   host: process.env.MYSQL_HOST, // Replace with your MySQL host
+//   user: process.env.MYSQL_USER, // MySQL username
+//   password: process.env.MYSQL_PASSWORD, // MySQL password
+//   database: process.env.MYSQL_DATABASE // MySQL database name
+// });
 
 
 // Define routes
@@ -30,7 +30,7 @@ app.get('/api', (req, res) => {
 });
 
 app.get('/api/data', (req, res) => {
-  db.query('SELECT * FROM userprofile', (err, results) => {
+  db.query('SELECT * FROM users', (err, results) => {
     if (err) {
       res.status(500).send(err);
     } else {
@@ -39,8 +39,11 @@ app.get('/api/data', (req, res) => {
   });
 });
 
+//pushing from front end to database
+//this is an api endpoint that will be used to register a user in the database
+//This is a whole method that will be used to register a user in the database
 app.post('/api/register', (req, res) => {
-  const { firstname, lastname, username, profession, phoneNumber, userAddress, userCity, userProvince, userPostalCode } = req.body;
+  const { email, firstname, lastname, username, profession, phoneNumber, userAddress, userCity, userProvince, userPostalCode } = req.body;
 
   // Check if required fields are present
   if (!firstname || !lastname || !username) {
@@ -48,17 +51,35 @@ app.post('/api/register', (req, res) => {
   }
 
   // Update SQL query and values to exclude email and password
-  const query = 'INSERT INTO userprofile (first_name, last_name, username, profession, phone_number, address_line1, city, province, postal_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-  const values = [firstname, lastname, username, profession, phoneNumber, userAddress, userCity, userProvince, userPostalCode];
+  const query = 'INSERT INTO UserProfile (email, first_name, last_name, username, profession, phone_number, address_line1, city, province, postal_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  const values = [email, firstname, lastname, username, profession, phoneNumber, userAddress, userCity, userProvince, userPostalCode];
 
   db.query(query, values, (err, results) => {
     if (err) {
       res.status(500).send(err);
     } else {
-      res.status(201).send('User registered successfully');
+      res.status(200).send('User registered successfully');
     }
   });
 });
+
+// This is an API endpoint that will be used to check if a user exists in the database
+app.post('/api/check-user', async (req, res) => {
+  const { email } = req.body;
+  console.log('Checking for user with email:', email); // Debugging
+  try {
+    const result = await db.query('SELECT * FROM UserProfile WHERE email = ?', [email]);
+    console.log('Query result:', result); // Debugging
+    if (result.length > 0) {
+      return res.status(200).json({ exists: true });
+    }
+    return res.status(200).json({ exists: false });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Database error' });
+  }
+});
+
 
 
 // The "catchall" handler: for any request that doesn't

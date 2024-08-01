@@ -9,13 +9,41 @@ const ProtectedRoute = ({ children }) => {
     const [needsProfile, setNeedsProfile] = useState(false);
 
     useEffect(() => {
+        const checkUserProfile = async (email) => {
+            try {
+                const response = await fetch('http://localhost:3000/api/check-user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setNeedsProfile(data.needsProfile); // Assuming the response has a needsProfile property
+                } else {
+                    console.error('Failed to check profile completion');
+                    setNeedsProfile(true); // Default to needing profile if there's an error
+                }
+            } catch (error) {
+                console.error('Error checking profile completion:', error);
+                setNeedsProfile(true); // Default to needing profile if there's an error
+            }
+        };
+
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
-                //console.log('User logged in:', user);
                 setIsVerified(user.emailVerified);
-                setNeedsProfile(!user.displayName);
+                if (user.emailVerified) {
+                    // Check profile completion only if email is verified
+                    checkUserProfile(user.email);
+                } else {
+                    setNeedsProfile(false);
+                }
             } else {
                 console.log('No user logged in');
+                setNeedsProfile(false);
             }
             setLoading(false);
         });
