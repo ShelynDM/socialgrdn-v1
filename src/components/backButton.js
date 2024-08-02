@@ -2,6 +2,7 @@ import React from "react";
 import { SlArrowLeft } from "react-icons/sl";
 import { useNavigate } from "react-router-dom";
 
+// This is a back button component that can be used throughout the application
 export default function BackButton() {
     const navigate = useNavigate();
 

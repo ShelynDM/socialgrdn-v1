@@ -5,14 +5,20 @@ import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../_utils/firebase";
 import { useNavigate } from "react-router-dom";
 
+// This is the ForgotPassword page of the application where users can reset their password
 export default function ForgotPassword() {
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState(""); // success or error
 
+  // This function will handle the password reset process
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Get the email value from the form
     const emailVal = e.target.email.value;
+
+    // Send the password reset email using the email value from the form and Firebase Auth
     sendPasswordResetEmail(auth, emailVal)
       .then((data) => {
         setMessageType("success");

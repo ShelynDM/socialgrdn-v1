@@ -4,6 +4,7 @@ import NavBar from "../components/navbar";
 import Sprout from "../assets/sprout.png";
 import SearchBar from "../components/searchbar";
 
+// This is the MapSearch page of the application where users can search for a location on the map and view the listings
 export default function MapSearch() {
     return (
         <div className='bg-main-background relative'>

@@ -4,6 +4,7 @@ import { FaEarthAmericas } from "react-icons/fa6";
 import { FaRegUser } from "react-icons/fa6";
 import { Link } from 'react-router-dom';
 
+// This is the navigation bar that will be displayed at the bottom of the screen
 export default function NavBar({SproutPath, SearchColor, EarthColor, ProfileColor}) {
     return (
         <nav className='fixed bottom-0 w-full border border-t-2 py-4 px-6 pb-5 bg-main-background'>

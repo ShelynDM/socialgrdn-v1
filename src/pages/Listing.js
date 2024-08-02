@@ -3,6 +3,7 @@ import InAppLogo from "../components/inAppLogo";
 import NavBar from "../components/navbar";
 import GreenSprout from "../assets/sproutGreen.png";
 
+// This is the Listing page of the application where users can view other users' listings
 export default function Listing() {
     return (
         <div className='bg-main-background relative'>

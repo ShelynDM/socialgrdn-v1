@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import SignUp from './pages/SignUp';
-import Register from './pages/Register';
 import SignIn from './pages/SignIn';
 import Search from './pages/Search';
 import Profile from './pages/Profile';
@@ -31,7 +30,6 @@ export default function App() {
             <Route path="/Profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/MapSearch" element={<ProtectedRoute><MapSearch /></ProtectedRoute>} />
             <Route path="/Listing" element={<ProtectedRoute><Listing /></ProtectedRoute>} />
-            <Route path="/Register" element={<Register />} />
             <Route path="/VerifyEmail" element={<VerifyEmail />} />
             <Route path="/ForgotPassword" element={<ForgotPassword />} />
           </>
@@ -41,7 +39,6 @@ export default function App() {
             <Route path="/LandingPage" element={<LandingPage />} />
             <Route path="/SignIn" element={<SignIn />} />
             <Route path="/SignUp" element={<SignUp />} />
-            <Route path="/Register" element={<Register />} />
             <Route path="/ForgotPassword" element={<ForgotPassword />} />
             <Route path="/VerifyEmail" element={<VerifyEmail />} />
           </>

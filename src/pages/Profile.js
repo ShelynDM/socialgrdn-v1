@@ -13,6 +13,8 @@ import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../_utils/firebase";
 
+// This is the Profile page of the application where users can view and edit their profile information and log out
+// User will be able to access the add listing page from here
 export default function Profile() {
     const [firstname, setFirstName] = useState('');
     const [lastname, setLastName] = useState('');

@@ -11,46 +11,23 @@ export default function SignIn() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const checkUserExists = async (email) => {
-    try {
-      const response = await fetch('/api/check-user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const result = await response.json();
-      return result.exists;
-    } catch (error) {
-      console.error('Error checking user existence:', error);
-      setError('Error checking user existence. Please try again.');
-      return false;
-    }
-  };
-
+  // This function will handle the sign in process using Firebase Auth
   const handleSignIn = async (event) => {
     event.preventDefault();
+
+    // Check if email and password are not empty
     if (email && password) {
       try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-
-        // Check if the user exists in the database
-        const userExists = await checkUserExists(email);
-
-        if (userExists) {
-          if (user.emailVerified) {
-            navigate('/Search');
-          } else {
-            navigate('/VerifyEmail');
-          }
+        
+        // Check if the user's email is verified using the emailVerified property of the user object 
+        if (user.emailVerified) {
+          navigate('/Search');
         } else {
-          navigate('/Register');
+          navigate('/VerifyEmail');
         }
+
       } catch (error) {
         setError('Invalid Credentials. Please try again or Sign Up.');
         console.log(error);
@@ -60,6 +37,7 @@ export default function SignIn() {
     }
   };
 
+  // This function will handle the password reset process
   const handleReset = () => {
     navigate('/ForgotPassword');
   };

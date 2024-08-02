@@ -161,3 +161,23 @@ app.listen(port, (err) => {
     global.db = db;
   }
 });
+
+
+// ==========================//===========================//======================
+// Check if a username exists in the database
+app.post('/api/check-username', async (req, res) => {
+  const { username } = req.body;
+  console.log('Checking for user with username:', username); // Debugging
+  try {
+    const result = await db.query('SELECT * FROM UserProfile WHERE username = ?', [username]);
+    console.log('Query result:', result); // Debugging
+    if (result.length > 0) {
+      return res.status(200).json({ exists: true, message: 'Username already exists' });
+    }
+    return res.status(200).json({ exists: false, message: 'Username is available' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Database error' });
+  }
+});
+
