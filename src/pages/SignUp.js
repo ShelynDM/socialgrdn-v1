@@ -30,6 +30,7 @@ export default function SignUp() {
         if (email && password && email.includes('@') && email.includes('.') && password.length >= 6 && firstname && lastname && username) {
             try {
                 // userData is an object that contains all the user data that will be sent to the server
+
                 const userData = {
                     email,
                     firstname,
@@ -192,7 +193,9 @@ export default function SignUp() {
                             className='py-2 w-full rounded shadow-lg bg-green-600 text-white font-bold' />
                         {emailMessage && <p className="text-green-500 mt-2">{emailMessage}</p>}
                     </form>
-                    {error && <p className="text-red-500 mt-2">{error}</p>}
+                    <div className='w-full'>
+                        {error && <p className="text-red-500 mt-2 text-left">{error}</p>}
+                    </div>
                 </div>
                 <div className='px-6 text-sm'>
                     <p>By signing up, you agree to the <strong>Terms, Conditions</strong> and <strong>Privacy Policy</strong>.</p>

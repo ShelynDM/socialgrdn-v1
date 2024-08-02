@@ -1,3 +1,5 @@
+//require('dotenv').config({path: '../.env.local'});
+
 const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
@@ -139,13 +141,21 @@ app.listen(port, (err) => {
   } else {
     console.log(`Server running at http://localhost:${port}/LandingPage`);
 
-    // Establish MySQL connection
+    //Establish MySQL connection
     const db = mysql.createConnection({
       host: "mysocialgrdn.cxec4yk4254a.us-east-2.rds.amazonaws.com", // Replace with your MySQL host
       user: "admin", // MySQL username
       password: "!SocialGrdn1!", // MySQL password
       database: "mysocialgrdn" // MySQL database name
     });
+
+    // MySQL connection configuration
+    // const db = mysql.createConnection({
+    //   host: process.env.MYSQL_HOST, // Replace with your MySQL host
+    //   user: process.env.MYSQL_USER, // MySQL username
+    //   password: process.env.MYSQL_PASSWORD, // MySQL password
+    //   database: process.env.MYSQL_DATABASE // MySQL database name
+    // });
 
     db.connect((err) => {
       if (err) {
