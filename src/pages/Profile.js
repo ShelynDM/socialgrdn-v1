@@ -39,7 +39,7 @@ export default function Profile() {
                 }
                 const userData = await response.json();
                 
-                (setFirstName(userData.first_name)).toUpperCase();
+                setFirstName(userData.first_name);
                 setLastName(userData.last_name);
                 setUsername(userData.username);
                 setUserAddress(userData.address_line1);
