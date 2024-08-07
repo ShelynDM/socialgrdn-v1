@@ -48,7 +48,13 @@ export default function Profile() {
                 setUserPostalCode(userData.postal_code);
                 setPhoneNumber(userData.phone_number);
                 setProfession(userData.profession);
-                setCreatedAt(userData.created_at); // Assuming your API returns a 'created_at' field
+
+                // Convert the date to a more readable format
+                const date = new Date(userData.created_at);
+
+                // Format the date as 'Month Day, Year'
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                setCreatedAt(date.toLocaleDateString('en-US', options));
             } catch (error) {
                 console.error('Error fetching user profile:', error);
             }
