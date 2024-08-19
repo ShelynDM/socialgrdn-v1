@@ -23,45 +23,74 @@ export default function Profile() {
     const [userPostalCode, setUserPostalCode] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [profession, setProfession] = useState('');
-    const [email, setEmail] = useState(auth.currentUser.email);
+    const [email, setEmail] = useState(auth.currentUser?.email || '');
     const [createdAt, setCreatedAt] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUserProfile = async () => {
+            setIsLoading(true);
+            setError(null);
             try {
+                console.log('Fetching profile for email:', email);
                 const response = await fetch(`/api/profile?email=${email}`);
+                console.log('Response status:', response.status);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                const userData = await response.json();
-                
-                setFirstName(userData.first_name);
-                setLastName(userData.last_name);
-                setUsername(userData.username);
-                setUserAddress(userData.address_line1);
-                setUserCity(userData.city);
-                setUserProvince(userData.province);
-                setUserPostalCode(userData.postal_code);
-                setPhoneNumber(userData.phone_number);
-                setProfession(userData.profession);
-                setCreatedAt(userData.created_at); // Assuming your API returns a 'created_at' field
+                const responseText = await response.text();
+                console.log('Raw response:', responseText);
+                const userData = JSON.parse(responseText);
+                console.log('Parsed user data:', userData);
+
+                if (userData && typeof userData === 'object') {
+                    setFirstName(userData.first_name ? userData.first_name.toUpperCase() : '');
+                    setLastName(userData.last_name ? userData.last_name.toUpperCase() :'');
+                    setUsername(userData.username || '');
+                    setUserAddress(userData.address_line1 || '');
+                    setUserCity(userData.city || '');
+                    setUserProvince(userData.province || '');
+                    setUserPostalCode(userData.postal_code || '');
+                    setPhoneNumber(userData.phone_number || '');
+                    setProfession(userData.profession || '');
+                    setCreatedAt(userData.created_at || '');
+                } else {
+                    throw new Error('Received invalid user data');
+                }
             } catch (error) {
                 console.error('Error fetching user profile:', error);
+                setError(error.message);
+            } finally {
+                setIsLoading(false);
             }
         };
 
-        fetchUserProfile();
+        if (email) {
+            fetchUserProfile();
+        } else {
+            setIsLoading(false);
+            setError('No email available');
+        }
     }, [email]);
 
     const handleLogOut = async () => {
         try {
             await signOut(auth);
-            navigate("/SignIn"); // Redirect to SignIn page after logging out
+            navigate("/SignIn");
         } catch (error) {
             console.error("Error logging out:", error);
         }
+    }
+
+    if (isLoading) {
+        return <div>Loading profile...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
     }
 
     return (
