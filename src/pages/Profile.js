@@ -13,11 +13,9 @@ import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../_utils/firebase";
 
-/**
- * Profile displays user profile information and allows the user to log out.
- */
+// This is the Profile page of the application where users can view and edit their profile information and log out
+// User will be able to access the add listing page from here
 export default function Profile() {
-    // State variables for storing user profile data
     const [firstname, setFirstName] = useState('');
     const [lastname, setLastName] = useState('');
     const [username, setUsername] = useState('');
@@ -30,12 +28,8 @@ export default function Profile() {
     const [email, setEmail] = useState(auth.currentUser.email);
     const [createdAt, setCreatedAt] = useState('');
 
-    // Hook to handle navigation
     const navigate = useNavigate();
 
-    /**
-     * Fetches user profile data and creation time from the server and updates the state.
-     */
     useEffect(() => {
         const fetchUserProfile = async () => {
             try {
@@ -44,9 +38,8 @@ export default function Profile() {
                     throw new Error('Network response was not ok');
                 }
                 const userData = await response.json();
-
-                // Update state with user profile data
-                setFirstName(userData.first_name);
+                
+                (setFirstName(userData.first_name)).toUpperCase();
                 setLastName(userData.last_name);
                 setUsername(userData.username);
                 setUserAddress(userData.address_line1);
@@ -55,27 +48,15 @@ export default function Profile() {
                 setUserPostalCode(userData.postal_code);
                 setPhoneNumber(userData.phone_number);
                 setProfession(userData.profession);
+                setCreatedAt(userData.created_at); // Assuming your API returns a 'created_at' field
             } catch (error) {
                 console.error('Error fetching user profile:', error);
             }
         };
 
-        /**
-         * Fetches user account creation time and formats it.
-         */
-        const fetchCreationTime = () => {
-            const creationTime = auth.currentUser.metadata.creationTime;
-            const formattedDate = new Date(creationTime).toLocaleDateString(); // Format the date to a readable format
-            setCreatedAt(formattedDate);
-        };
-
         fetchUserProfile();
-        fetchCreationTime();
     }, [email]);
 
-    /**
-     * Handles user logout and redirects to the SignIn page.
-     */
     const handleLogOut = async () => {
         try {
             await signOut(auth);
@@ -92,7 +73,6 @@ export default function Profile() {
                 <BackButton />
                 <FaUserCircle className="text-green-500 text-9xl w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 mb-2" />
                 <div className="flex flex-col items-start justify-start">
-                    {/* Display user profile information */}
                     <div className="flex items-center space-x-4 p-3 ">
                         <FaRegUser className="text-2" />
                         <h1 className="text-lg ">{firstname} {lastname}</h1>
@@ -115,7 +95,7 @@ export default function Profile() {
                     </div>
                     <div className="flex items-center space-x-4 p-3 ">
                         <FaLock className="text-1" />
-                        <h1 className="text-lg">*******</h1> {/* Masked password */}
+                        <h1 className="text-lg">*******</h1>
                     </div>
                     <div className="flex items-center space-x-4 p-3">
                         <FaRegEnvelope className="text-1" />
@@ -132,13 +112,11 @@ export default function Profile() {
                     </div>
                 </div>
 
-                {/* Landowner button */}
                 <div className="flex items-center space-x-4 p-2 mb-2">
                     <GrMapLocation className="text-1" />
-                    <button className="text-xl font-semibold"> I am a landowner</button>
+                    <button className="text-xl font-semibold">I am a landowner</button>
                     <SlArrowRight className="ml-auto text-xl" />
                 </div>
-                {/* Log out button */}
                 <div className="flex justify-center ">
                     <button className="text-red-500 text-lg font-extrabold" onClick={handleLogOut}>Log Out</button>
                 </div>

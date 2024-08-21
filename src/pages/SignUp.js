@@ -8,39 +8,91 @@ import { useNavigate } from 'react-router-dom';
 export default function SignUp() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [firstname, setFirstName] = useState('');
+    const [lastname, setLastName] = useState('');
+    const [username, setUsername] = useState('');
+    const [profession, setProfession] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [userAddress, setUserAddress] = useState('');
+    const [userCity, setUserCity] = useState('');
+    const [userProvince, setUserProvince] = useState('');
+    const [userPostalCode, setUserPostalCode] = useState('');
     const [error, setError] = useState('');
     const [emailMessage, setEmailMessage] = useState('');
     
+    // This is a hook from react-router-dom that allows you to navigate to different pages
     const navigate = useNavigate();
 
+    // This function is called when the user clicks the "Sign up" button
     const handleSignUp = async (event) => {
-      event.preventDefault();
-      if (email && password) {
-          try {
-              const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-              const user = userCredential.user;
-              await sendEmailVerification(user);
-              setEmailMessage('Verification email sent! Please check your inbox.');
-              navigate('/VerifyEmail');
-          } catch (error) {
-              setError(error.message);
-              console.log(error);
-          }
-      }
-      else {
-        if (!email && !password) {
-          setError('Please enter an email and password.');
-        }
-        else if (!email) {
-          setError('Please enter an email.');
-        }
-        else if (!password) {
-          setError('Please enter a password.');
-      }
-    }
+        event.preventDefault();
+        // Check if the email and password are valid before proceeding with the sign up process and checking if the user has entered their first name, last name, and username
+        if (email && password && email.includes('@') && email.includes('.') && password.length >= 6 && firstname && lastname && username) {
+            try {
+                // userData is an object that contains all the user data that will be sent to the server
 
-  };
+                const userData = {
+                    email,
+                    firstname,
+                    lastname,
+                    username,
+                    profession,
+                    phoneNumber,
+                    userAddress,
+                    userCity,
+                    userProvince,
+                    userPostalCode,
+                };
 
+                // This sends a POST request to the server to create the user using the useData object
+                const response = await fetch('http://localhost:3000/api/register', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userData),
+                });
+
+                //This checks if the response is ok (no error in database) and if it is, it creates the user in Firebase and sends a verification email
+                if (response.ok) {
+                    // Create the user in Firebase
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+                    // Send the verification email to the user using the sendEmailVerification function
+                    const user = userCredential.user;
+                    await sendEmailVerification(user);
+                    setEmailMessage('Verification email sent! Please check your inbox.');
+                    navigate('/VerifyEmail');
+                } else {
+                    const errorText = await response.text();
+                    setError(`User registration failed: ${errorText}`);
+                }
+            } catch (error) {
+                setError(error.message);
+                console.log(error);
+            }
+        } else {
+            // This else statement handles the case where the user has not entered any required fields
+            if (!email && !password) {
+                setError('Please enter an email and password.');
+            } else if (!email) {
+                setError('Please enter an email.');
+            } else if (!password) {
+                setError('Please enter a password.');
+            } else if (!email.includes('@') || !email.includes('.')) {
+                setError('Please enter a valid email.');
+            } else if (password.length < 6) {
+                setError('Password must be at least 6 characters.');
+            } else if (!firstname) {
+                setError('Please enter your first name.');
+            } else if (!lastname) {
+                setError('Please enter your last name.');
+            } else if (!username) {
+                setError('Please enter a username.');
+            }
+        }
+    };
 
     return (
         <div className='bg-main-background relative'>
@@ -72,13 +124,78 @@ export default function SignUp() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
+                        <input
+                            type="text"
+                            placeholder="First Name"
+                            id="firstname"
+                            value={firstname}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
+                        <input
+                            type="text"
+                            placeholder="Last Name"
+                            id="lastname"
+                            value={lastname}
+                            onChange={(e) => setLastName(e.target.value)}
+                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
+                        <input
+                            type="text"
+                            placeholder="Username"
+                            id="username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
+                        <p className='text-gray-600 italic'>Optional</p>
+                        <input
+                            type="text"
+                            placeholder="Profession"
+                            id="profession"
+                            value={profession}
+                            onChange={(e) => setProfession(e.target.value)}
+                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
+                        <input
+                            type="text"
+                            placeholder="Phone Number"
+                            id="phonenumber"
+                            value={phoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
+                        <input
+                            type="text"
+                            placeholder="Address Line 1"
+                            id="userAddress"
+                            value={userAddress}
+                            onChange={(e) => setUserAddress(e.target.value)}
+                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
+                        <input
+                            type="text"
+                            placeholder="City"
+                            id="userCity"
+                            value={userCity}
+                            onChange={(e) => setUserCity(e.target.value)}
+                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
+                        <input
+                            type="text"
+                            placeholder="Province"
+                            id="userProvince"
+                            value={userProvince}
+                            onChange={(e) => setUserProvince(e.target.value)}
+                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
+                        <input
+                            type="text"
+                            placeholder="Postal Code"
+                            id="userPostalCode"
+                            value={userPostalCode}
+                            onChange={(e) => setUserPostalCode(e.target.value)}
+                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
                         <LongButton buttonName='Sign up'
-                            onClick={handleSignUp}
                             type='submit'
                             className='py-2 w-full rounded shadow-lg bg-green-600 text-white font-bold' />
-                            {emailMessage && <p className="text-green-500 mt-2">{emailMessage}</p>}
+                        {emailMessage && <p className="text-green-500 mt-2">{emailMessage}</p>}
                     </form>
-                    {error && <p className="text-red-500 mt-2">{error}</p>}
+                    <div className='w-full'>
+                        {error && <p className="text-red-500 mt-2 text-left">{error}</p>}
+                    </div>
                 </div>
                 <div className='px-6 text-sm'>
                     <p>By signing up, you agree to the <strong>Terms, Conditions</strong> and <strong>Privacy Policy</strong>.</p>
