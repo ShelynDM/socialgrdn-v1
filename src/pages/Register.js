@@ -75,8 +75,6 @@ export default function Register() {
           <FaUserCircle className='text-7xl' style={{ color: '#00B761' }} />
         </div>
         <div className='p-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3'>
-          <p>HEllo</p>
-          <p>HEllo</p>
           <form className="flex flex-col flex-grow w-full gap-4" onSubmit={handleRegister}>
             <input
               type="text"

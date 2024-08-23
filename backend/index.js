@@ -30,7 +30,7 @@ app.get('/api', (req, res) => {
 });
 
 app.get('/api/data', (req, res) => {
-  db.query('SELECT * FROM userprofile', (err, results) => {
+  db.query('SELECT * FROM UserProfile', (err, results) => {
     if (err) {
       res.status(500).send(err);
     } else {
@@ -53,6 +53,7 @@ app.post('/api/register', (req, res) => {
 
   db.query(query, values, (err, results) => {
     if (err) {
+      y
       res.status(500).send(err);
     } else {
       res.status(201).send('User registered successfully');
