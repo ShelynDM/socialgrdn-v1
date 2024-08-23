@@ -2,9 +2,9 @@ import React from "react";
 import InAppLogo from "../components/inAppLogo";
 import NavBar from "../components/navbar";
 import Sprout from "../assets/sprout.png";
-
 import SearchBar from "../components/searchbar.js";
 
+// This is the Search page of the application where users can search for a location and view the listings
 export default function Search() {
     return (
         <div className='bg-main-background relative'>

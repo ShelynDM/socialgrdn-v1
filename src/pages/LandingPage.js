@@ -2,6 +2,7 @@ import React from 'react';
 import logo from '../assets/SocialGrdnLogo.png';
 import LongButton from '../components/longButton';
 
+// This is the landing page of the application where users can sign up or log in
 export default function LandingPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen gap-32 bg-radial-green"> 

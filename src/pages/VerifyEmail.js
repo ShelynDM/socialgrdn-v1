@@ -28,7 +28,7 @@ export default function VerifyEmail() {
                 //console.log('Reloaded user:', auth.currentUser);
                 if (auth.currentUser.emailVerified) {
                     clearInterval(intervalId);
-                    navigate('/Register');
+                    navigate('/Search');
                 }
             }
         }, 3000); // Check every 3 seconds
