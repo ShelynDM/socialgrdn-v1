@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { auth } from '../_utils/firebase';
+import { auth } from '../../_utils/firebase';
 import { sendEmailVerification } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/SocialGrdnLogo.png';
+import logo from '../../assets/logo/SocialGrdnLogo.png';
 
 export default function VerifyEmail() {
     const [message, setMessage] = useState('');
