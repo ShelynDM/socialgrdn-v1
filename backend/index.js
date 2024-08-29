@@ -5,7 +5,7 @@ const cors = require('cors'); // Importing CORS to allow cross-origin requests f
 const path = require('path'); // for file path
 
 const app = express(); // for middleware and routing
-const port = 3000;
+const port = 3001;
 
 // Middleware
 app.use(bodyParser.json()); // Middleware to parse JSON request bodies

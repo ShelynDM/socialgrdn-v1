@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import LongButton from "../components/longButton";
-import BackButton from "../components/backButton";
+import LongButton from "../../components/Buttons/longButton";
+import BackButton from "../../components/Buttons/backButton";
 import { sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "../_utils/firebase";
+import { auth } from "../../_utils/firebase";
 import { useNavigate } from "react-router-dom";
 
 // This is the ForgotPassword page of the application where users can reset their password

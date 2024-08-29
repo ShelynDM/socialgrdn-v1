@@ -1,6 +1,6 @@
 import React from 'react';
-import logo from '../assets/SocialGrdnLogo.png';
-import LongButton from '../components/longButton';
+import logo from '../../assets/logo/SocialGrdnLogo.png';
+import LongButton from '../../components/Buttons/longButton';
 
 // This is the landing page of the application where users can sign up or log in
 export default function LandingPage() {
