@@ -15,15 +15,23 @@ import MapSearch from './pages/SearchSection/MapSearch';
 
 // Profile Section
 import Profile from './pages/ProfileSection/Profile';
+import EditProfile from './pages/ProfileSection/EditProfile';
+import ViewProfile from './pages/ProfileSection/ViewProfile';
 
 // Rent Property Section
 import Listing from './pages/RentPropertySection/Listing';
 import RentProperty from './pages/RentPropertySection/RentProperty';
 import RentConfirmation from './pages/RentPropertySection/RentConfirmation';
+import ViewProperty from './pages/RentPropertySection/ViewProperty';
+import ViewMyProperty from './pages/RentPropertySection/ViewMyProperty';
+import AddProperty from './pages/RentPropertySection/AddProperty';
+import EditProperty from './pages/RentPropertySection/EditProperty';
 
 // Listing Section
 import PropertyLists from './pages/ListingSection/PropertyLists';
 import DeletionConfirmation from './pages/ListingSection/DeletionConfirmation';
+import ListingConfirmation from './pages/ListingSection/ListingConfirmation';
+import ViewMyListings from './pages/ListingSection/ViewMyListings';
 
 //Pay Property Section
 import PayProperty from './pages/PayPropertySection/PayProperty';
@@ -72,15 +80,25 @@ export default function App() {
             
             {/* Profile Section */}
             <Route path="/Profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/EditProfile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
+            <Route path="/ViewProfile" element={<ProtectedRoute><ViewProfile /></ProtectedRoute>} />
+
 
             {/* Rent Property Section */}
             <Route path="/Listing" element={<ProtectedRoute><Listing /></ProtectedRoute>} />
             <Route path="/RentProperty" element={<ProtectedRoute><RentProperty /></ProtectedRoute>} />
             <Route path="/RentConfirmation" element={<ProtectedRoute><RentConfirmation /></ProtectedRoute>} />
+            <Route path="/ViewProperty" element={<ProtectedRoute><ViewProperty /></ProtectedRoute>} />
+            <Route path="/ViewMyProperty" element={<ProtectedRoute><ViewMyProperty /></ProtectedRoute>} />
+            <Route path="/AddProperty" element={<ProtectedRoute><AddProperty /></ProtectedRoute>} />
+            <Route path="/EditProperty" element={<ProtectedRoute><EditProperty /></ProtectedRoute>} />
+
 
             {/* Listing Section */}
             <Route path="/PropertyLists" element={<ProtectedRoute><PropertyLists /></ProtectedRoute>} />
             <Route path="/DeletionConfirmation" element={<ProtectedRoute><DeletionConfirmation /></ProtectedRoute>} />
+            <Route path="/ListingConfirmation" element={<ProtectedRoute><ListingConfirmation /></ProtectedRoute>} />
+            <Route path="/ViewMyListings" element={<ProtectedRoute><ViewMyListings /></ProtectedRoute>} />
 
             {/* Pay Property Section */}
             <Route path="/PayProperty" element={<ProtectedRoute><PayProperty /></ProtectedRoute>} />
