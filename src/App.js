@@ -28,7 +28,10 @@ import DeletionConfirmation from './pages/ListingSection/DeletionConfirmation';
 //Pay Property Section
 import PayProperty from './pages/PayPropertySection/PayProperty';
 
-
+//Reservation Pages Section
+import ReservationCancelled from './pages/ReservationSection/ReservationCancelled';
+import ReservationDetails from './pages/ReservationSection/ReservationDetails';
+import Reservations from './pages/ReservationSection/Reservations';
 
 
 // import LandingPage from './pages/SignUpSection/LandingPage';
@@ -69,7 +72,7 @@ export default function App() {
             {/* Sign In Section */}
             <Route path="/SignIn" element={<SignIn />} />
             <Route path="/ForgotPassword" element={<ForgotPassword />} />
-            
+
             {/* Profile Section */}
             <Route path="/Profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
@@ -84,6 +87,12 @@ export default function App() {
 
             {/* Pay Property Section */}
             <Route path="/PayProperty" element={<ProtectedRoute><PayProperty /></ProtectedRoute>} />
+
+            {/* Reserve Property Section */}
+            <Route path="/ReservationCancelled" element={<ProtectedRoute><ReservationCancelled /></ProtectedRoute>} />
+            <Route path="/ReservationDetails" element={<ProtectedRoute><ReservationDetails /></ProtectedRoute>} />
+            <Route path="/Reservations" element={<ProtectedRoute><Reservations /></ProtectedRoute>} />
+
 
           </>
         ) : (
