@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
-import InAppLogo from "../components/inAppLogo";
-import NavBar from "../components/navbar";
-import Sprout from "../assets/sprout.png";
+import InAppLogo from "../../components/Logo/inAppLogo";
+import NavBar from "../../components/Navbar/navbar";
+import Sprout from "../../assets/navbarAssets/sprout.png";
 import { SlArrowRight } from "react-icons/sl";
 import { FaRegUser, FaRegUserCircle, FaPhone, FaUserTie, FaLock, FaUserCircle } from "react-icons/fa";
 import { FaLocationDot, FaRegEnvelope } from "react-icons/fa6";
 import { IoRibbonOutline } from "react-icons/io5";
 import { GrMapLocation } from "react-icons/gr";
-import LongButton from "../components/longButton";
-import BackButton from "../components/backButton";
+import LongButton from "../../components/Buttons/longButton";
+import BackButton from "../../components/Buttons/backButton";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../_utils/firebase";
+import { auth } from "../../_utils/firebase";
 
 // This is the Profile page of the application where users can view and edit their profile information and log out
 // User will be able to access the add listing page from here
@@ -39,7 +39,7 @@ export default function Profile() {
                 }
                 const userData = await response.json();
                 
-                (setFirstName(userData.first_name)).toUpperCase();
+                setFirstName(userData.first_name);
                 setLastName(userData.last_name);
                 setUsername(userData.username);
                 setUserAddress(userData.address_line1);
@@ -48,7 +48,13 @@ export default function Profile() {
                 setUserPostalCode(userData.postal_code);
                 setPhoneNumber(userData.phone_number);
                 setProfession(userData.profession);
-                setCreatedAt(userData.created_at); // Assuming your API returns a 'created_at' field
+
+                // Convert the date to a more readable format
+                const date = new Date(userData.created_at);
+
+                // Format the date as 'Month Day, Year'
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                setCreatedAt(date.toLocaleDateString('en-US', options));
             } catch (error) {
                 console.error('Error fetching user profile:', error);
             }
