@@ -20,12 +20,12 @@ export default function Profile() {
     const [lastname, setLastName] = useState('');
     const [username, setUsername] = useState('');
     const [userAddress, setUserAddress] = useState('');
-    const [userCity, setUserCity] = useState('');
-    const [userProvince, setUserProvince] = useState('');
-    const [userPostalCode, setUserPostalCode] = useState('');
+    //const [userCity, setUserCity] = useState('');
+    //const [userProvince, setUserProvince] = useState('');
+    //const [userPostalCode, setUserPostalCode] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [profession, setProfession] = useState('');
-    const [email, setEmail] = useState(auth.currentUser.email);
+    const email = auth.currentUser.email;
     const [createdAt, setCreatedAt] = useState('');
 
     const navigate = useNavigate();
@@ -38,14 +38,19 @@ export default function Profile() {
                     throw new Error('Network response was not ok');
                 }
                 const userData = await response.json();
+<<<<<<< Updated upstream:src/pages/ProfileSection/Profile.js
                 
                 setFirstName(userData.first_name);
+=======
+
+                (setFirstName(userData.first_name)).toUpperCase();
+>>>>>>> Stashed changes:src/pages/Profile.js
                 setLastName(userData.last_name);
                 setUsername(userData.username);
                 setUserAddress(userData.address_line1);
-                setUserCity(userData.city);
-                setUserProvince(userData.province);
-                setUserPostalCode(userData.postal_code);
+                //setUserCity(userData.city);
+                //setUserProvince(userData.province);
+                //setUserPostalCode(userData.postal_code);
                 setPhoneNumber(userData.phone_number);
                 setProfession(userData.profession);
 
