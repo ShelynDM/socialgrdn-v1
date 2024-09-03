@@ -13,6 +13,8 @@ import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../_utils/firebase";
 
+// This is the Profile page of the application where users can view and edit their profile information and log out
+// User will be able to access the add listing page from here
 export default function Profile() {
     const [firstname, setFirstName] = useState('');
     const [lastname, setLastName] = useState('');
@@ -23,74 +25,51 @@ export default function Profile() {
     const [userPostalCode, setUserPostalCode] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [profession, setProfession] = useState('');
-    const [email] = useState(auth.currentUser?.email || '');
+    const [email, setEmail] = useState(auth.currentUser.email);
     const [createdAt, setCreatedAt] = useState('');
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUserProfile = async () => {
-            setIsLoading(true);
-            setError(null);
             try {
-                console.log('Fetching profile for email:', email);
                 const response = await fetch(`/api/profile?email=${email}`);
-                console.log('Response status:', response.status);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                const responseText = await response.text();
-                console.log('Raw response:', responseText);
-                const userData = JSON.parse(responseText);
-                console.log('Parsed user data:', userData);
+                const userData = await response.json();
+                
+                setFirstName(userData.first_name);
+                setLastName(userData.last_name);
+                setUsername(userData.username);
+                setUserAddress(userData.address_line1);
+                setUserCity(userData.city);
+                setUserProvince(userData.province);
+                setUserPostalCode(userData.postal_code);
+                setPhoneNumber(userData.phone_number);
+                setProfession(userData.profession);
 
-                if (userData && typeof userData === 'object') {
-                    setFirstName(userData.first_name ? userData.first_name.toUpperCase() : '');
-                    setLastName(userData.last_name ? userData.last_name.toUpperCase() :'');
-                    setUsername(userData.username || '');
-                    setUserAddress(userData.address_line1 || '');
-                    setUserCity(userData.city || '');
-                    setUserProvince(userData.province || '');
-                    setUserPostalCode(userData.postal_code || '');
-                    setPhoneNumber(userData.phone_number || '');
-                    setProfession(userData.profession || '');
-                    setCreatedAt(userData.created_at || '');
-                } else {
-                    throw new Error('Received invalid user data');
-                }
+                // Convert the date to a more readable format
+                const date = new Date(userData.created_at);
+
+                // Format the date as 'Month Day, Year'
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                setCreatedAt(date.toLocaleDateString('en-US', options));
             } catch (error) {
                 console.error('Error fetching user profile:', error);
-                setError(error.message);
-            } finally {
-                setIsLoading(false);
             }
         };
 
-        if (email) {
-            fetchUserProfile();
-        } else {
-            setIsLoading(false);
-            setError('No email available');
-        }
+        fetchUserProfile();
     }, [email]);
 
     const handleLogOut = async () => {
         try {
             await signOut(auth);
-            navigate("/SignIn");
+            navigate("/SignIn"); // Redirect to SignIn page after logging out
         } catch (error) {
             console.error("Error logging out:", error);
         }
-    }
-
-    if (isLoading) {
-        return <div>Loading profile...</div>;
-    }
-
-    if (error) {
-        return <div>Error: {error}</div>;
     }
 
     return (
@@ -127,10 +106,6 @@ export default function Profile() {
                     <div className="flex items-center space-x-4 p-3">
                         <FaRegEnvelope className="text-1" />
                         <h1 className="text-lg">{email}</h1>
-                    </div>
-                    <div className="flex items-center space-x-4 p-3">
-                        <FaLocationDot className="text-1" />
-                        <h1 className="text-lg">{userAddress}, {userCity}, {userProvince}, {userPostalCode}</h1>
                     </div>
                     <div className="flex items-center space-x-4 p-3 mb-4">
                         <IoRibbonOutline className="text-1" />
