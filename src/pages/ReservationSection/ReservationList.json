@@ -1,0 +1,30 @@
+[
+    {
+      "id": "1h2GJKH12gkHG31h1H",
+      "name": "Gibson's Greenhouse",
+      "landowner": "Joe Gibson",
+      "start": "2021-06-01",
+      "end": "2021-09-30",
+      "address": "Next St. Calumet, MI 49913",
+      "image": "https://images.pexels.com/photos/1084540/pexels-photo-1084540.jpeg"
+    },
+    {
+        "id": "1h2GJKH12gkHG31h1H",
+        "name": "John's Yard",
+        "landowner": "Jogn Doe",
+        "start": "2021-06-15",
+        "end": "2021-08-14",
+        "address": "1234 Elm St. Calumet, MI 49913",
+        "image": "https://images.pexels.com/photos/5561356/pexels-photo-5561356.jpeg"
+    },
+    {
+        "id": "1h2GJKH12gkHG31h1H",
+        "name": "Sally's Garden",
+        "landowner": "Sally Smith",
+        "start": "2021-07-01",
+        "end": "2021-09-30",
+        "address": "5678 Maple St. Calumet, MI 49913",
+        "image": "https://images.pexels.com/photos/5529592/pexels-photo-5529592.jpeg"
+    }
+
+  ]
