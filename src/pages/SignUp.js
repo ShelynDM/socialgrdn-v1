@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import logo from '../assets/SocialGrdnLogo.png';
-import LongButton from '../components/longButton';
+import logo from '../../assets/logo/SocialGrdnLogo.png';
+import LongButton from '../../components/Buttons/longButton';
 import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
-import { auth } from '../_utils/firebase';
+import { auth } from '../../_utils/firebase';
 import { useNavigate } from 'react-router-dom';
 
 export default function SignUp() {

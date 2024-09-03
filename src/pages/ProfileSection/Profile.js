@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
-import InAppLogo from "../components/inAppLogo";
-import NavBar from "../components/navbar";
-import Sprout from "../assets/sprout.png";
+import InAppLogo from "../../components/Logo/inAppLogo";
+import NavBar from "../../components/Navbar/navbar";
+import Sprout from "../../assets/navbarAssets/sprout.png";
 import { SlArrowRight } from "react-icons/sl";
 import { FaRegUser, FaRegUserCircle, FaPhone, FaUserTie, FaLock, FaUserCircle } from "react-icons/fa";
 import { FaLocationDot, FaRegEnvelope } from "react-icons/fa6";
 import { IoRibbonOutline } from "react-icons/io5";
 import { GrMapLocation } from "react-icons/gr";
-import LongButton from "../components/longButton";
-import BackButton from "../components/backButton";
+import LongButton from "../../components/Buttons/longButton";
+import BackButton from "../../components/Buttons/backButton";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../_utils/firebase";
+import { auth } from "../../_utils/firebase";
 
 export default function Profile() {
     const [firstname, setFirstName] = useState('');
