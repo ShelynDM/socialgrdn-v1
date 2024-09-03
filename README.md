@@ -16,6 +16,6 @@ npm install mysql
 
 then
 
+npm install
 npm run build
-
 npm run start
