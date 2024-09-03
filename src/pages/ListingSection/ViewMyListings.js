@@ -1,9 +1,9 @@
 import React from "react";
-import InAppLogo from "../components/inAppLogo";
-import NavBar from "../components/navbar";
-import Sprout from "../assets/sprout.png";
-import LongButton from "../components/longButton";
-import BackMoreButton from "../components/backMoreButton";
+import InAppLogo from "../../components/Logo/inAppLogo";
+import NavBar from "../../components/Navbar/navbar";
+import Sprout from "../../assets/navbarAssets/sprout.png";
+import LongButton from "../../components/Buttons/longButton";
+import BackMoreButton from "../../components/Buttons/backMoreButton";
 
 // Hardcoded data for listings
 const listings = [

@@ -1,7 +1,7 @@
-import InAppLogo from "../components/inAppLogo";
-import NavBar from "../components/navbar";
-import Sprout from "../assets/sprout.png";
-import BackMoreButton from "../components/backMoreButton";
+import InAppLogo from "../../components/Logo/inAppLogo";
+import NavBar from "../../components/Navbar/navbar";
+import Sprout from "../../assets/navbarAssets/sprout.png";
+import BackMoreButton from "../../components/Buttons/backMoreButton";
 
 export default function ListingConfirmation() {
     return (

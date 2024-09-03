@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import InAppLogo from "../components/inAppLogo";
-import NavBar from "../components/navbar";
-import Sprout from "../assets/sprout.png";
-import LongButton from "../components/longButton";
-import BackButton from "../components/backButton";
+import InAppLogo from "../../components/Logo/inAppLogo";
+import NavBar from "../../components/Navbar/navbar";
+import Sprout from "../../assets/navbarAssets/sprout.png";
+import LongButton from "../../components/Buttons/longButton";
+import BackButton from "../../components/Buttons/backButton";
 
 export default function AddProperty() {
     const [isLocationEnabled, setIsLocationEnabled] = useState(false);

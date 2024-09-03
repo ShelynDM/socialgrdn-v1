@@ -1,11 +1,12 @@
 import React from "react";
-import InAppLogo from "../components/inAppLogo";
-import NavBar from "../components/navbar";
-import Sprout from "../assets/sprout.png";
+import InAppLogo from "../../components/Logo/inAppLogo";
+import NavBar from "../../components/Navbar/navbar";
+import Sprout from "../../assets/navbarAssets/sprout.png";
 import { FaUserCircle } from "react-icons/fa";
-import LongButton from "../components/longButton";
-import BackButton from "../components/backButton";
-import InputWithClearButton from "../components/inputWithClearButton";
+import LongButton from "../../components/Buttons/longButton";
+import BackButton from "../../components/Buttons/backButton";
+import InputWithClearButton from "../../components/InputComponents/inputWithClearButton";
+
 export default function EditProfile() {
     return (
         <div className="bg-main-background relative">
