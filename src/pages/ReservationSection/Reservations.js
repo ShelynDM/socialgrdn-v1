@@ -7,7 +7,7 @@ import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
 import BackButton from "../../components/Buttons/backButton";
 import SearchBar from "../../components/SearchComponents/searchbar";
 
-import Reservation from "./reservation";
+import Reservation from "./Reservation";
 import list from "./ReservationList.json";
 
 // This is the Listing page of the application where users can view other users' listings
