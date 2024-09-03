@@ -33,6 +33,9 @@ import ReservationCancelled from './pages/ReservationSection/ReservationCancelle
 import ReservationDetails from './pages/ReservationSection/ReservationDetails';
 import Reservations from './pages/ReservationSection/Reservations';
 
+//Landowner Gross Earnings Section
+import GrossEarnings from './pages/LandownerEarnings/GrossEarnings';
+
 
 // import LandingPage from './pages/SignUpSection/LandingPage';
 // import SignUp from './pages/SignUpSection/SignUp';
@@ -92,6 +95,9 @@ export default function App() {
             <Route path="/ReservationCancelled" element={<ProtectedRoute><ReservationCancelled /></ProtectedRoute>} />
             <Route path="/ReservationDetails" element={<ProtectedRoute><ReservationDetails /></ProtectedRoute>} />
             <Route path="/Reservations" element={<ProtectedRoute><Reservations /></ProtectedRoute>} />
+
+            {/* Landowner Gross Earnings Section */}
+            <Route path="/GrossEarnings" element={<ProtectedRoute><GrossEarnings /></ProtectedRoute>} />
 
 
           </>

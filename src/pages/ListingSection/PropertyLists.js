@@ -1,12 +1,37 @@
+//import React, { useState } from "react";
 import React from "react";
+import { useNavigate } from "react-router-dom";
+
 import InAppLogo from "../../components/Logo/inAppLogo";
-import { TfiAlignRight } from "react-icons/tfi";
+import NavBar from "../../components/Navbar/navbar";
+import Sprout from "../../assets/navbarAssets/sprout.png";
+//import Sidenav from "../../components/Navbar/sidenavbar";
+//import { TfiAlignRight } from "react-icons/tfi";
 import { IoArrowBackSharp } from "react-icons/io5";
 import AddListButton from "../../components/Buttons/longButton";
 import ListingView from "../../components/ListingComponents/listingView";
 
-
 export default function PropertyLists() {
+    const navigate = useNavigate();
+
+    const handleNavToMyEarnings = () => {
+        navigate('/GrossEarnings');
+    };
+
+    // const [isSideNavOpen, setSideNavOpen] = useState(false);
+
+    // const menuClicked = () => {
+    //     openSideNav();
+    // }
+
+    // const openSideNav = () => {
+    //     setSideNavOpen(true);
+    // };
+
+    // const closeSideNav = () => {
+    //     setSideNavOpen(false);
+    // }
+
     return (
         <div className='bg-main-background'>
             <div className="flex flex-wrap items-start justify-center gap-2 min-h-screen mx-4 pb-20 bg-main-background">
@@ -17,9 +42,10 @@ export default function PropertyLists() {
                     <button>
                         <IoArrowBackSharp size={25} />
                     </button>
-                    <button>
+                    <p className="hover:font-bold" onClick={handleNavToMyEarnings}> My Earnings</p>
+                    {/* <button onClick={menuClicked}>
                         <TfiAlignRight size={25} />
-                    </button>
+                    </button> */}
                 </div>
                 <div className="w-auto flex-wrap mt-20 items-start justify-center ">
                     <AddListButton
@@ -30,19 +56,21 @@ export default function PropertyLists() {
                         <h1 className="text-center text-xl mt-4">You have 4 listings</h1>
                     </div>
                 </div>
+                <div>
+
+                </div>
+                {/* <div>
+                    <Sidenav isOpen={isSideNavOpen} onClose={closeSideNav} />
+                </div> */}
                 <div className="flex flex-col gap-4">
                     <ListingView />
                     <ListingView />
                     <ListingView />
                     <ListingView />
-                    <ListingView />
-                    <ListingView />
-                    <ListingView />
-                    <ListingView />
                 </div>
+                {/* Navigation Bar */}
+                <NavBar SearchColor={"#00B761"} SproutPath={Sprout} />
             </div>
-
-
         </div>
     );
 }

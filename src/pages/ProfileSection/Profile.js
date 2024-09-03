@@ -38,13 +38,8 @@ export default function Profile() {
                     throw new Error('Network response was not ok');
                 }
                 const userData = await response.json();
-<<<<<<< Updated upstream:src/pages/ProfileSection/Profile.js
-                
-                setFirstName(userData.first_name);
-=======
 
-                (setFirstName(userData.first_name)).toUpperCase();
->>>>>>> Stashed changes:src/pages/Profile.js
+                setFirstName(userData.first_name);
                 setLastName(userData.last_name);
                 setUsername(userData.username);
                 setUserAddress(userData.address_line1);
@@ -77,6 +72,9 @@ export default function Profile() {
         }
     }
 
+    const handleLandownerPage = () => {
+        navigate("../PropertyLists"); // Redirect to Property List page
+    }
     return (
         <div className='bg-main-background relative'>
             <InAppLogo />
@@ -125,7 +123,7 @@ export default function Profile() {
 
                 <div className="flex items-center space-x-4 p-2 mb-2">
                     <GrMapLocation className="text-1" />
-                    <button className="text-xl font-semibold">I am a landowner</button>
+                    <button className="text-xl font-semibold" onClick={handleLandownerPage}>I am a landowner</button>
                     <SlArrowRight className="ml-auto text-xl" />
                 </div>
                 <div className="flex justify-center ">
