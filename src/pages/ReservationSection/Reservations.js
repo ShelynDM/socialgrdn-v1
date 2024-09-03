@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
@@ -12,7 +13,11 @@ import list from "./ReservationList.json";
 // This is the Listing page of the application where users can view other users' listings
 
 export default function Reservations({ name, landowner, start, end, address, image }) {
+    const navigate = useNavigate();
 
+    const handleViewReservation = () => {
+        navigate('/ReservationDetails');
+    };
 
 
     return (
@@ -29,7 +34,7 @@ export default function Reservations({ name, landowner, start, end, address, ima
                 <div>
                     <ul>
                         {list.map((reservation) => (
-                            <li key={reservation.id} >
+                            <li key={reservation.id} onClick={handleViewReservation}>
                                 <Reservation name={reservation.name} landowner={reservation.landowner} start={reservation.start} end={reservation.end} address={reservation.address} image={reservation.image} />
                             </li>
                         ))}
