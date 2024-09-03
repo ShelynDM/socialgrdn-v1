@@ -14,6 +14,6 @@ npm install firebase
 
 then
 
+npm install
 npm run build
-
 npm run start
