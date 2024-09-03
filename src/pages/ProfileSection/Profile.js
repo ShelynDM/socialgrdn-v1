@@ -73,7 +73,7 @@ export default function Profile() {
     }
 
     const handleLandownerPage = () => {
-        navigate("../PropertyLists"); // Redirect to Property List page
+        navigate("../ViewMyListings"); // Redirect to Property List page
     }
     return (
         <div className='bg-main-background relative'>

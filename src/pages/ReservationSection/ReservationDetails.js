@@ -5,6 +5,7 @@ import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
 import BackButton from "../../components/Buttons/backButton";
+import { FaLocationDot } from "react-icons/fa6";
 
 
 export default function ReservationDetails() {
@@ -40,10 +41,17 @@ export default function ReservationDetails() {
 
                 <section className="mb-3 mt-5">
                     <img src={image} alt="Listing" className="w-full h-auto" />
+
                     <div className="p-3">
-                        <h2 className="font-bol text-xl">{name}</h2>
-                        <p>{address}</p>
+                        <div className="flex items-center">
+                            <FaLocationDot className="text-1" />
+                            <h2 className="text-lg">{name}</h2>
+                        </div>
+                        <div>
+                            <p className="px-3">{address}</p>
+                        </div>
                     </div>
+
                     <div className="p-3 text-sm">
                         <h2 className="font-bold">Reservation details</h2>
                         <div className="p-3 flex">
