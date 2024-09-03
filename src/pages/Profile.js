@@ -23,7 +23,7 @@ export default function Profile() {
     const [userPostalCode, setUserPostalCode] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [profession, setProfession] = useState('');
-    const [email, setEmail] = useState(auth.currentUser?.email || '');
+    const [email] = useState(auth.currentUser?.email || '');
     const [createdAt, setCreatedAt] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -127,6 +127,10 @@ export default function Profile() {
                     <div className="flex items-center space-x-4 p-3">
                         <FaRegEnvelope className="text-1" />
                         <h1 className="text-lg">{email}</h1>
+                    </div>
+                    <div className="flex items-center space-x-4 p-3">
+                        <FaLocationDot className="text-1" />
+                        <h1 className="text-lg">{userAddress}, {userCity}, {userProvince}, {userPostalCode}</h1>
                     </div>
                     <div className="flex items-center space-x-4 p-3 mb-4">
                         <IoRibbonOutline className="text-1" />

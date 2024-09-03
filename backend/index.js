@@ -5,9 +5,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 
-const userRoutes = require('./api/userRoutes');
-const profileRoutes = require('./api/profileRoutes');
-const dataRoutes = require('./api/dataRoutes');
+const userRoutes = require('./api/RegisterAPI');
+const profileRoutes = require('./api/GetProfileAPI');
 
 const app = express();
 const port = 3000;
@@ -23,7 +22,6 @@ app.use(express.static(path.join(__dirname, '../build')));
 // Use route files
 app.use('/api/users', userRoutes);
 app.use('/api/profile', profileRoutes);
-app.use('/api/data', dataRoutes);
 
 // The "catchall" handler
 app.get('*', (req, res) => {
