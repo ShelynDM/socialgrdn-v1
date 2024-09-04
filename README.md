@@ -12,6 +12,8 @@ npm install react-router-dom
 
 npm install firebase
 
+npm install mysql
+
 then
 
 npm install

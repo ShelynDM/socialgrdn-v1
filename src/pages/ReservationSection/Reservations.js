@@ -23,7 +23,7 @@ export default function Reservations({ name, landowner, start, end, address, ima
     return (
         <div className='bg-main-background relative'>
 
-            <div className="flex flex-col items-center justify-center gap-2 min-h-screen m-0 pb-20 pt-24">
+            <div className="flex flex-col items-center justify-center gap-2 min-h-screen m-0 pb-20 pt-28">
                 <InAppLogo />
                 <SearchBar />
                 <BackButton />

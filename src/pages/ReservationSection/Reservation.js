@@ -21,8 +21,8 @@ export default function Reservation({ name, landowner, start, end, address, imag
                     <p>{address}</p>
                 </div>
             </div>
-            <div className="self-center p-5">
-                <p className="text-teal-600 text-xl font-bold text-center">View Details</p>
+            <div className="text-center p-5">
+                <button className="text-teal-600 text-xl font-bold text-center">View Details</button>
             </div>
         </section >
     );

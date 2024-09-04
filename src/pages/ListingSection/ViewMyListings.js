@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
+
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import Sprout from "../../assets/navbarAssets/sprout.png";
 import LongButton from "../../components/Buttons/longButton";
-import BackMoreButton from "../../components/Buttons/backMoreButton";
+import BackButton from "../../components/Buttons/backButton";
+import SideNavBar from "../../components/Navbar/sidenavbar"; // Ensure you are importing the correct component
+import { TfiAlignRight } from "react-icons/tfi";
 
 // Hardcoded data for listings
 const listings = [
@@ -13,17 +16,53 @@ const listings = [
 ];
 
 export default function ViewMyListings() {
+    const [isSideNavOpen, setSideNavOpen] = useState(false);
+    const sideNavRef = useRef(null); // Reference for the Sidenav
+
+    const openSideNav = () => {
+        setSideNavOpen(true);
+    };
+
+    const closeSideNav = () => {
+        setSideNavOpen(false);
+    };
+
+    // Close the Sidenav if the user clicks outside of it
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (sideNavRef.current && !sideNavRef.current.contains(event.target)) {
+                closeSideNav();
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     return (
         <div className="bg-main-background min-h-screen flex flex-col justify-between">
             <InAppLogo />
-            <BackMoreButton />
-            <div className="flex flex-col items-center justify-center flex-grow ">
+
+            <div className="flex flex-col items-center justify-center flex-grow top-0 mt-10 mx-4 px-6 ">
+                <div className="flex px-4 w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 justify-between">
+                    <div className="text-start">
+                        <BackButton />
+                    </div>
+                    <div className="text-right">
+                        <button onClick={openSideNav}>
+                            <TfiAlignRight />
+                        </button>
+                    </div>
+                </div>
                 <div className="px-4 w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 mb-32">
                     <LongButton buttonName="+ Add New Listing" className="w-full rounded shadow-lg bg-green-500 text-black font-semibold mb-6 mt-6" pagePath="/EditListing" />
                     <div className="text-center mb-6">
                         <h1 className="text-xl font-normal">You have 3 listings</h1>
                     </div>
-
+                    {/* SideNavBar Component */}
+                    <SideNavBar ref={sideNavRef} isOpen={isSideNavOpen} onClose={closeSideNav} />
                     {/* Listings */}
                     <div className="w-full space-y-4">
                         {listings.map((listing) => (

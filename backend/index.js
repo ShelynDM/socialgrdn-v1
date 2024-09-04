@@ -10,7 +10,7 @@ const port = 3001;
 // Middleware
 app.use(bodyParser.json()); // Middleware to parse JSON request bodies
 app.use(bodyParser.urlencoded({ extended: true })); // Middleware to parse URL-encoded request bodies
-app.use(cors()); 
+app.use(cors());
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '../build'))); // Serving static files from the build directory
@@ -70,26 +70,26 @@ app.post('/api/check-user', async (req, res) => {
 
 // API endpoint to get user profile based on email
 app.get('/api/profile', (req, res) => {
-    const { email } = req.query;
+  const { email } = req.query;
 
 
-    if (!email) {
-        return res.status(400).send('Email is required');
+  if (!email) {
+    return res.status(400).send('Email is required');
+  }
+
+  const query = 'SELECT * FROM UserProfile WHERE email = ?';
+  db.query(query, [email], (err, results) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).send(err);
     }
 
-    const query = 'SELECT * FROM UserProfile WHERE email = ?';
-    db.query(query, [email], (err, results) => {
-        if (err) {
-            console.error('Database error:', err);
-            return res.status(500).send(err);
-        }
-
-        if (results.length === 0) {
-            return res.status(404).send('User not found');
-        } else {
-            return res.status(200).json(results[0]);
-        }
-    });
+    if (results.length === 0) {
+      return res.status(404).send('User not found');
+    } else {
+      return res.status(200).json(results[0]);
+    }
+  });
 });
 
 
@@ -113,7 +113,7 @@ app.listen(port, (err) => {
       database: "mysocialgrdn" // MySQL database name
     });
 
-//issue handling
+    //issue handling
     db.connect((err) => {
       if (err) {
         console.error('Error connecting to MySQL: ', err);
@@ -128,6 +128,4 @@ app.listen(port, (err) => {
     global.db = db;
   }
 });
-
-
 

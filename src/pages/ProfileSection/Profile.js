@@ -20,12 +20,12 @@ export default function Profile() {
     const [lastname, setLastName] = useState('');
     const [username, setUsername] = useState('');
     const [userAddress, setUserAddress] = useState('');
-    const [userCity, setUserCity] = useState('');
-    const [userProvince, setUserProvince] = useState('');
-    const [userPostalCode, setUserPostalCode] = useState('');
+    //const [userCity, setUserCity] = useState('');
+    //const [userProvince, setUserProvince] = useState('');
+    //const [userPostalCode, setUserPostalCode] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [profession, setProfession] = useState('');
-    const [email, setEmail] = useState(auth.currentUser.email);
+    const email = auth.currentUser.email;
     const [createdAt, setCreatedAt] = useState('');
 
     const navigate = useNavigate();
@@ -38,14 +38,14 @@ export default function Profile() {
                     throw new Error('Network response was not ok');
                 }
                 const userData = await response.json();
-                
+
                 setFirstName(userData.first_name);
                 setLastName(userData.last_name);
                 setUsername(userData.username);
                 setUserAddress(userData.address_line1);
-                setUserCity(userData.city);
-                setUserProvince(userData.province);
-                setUserPostalCode(userData.postal_code);
+                //setUserCity(userData.city);
+                //setUserProvince(userData.province);
+                //setUserPostalCode(userData.postal_code);
                 setPhoneNumber(userData.phone_number);
                 setProfession(userData.profession);
 
@@ -72,6 +72,9 @@ export default function Profile() {
         }
     }
 
+    const handleLandownerPage = () => {
+        navigate("../ViewMyListings"); // Redirect to Property List page
+    }
     return (
         <div className='bg-main-background relative'>
             <InAppLogo />
@@ -120,7 +123,7 @@ export default function Profile() {
 
                 <div className="flex items-center space-x-4 p-2 mb-2">
                     <GrMapLocation className="text-1" />
-                    <button className="text-xl font-semibold">I am a landowner</button>
+                    <button className="text-xl font-semibold" onClick={handleLandownerPage}>I am a landowner</button>
                     <SlArrowRight className="ml-auto text-xl" />
                 </div>
                 <div className="flex justify-center ">
