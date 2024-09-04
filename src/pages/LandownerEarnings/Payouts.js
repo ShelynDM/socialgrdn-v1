@@ -5,7 +5,7 @@ import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
 import BackButton from "../../components/Buttons/backButton";
 
-export default function GrossEarnings() {
+export default function Payouts() {
 
     // Dummy data for renter payouts
     const renterPayouts = [
@@ -31,7 +31,7 @@ export default function GrossEarnings() {
                 <BackButton />
                 <div className="">
                     <div className="pb-5">
-                        <p className="text-2xl font-bold text-center">Gross Earnings</p>
+                        <p className="text-2xl font-bold text-center">Payouts</p>
                     </div>
 
                     <table className="min-w-full bg-white">

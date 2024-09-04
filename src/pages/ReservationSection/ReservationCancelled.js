@@ -27,8 +27,8 @@ export default function ReservationCancelled() {
                     <p className="pt-5 text-center">Your reservation </p>
                     <p className="text-center">has been cancelled</p>
 
-                    <p className="mt-5 text-teal-600 text-xl font-bold text-center"
-                        onClick={handleBackToReservations}>Back to My Reservation</p>
+                    <button className="mt-5 text-teal-600 text-xl font-bold text-center"
+                        onClick={handleBackToReservations}>Back to My Reservation</button>
                 </div>
             </div>
             <NavBar SproutPath={GreenSprout} />
