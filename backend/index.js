@@ -107,10 +107,10 @@ app.listen(port, (err) => {
 
     //MySQL connection configuration
     const db = mysql.createConnection({
-      host: "mysocialgrdn.cxec4yk4254a.us-east-2.rds.amazonaws.com", // Replace with your MySQL host
+      host: "camysocialgrdn.cbsqsgmsu22j.ca-central-1.rds.amazonaws.com", // Replace with your MySQL host
       user: "admin", // MySQL username
       password: "!SocialGrdn1!", // MySQL password
-      database: "mysocialgrdn" // MySQL database name
+      database: "camysocialgrdn" // MySQL database name
     });
 
     //issue handling
