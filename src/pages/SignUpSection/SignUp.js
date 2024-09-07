@@ -45,7 +45,7 @@ export default function SignUp() {
                 };
 
                 // This sends a POST request to the server to create the user using the useData object
-                const response = await fetch('http://localhost:3000/api/register', {
+                const response = await fetch('http://localhost:3000/api/users/register', {
                     method: 'POST',
                     credentials: 'include',
                     headers: {
