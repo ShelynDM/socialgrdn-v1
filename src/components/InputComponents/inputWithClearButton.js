@@ -1,19 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 import { IoMdClose } from "react-icons/io";
 
-function InputWithClearButton({ placeholder, type = "text", id }) {
-    const [value, setValue] = useState("");
-
-    const handleClear = () => setValue("");
+function InputWithClearButton({ placeholder, type = "text", id, value, onChange }) {
+    const handleClear = () => onChange({ target: { value: "" } });
 
     return (
         <div className="relative">
             <input
                 type={type}
                 id={id}
-                placeholder={placeholder}
                 value={value}
-                onChange={(e) => setValue(e.target.value)}
+                onChange={onChange}
+                placeholder={placeholder} // Use placeholder
                 className="p-2 w-full border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
             />
             {value && (
