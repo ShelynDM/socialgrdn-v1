@@ -8,10 +8,11 @@ import { FaLocationDot, FaRegEnvelope } from "react-icons/fa6";
 import { IoRibbonOutline } from "react-icons/io5";
 import { GrMapLocation } from "react-icons/gr";
 import LongButton from "../../components/Buttons/longButton";
-import BackButton from "../../components/Buttons/backButton";
+//import BackButton from "../../components/Buttons/backButton";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../_utils/firebase";
+//import { PiFolder } from "react-icons/pi";
 
 export default function Profile() {
     const [firstname, setFirstName] = useState('');
@@ -74,7 +75,7 @@ export default function Profile() {
         <div className='bg-main-background relative'>
             <InAppLogo />
             <div className="flex flex-col items-center justify-center gap-2 min-h-screen pb-20">
-                <BackButton />
+
                 <FaUserCircle className="text-green-500 text-9xl w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 mb-2" />
                 <div className="flex flex-col items-start justify-start">
                     <div className="flex items-center space-x-4 p-3 ">
@@ -83,19 +84,29 @@ export default function Profile() {
                     </div>
                     <div className="flex items-center space-x-4 p-3">
                         <FaRegUserCircle className="text-1" />
+
                         <h1 className="text-lg">{username}</h1>
                     </div>
                     <div className="flex items-center space-x-4 p-3">
                         <FaLocationDot className="text-1" />
-                        <h1 className="text-lg">{userAddress}</h1>
+                        {userAddress ?
+                            <h1 className="text-lg">{userAddress}</h1> :
+                            <h1 className="text-lg text-slate-600">Address</h1>
+                        }
                     </div>
                     <div className="flex items-center space-x-4 p-3 ">
                         <FaPhone className="text-1" />
-                        <h1 className="text-lg">{phoneNumber}</h1>
+                        {phoneNumber ?
+                            <h1 className="text-lg">{phoneNumber}</h1> :
+                            <h1 className="text-lg text-slate-600">Phone Number</h1>
+                        }
                     </div>
                     <div className="flex items-center space-x-4 p-3">
                         <FaUserTie className="text-1" />
-                        <h1 className="text-lg">{profession}</h1>
+                        {profession ?
+                            <h1 className="text-lg">{profession}</h1> :
+                            <h1 className="text-lg text-slate-600">Profession</h1>
+                        }
                     </div>
                     <div className="flex items-center space-x-4 p-3 ">
                         <FaLock className="text-1" />
