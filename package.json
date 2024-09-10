@@ -37,7 +37,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "dev:react": "react-scripts start",
+    "dev:react": "set PORT=3001 && react-scripts start",
     "dev:backend": "nodemon backend/index.js",
     "dev": "concurrently \"npm run dev:react\" \"npm run dev:backend\""
   },

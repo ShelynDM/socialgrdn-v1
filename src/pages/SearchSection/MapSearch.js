@@ -28,10 +28,22 @@ export default function MapSearch() {
             </div>
 
             {/* Search Results Section */}
-            <div className="flex overflow-x-auto whitespace-nowrap py-4 bg-main-background">
-                <div className="flex mx-2 px-2 gap-2">
-                    <SearchResult zoneColor={"#f00"} />
-                    <SearchResult zoneColor={"#f00"} />                                    
+            <div className="w-full">
+                <div className="flex overflow-x-auto whitespace-nowrap py-4 bg-main-background items-start">
+                    <div className="flex w-full mx-2">
+                        <div className="min-w-[300px] sm:min-w-[400px] md:min-w-[500px] lg:min-w-[600px] xl:min-w-[1000px] flex-shrink-0 mx-1 px-1">
+                            <SearchResult zoneColor={"#f00"} />
+                        </div>
+                        <div className="min-w-[300px] sm:min-w-[400px] md:min-w-[500px] lg:min-w-[600px] xl:min-w-[1000px] flex-shrink-0 mx-1 px-1">
+                            <SearchResult zoneColor={"#f00"} />
+                        </div>
+                        <div className="min-w-[300px] sm:min-w-[400px] md:min-w-[500px] lg:min-w-[600px] xl:min-w-[1000px] flex-shrink-0 mx-1 px-1">
+                            <SearchResult zoneColor={"#f00"} />
+                        </div>
+                        <div className="min-w-[300px] sm:min-w-[400px] md:min-w-[500px] lg:min-w-[600px] xl:min-w-[1000px] flex-shrink-0 mx-1 px-1">
+                            <SearchResult zoneColor={"#f00"} />
+                        </div>
+                    </div>
                 </div>
             </div>
 

@@ -45,7 +45,7 @@ export default function Search() {
                 {/* Search Results Section */}
                 <div className="flex flex-col w-full justify-center items-center mt-20 gap-8">
                     <div className="flex w-full justify-start pt-4 items-start  ">
-                        <p className="text-start">Recommendations</p>
+                        <p className="text-start">Recommendations Try</p>
                     </div>
                     <SearchResult zoneColor={"f00"} />
                     <SearchResult zoneColor={"f00"} />
