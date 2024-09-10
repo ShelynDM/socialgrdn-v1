@@ -3,7 +3,7 @@ import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import Sprout from "../../assets/navbarAssets/sprout.png";
 import { SlArrowRight } from "react-icons/sl";
-import { FaRegUser, FaRegUserCircle, FaPhone, FaUserTie, FaLock, FaUserCircle } from "react-icons/fa";
+import { FaRegUser, FaRegUserCircle, FaPhone, FaUserTie, FaUserCircle } from "react-icons/fa";
 import { FaLocationDot, FaRegEnvelope } from "react-icons/fa6";
 import { IoRibbonOutline } from "react-icons/io5";
 import { GrMapLocation } from "react-icons/gr";
@@ -107,10 +107,6 @@ export default function Profile() {
                             <h1 className="text-lg">{profession}</h1> :
                             <h1 className="text-lg text-slate-600">Profession</h1>
                         }
-                    </div>
-                    <div className="flex items-center space-x-4 p-3 ">
-                        <FaLock className="text-1" />
-                        <h1 className="text-lg">*******</h1>
                     </div>
                     <div className="flex items-center space-x-4 p-3">
                         <FaRegEnvelope className="text-1" />
