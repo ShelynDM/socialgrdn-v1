@@ -5,7 +5,7 @@ import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
 import BackButton from "../../components/Buttons/backButton";
-import SearchBar from "../../components/SearchComponents/searchbar";
+import SearchBar from "../../components/SearchComponents/search";
 
 import Reservation from "./Reservation";
 import list from "./ReservationList.json";
@@ -23,12 +23,17 @@ export default function Reservations({ name, landowner, start, end, address, ima
     return (
         <div className='bg-main-background relative'>
 
-            <div className="flex flex-col items-center justify-center gap-2 min-h-screen m-0 pb-20 pt-28">
-                <InAppLogo />
-                <SearchBar />
-                <BackButton />
-
-                <div className="pb-2">
+            <div className="flex flex-col items-center justify-center gap-2 min-h-screen mx-4 pb-20 bg-main-background">
+                <div className='p-2 fixed top-0 left-0 w-full bg-main-background'>
+                    <InAppLogo />
+                </div>
+                {/* Search Bar Section */}
+                <div className='mx-2 px-2 fixed top-12 flex w-full items-center justify-between bg-main-background'>
+                    <div className="flex-grow w-full">
+                        <SearchBar className="w-full" />
+                    </div>
+                </div>
+                <div className="pb-2 mt-24">
                     <h2 className="text-xl">Upcoming Reservations</h2>
                 </div>
                 <div>

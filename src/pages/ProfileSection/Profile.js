@@ -28,7 +28,7 @@ export default function Profile() {
     useEffect(() => {
         const fetchUserProfile = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/api/profile?email=${email}`);
+                const response = await fetch(`/api/profile?email=${email}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }

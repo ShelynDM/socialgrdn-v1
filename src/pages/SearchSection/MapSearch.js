@@ -9,7 +9,7 @@ export default function MapSearch() {
     return (
         <div className='bg-main-background flex flex-col h-screen'>
             {/* Logo Section */}
-            <div className='p-2 fixed top-0 left-0 w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-main-background'>
+            <div className='p-2 fixed top-0 left-0 w-full bg-main-background'>
                 <InAppLogo/>
             </div>
 
