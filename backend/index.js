@@ -35,8 +35,6 @@ app.listen(port, (err) => {
   if (err) {
     console.error('Error starting the server:', err);
   } else {
-    console.log(`Server running at http://localhost:${port}/LandingPage`);
-
     // Establish MySQL connection
     const db = mysql.createConnection({
       host: "secret", // Replace with your MySQL host
@@ -50,9 +48,6 @@ app.listen(port, (err) => {
         console.error('Error connecting to MySQL: ', err);
         return;
       }
-      console.log('Connected to MySQL');
-      console.log('Port 3306');
-      console.log('Connection successful');
     });
 
     // Make the database connection available globally
