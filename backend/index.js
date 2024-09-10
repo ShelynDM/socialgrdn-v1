@@ -39,10 +39,10 @@ app.listen(port, (err) => {
 
     // Establish MySQL connection
     const db = mysql.createConnection({
-      host: "secret", // Replace with your MySQL host
-      user: "secret", // MySQL username
-      password: "!secret!", // MySQL password
-      database: "secret" // MySQL database name
+      host: "camysocialgrdn.cbsqsgmsu22j.ca-central-1.rds.amazonaws.com", // Replace with your MySQL host
+      user: "admin", // MySQL username
+      password: "!SocialGrdn1!", // MySQL password
+      database: "camysocialgrdn" // MySQL database name
     });
 
     db.connect((err) => {
