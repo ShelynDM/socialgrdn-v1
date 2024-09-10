@@ -4,16 +4,25 @@ const router = express.Router();
 router.post('/register', (req, res) => {
   const { email, firstname, lastname, username, profession, phoneNumber, userAddress, userCity, userProvince, userPostalCode } = req.body;
 
-  if (!firstname || !lastname || !username) {
-    return res.status(400).send('First name, last name, and username are required');
+  if (!firstname || !lastname || !username || !email) {
+    return res.status(400).send('First name, last name, username, and email are required');
   }
 
-  const query = 'INSERT INTO UserProfile (email, first_name, last_name, username, profession, phone_number, address_line1, city, province, postal_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-  const values = [email, firstname, lastname, username, profession, phoneNumber, userAddress, userCity, userProvince, userPostalCode];
+  const query = `
+    INSERT INTO UserProfile (
+      email, first_name, last_name, username, profession, phone_number, 
+      address_line1, city, province, postal_code, role, status
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '1', '1')
+  `;
+  const values = [
+    email, firstname, lastname, username, profession, phoneNumber, 
+    userAddress, userCity, userProvince, userPostalCode
+  ];
 
   db.query(query, values, (err, results) => {
     if (err) {
-      res.status(500).send(err);
+      console.error('Error registering user:', err);
+      res.status(500).send('Error registering user');
     } else {
       res.status(200).send('User registered successfully');
     }

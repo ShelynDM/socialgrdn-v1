@@ -13,16 +13,11 @@ import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../_utils/firebase";
 
-// This is the Profile page of the application where users can view and edit their profile information and log out
-// User will be able to access the add listing page from here
 export default function Profile() {
     const [firstname, setFirstName] = useState('');
     const [lastname, setLastName] = useState('');
     const [username, setUsername] = useState('');
     const [userAddress, setUserAddress] = useState('');
-    //const [userCity, setUserCity] = useState('');
-    //const [userProvince, setUserProvince] = useState('');
-    //const [userPostalCode, setUserPostalCode] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [profession, setProfession] = useState('');
     const email = auth.currentUser.email;
@@ -43,16 +38,10 @@ export default function Profile() {
                 setLastName(userData.last_name);
                 setUsername(userData.username);
                 setUserAddress(userData.address_line1);
-                //setUserCity(userData.city);
-                //setUserProvince(userData.province);
-                //setUserPostalCode(userData.postal_code);
                 setPhoneNumber(userData.phone_number);
                 setProfession(userData.profession);
 
-                // Convert the date to a more readable format
                 const date = new Date(userData.created_at);
-
-                // Format the date as 'Month Day, Year'
                 const options = { year: 'numeric', month: 'long', day: 'numeric' };
                 setCreatedAt(date.toLocaleDateString('en-US', options));
             } catch (error) {
@@ -66,15 +55,21 @@ export default function Profile() {
     const handleLogOut = async () => {
         try {
             await signOut(auth);
-            navigate("/SignIn"); // Redirect to SignIn page after logging out
+            navigate("/SignIn");
         } catch (error) {
             console.error("Error logging out:", error);
         }
-    }
+    };
 
     const handleLandownerPage = () => {
-        navigate("../ViewMyListings"); // Redirect to Property List page
-    }
+        navigate("../ViewMyListings");
+    };
+
+    // Updated onClick handler to navigate to EditProfile page
+    const handleEditProfile = () => {
+        navigate("/EditProfile");
+    };
+
     return (
         <div className='bg-main-background relative'>
             <InAppLogo />
@@ -116,7 +111,7 @@ export default function Profile() {
                     </div>
                     <div className='flex flex-col items-center justify-center gap-4 pb-6 w-full'>
                         <LongButton buttonName='Edit Profile'
-                            onClick={() => alert('Edit Profile')}
+                            onClick={handleEditProfile} // Navigate to EditProfile page
                             className='p-2 w-full rounded shadow-lg bg-green-600 text-white font-bold' />
                     </div>
                 </div>

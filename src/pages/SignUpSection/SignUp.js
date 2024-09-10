@@ -1,65 +1,54 @@
 import React, { useState } from 'react';
-import logo from '../../assets/logo/SocialGrdnLogo.png';
-import LongButton from '../../components/Buttons/longButton';
+import { useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { auth } from '../../_utils/firebase';
-import { useNavigate } from 'react-router-dom';
+import logo from '../../assets/logo/SocialGrdnLogo.png';
+import LongButton from '../../components/Buttons/longButton';
 
 export default function SignUp() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [firstname, setFirstName] = useState('');
-    const [lastname, setLastName] = useState('');
-    const [username, setUsername] = useState('');
-    const [profession, setProfession] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [userAddress, setUserAddress] = useState('');
-    const [userCity, setUserCity] = useState('');
-    const [userProvince, setUserProvince] = useState('');
-    const [userPostalCode, setUserPostalCode] = useState('');
+    const [formData, setFormData] = useState({
+        email: '',
+        password: '',
+        firstname: '',
+        lastname: '',
+        username: '',
+        profession: '',
+        phoneNumber: '',
+        userAddress: '',
+        userCity: '',
+        userProvince: '',
+        userPostalCode: ''
+    });
     const [error, setError] = useState('');
     const [emailMessage, setEmailMessage] = useState('');
     
-    // This is a hook from react-router-dom that allows you to navigate to different pages
     const navigate = useNavigate();
 
-    // This function is called when the user clicks the "Sign up" button
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
     const handleSignUp = async (event) => {
         event.preventDefault();
-        // Check if the email and password are valid before proceeding with the sign up process and checking if the user has entered their first name, last name, and username
+        const { email, password, firstname, lastname, username } = formData;
+        
         if (email && password && email.includes('@') && email.includes('.') && password.length >= 6 && firstname && lastname && username) {
             try {
-                // userData is an object that contains all the user data that will be sent to the server
-
-                const userData = {
-                    email,
-                    firstname,
-                    lastname,
-                    username,
-                    profession,
-                    phoneNumber,
-                    userAddress,
-                    userCity,
-                    userProvince,
-                    userPostalCode,
-                };
-
-                // This sends a POST request to the server to create the user using the useData object
                 const response = await fetch('http://localhost:3000/api/users/register', {
                     method: 'POST',
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(userData),
+                    body: JSON.stringify(formData),
                 });
 
-                //This checks if the response is ok (no error in database) and if it is, it creates the user in Firebase and sends a verification email
                 if (response.ok) {
-                    // Create the user in Firebase
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-
-                    // Send the verification email to the user using the sendEmailVerification function
                     const user = userCredential.user;
                     await sendEmailVerification(user);
                     setEmailMessage('Verification email sent! Please check your inbox.');
@@ -73,23 +62,12 @@ export default function SignUp() {
                 console.log(error);
             }
         } else {
-            // This else statement handles the case where the user has not entered any required fields
-            if (!email && !password) {
-                setError('Please enter an email and password.');
-            } else if (!email) {
-                setError('Please enter an email.');
-            } else if (!password) {
-                setError('Please enter a password.');
+            if (!email || !password || !firstname || !lastname || !username) {
+                setError('Please fill in all required fields: email, password, first name, last name, and username.');
             } else if (!email.includes('@') || !email.includes('.')) {
                 setError('Please enter a valid email.');
             } else if (password.length < 6) {
                 setError('Password must be at least 6 characters.');
-            } else if (!firstname) {
-                setError('Please enter your first name.');
-            } else if (!lastname) {
-                setError('Please enter your last name.');
-            } else if (!username) {
-                setError('Please enter a username.');
             }
         }
     };
@@ -111,86 +89,102 @@ export default function SignUp() {
                         <input
                             type="email"
                             placeholder="Email"
-                            id="email"
                             name="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
+                            value={formData.email}
+                            onChange={handleChange}
+                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
+                            required
+                        />
                         <input
                             type="password"
                             placeholder="Password"
-                            id="password"
                             name="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
+                            value={formData.password}
+                            onChange={handleChange}
+                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
+                            required
+                        />
                         <input
                             type="text"
                             placeholder="First Name"
-                            id="firstname"
-                            value={firstname}
-                            onChange={(e) => setFirstName(e.target.value)}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
+                            name="firstname"
+                            value={formData.firstname}
+                            onChange={handleChange}
+                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
+                            required
+                        />
                         <input
                             type="text"
                             placeholder="Last Name"
-                            id="lastname"
-                            value={lastname}
-                            onChange={(e) => setLastName(e.target.value)}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
+                            name="lastname"
+                            value={formData.lastname}
+                            onChange={handleChange}
+                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
+                            required
+                        />
                         <input
                             type="text"
                             placeholder="Username"
-                            id="username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
+                            name="username"
+                            value={formData.username}
+                            onChange={handleChange}
+                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
+                            required
+                        />
                         <p className='text-gray-600 italic'>Optional</p>
                         <input
                             type="text"
                             placeholder="Profession"
-                            id="profession"
-                            value={profession}
-                            onChange={(e) => setProfession(e.target.value)}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
+                            name="profession"
+                            value={formData.profession}
+                            onChange={handleChange}
+                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
+                        />
                         <input
-                            type="text"
+                            type="tel"
                             placeholder="Phone Number"
-                            id="phonenumber"
-                            value={phoneNumber}
-                            onChange={(e) => setPhoneNumber(e.target.value)}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
+                            name="phoneNumber"
+                            value={formData.phoneNumber}
+                            onChange={handleChange}
+                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
+                        />
                         <input
                             type="text"
                             placeholder="Address Line 1"
-                            id="userAddress"
-                            value={userAddress}
-                            onChange={(e) => setUserAddress(e.target.value)}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
+                            name="userAddress"
+                            value={formData.userAddress}
+                            onChange={handleChange}
+                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
+                        />
                         <input
                             type="text"
                             placeholder="City"
-                            id="userCity"
-                            value={userCity}
-                            onChange={(e) => setUserCity(e.target.value)}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
+                            name="userCity"
+                            value={formData.userCity}
+                            onChange={handleChange}
+                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
+                        />
                         <input
                             type="text"
                             placeholder="Province"
-                            id="userProvince"
-                            value={userProvince}
-                            onChange={(e) => setUserProvince(e.target.value)}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
+                            name="userProvince"
+                            value={formData.userProvince}
+                            onChange={handleChange}
+                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
+                        />
                         <input
                             type="text"
                             placeholder="Postal Code"
-                            id="userPostalCode"
-                            value={userPostalCode}
-                            onChange={(e) => setUserPostalCode(e.target.value)}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500' />
-                        <LongButton buttonName='Sign up'
+                            name="userPostalCode"
+                            value={formData.userPostalCode}
+                            onChange={handleChange}
+                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
+                        />
+                        <LongButton 
+                            buttonName='Sign up'
                             type='submit'
-                            className='py-2 w-full rounded shadow-lg bg-green-600 text-white font-bold' />
+                            className='py-2 w-full rounded shadow-lg bg-green-600 text-white font-bold'
+                        />
                         {emailMessage && <p className="text-green-500 mt-2">{emailMessage}</p>}
                     </form>
                     <div className='w-full'>
@@ -201,9 +195,11 @@ export default function SignUp() {
                     <p>By signing up, you agree to the <strong>Terms, Conditions</strong> and <strong>Privacy Policy</strong>.</p>
                 </div>
                 <div className='px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3'>
-                    <LongButton buttonName='Already a member?'
+                    <LongButton 
+                        buttonName='Already a member?'
                         className=' w-full bg-green-200 font-bold'
-                        pagePath="/SignIn" />
+                        pagePath="/SignIn"
+                    />
                 </div>
             </div>
         </div>
