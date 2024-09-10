@@ -38,7 +38,7 @@ export default function SignUp() {
         
         if (email && password && email.includes('@') && email.includes('.') && password.length >= 6 && firstname && lastname && username) {
             try {
-                const response = await fetch('http://localhost:3000/api/users/register', {
+                const response = await fetch('/api/users/register', {
                     method: 'POST',
                     credentials: 'include',
                     headers: {
