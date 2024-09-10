@@ -34,7 +34,7 @@ export default function EditProfile() {
                     console.error("No email found");
                     return;
                 }
-                const response = await fetch(`/api/profile?email=${email}`);
+                const response = await fetch(`http://localhost:3000/api/profile?email=${email}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }

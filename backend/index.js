@@ -3,6 +3,7 @@ const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+
 const path = require('path');
 
 const userRoutes = require('./api/RegisterAPI');
@@ -15,7 +16,7 @@ const port = 3000;
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:3001' }));
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '../build')));
