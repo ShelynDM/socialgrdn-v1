@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
-import BackButton from "../../components/Buttons/backButton";
 import SearchBar from "../../components/SearchComponents/search";
 
 import Reservation from "./Reservation";

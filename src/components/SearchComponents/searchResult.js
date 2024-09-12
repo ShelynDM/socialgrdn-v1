@@ -5,7 +5,7 @@ import SoilIcon from "../../assets/listingAssets/Soil-icon.png";
 import { Link } from "react-router-dom";
 import ExampleImage from "../../assets/exampleAssets/imgExample.jpg";
 
-export default function SearchResult() {
+export default function SearchResult({listingTitle, listingAddress, listerName, listingZone, listingImage, listingCrop, listingFarmArea, listingSoilType}) {
     // const [propertyName, setPropertyName] = useState('');
     // const [username, setUsername] = useState('');
     // const [location, setLocation] = useState('');
@@ -20,8 +20,8 @@ export default function SearchResult() {
             <div className="px-6 pt-2">
                 <div className="flex flex-row justify-between mb-2">
                     <div>
-                        <h1 className="font-bold text-lg ">John’s Yard</h1>
-                        <p className="text-gray-700 text-sm">Address St, Calgary AB</p>
+                        <h1 className="font-bold text-lg ">{listingTitle}</h1>
+                        <p className="text-gray-700 text-sm">{listingAddress}</p>
                     </div>
                     <div>
                         <Link href="#" className="text-green-500 font-bold text-lg ml-auto">View</Link>
@@ -29,11 +29,11 @@ export default function SearchResult() {
                 </div>
                 <div className="flex flex-row justify-between">
                     <div>
-                        <p className="text-xs text-gray-500">Listed by JohnDoe</p> 
+                        <p className="text-xs text-gray-500">Listed by {listerName}</p> 
                     </div>
                     <div className="flex flex-row gap-1">
                         <div className="w-4 h-4 border-1 border-gray-400" style={{ backgroundColor: zoneColor }}></div>
-                        <p className="text-xs text-gray-500">Zone 4A</p>
+                        <p className="text-xs text-gray-500">Zone {listingZone}</p>
                     </div>
                 </div>
             </div>
@@ -47,21 +47,21 @@ export default function SearchResult() {
                     <img src={PlantIcon} alt="plant icon" className="w-7 h-7" />
                     <div>
                         <h1 className="text-[10px] text-gray-400">Crop</h1>
-                        <p className="text-[10px] text-gray-700">Squash</p>
+                        <p className="text-[10px] text-gray-700">{listingCrop}</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-1 w-1/3 rounded-xl border-2 shadow-md p-2 border-gray-200">
                     <img src={FarmAreaIcon} alt="farm area icon" className="w-7 h-7" />
                     <div>
                         <h1 className="text-[10px] text-gray-400">Farm Area</h1>
-                        <p className="text-[9px] text-gray-700">15x15x15 ft</p>
+                        <p className="text-[9px] text-gray-700">{listingFarmArea} ft</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-1 w-1/3 rounded-xl border-2 shadow-md p-2 border-gray-200">
                     <img src={SoilIcon} alt="soil icon" className="w-7 h-7" />
                     <div>
                         <h1 className="text-[10px] text-gray-400">Soil Type</h1>
-                        <p className="text-[10px] text-gray-700">Loam</p>
+                        <p className="text-[10px] text-gray-700">{listingSoilType}</p>
                     </div>
                 </div>
             </div>

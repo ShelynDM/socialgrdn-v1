@@ -6,6 +6,7 @@ import SearchResult from "../../components/SearchComponents/searchResult";
 import SearchBar from "../../components/SearchComponents/search";
 import SearchFilter from "../../components/SearchComponents/popupSearchFilter";
 import FilterButton from "../../components/SearchComponents/filterButton";
+import dummyData from "./searchResultDummyData.json";
 
 export default function Search() {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -47,14 +48,18 @@ export default function Search() {
                     <div className="flex w-full justify-start pt-4 items-start  ">
                         <p className="text-start">Recommendations</p>
                     </div>
-                    <SearchResult zoneColor={"f00"} />
-                    <SearchResult zoneColor={"f00"} />
-                    <SearchResult zoneColor={"f00"} />
-                    <SearchResult zoneColor={"f00"} />
-                    <SearchResult zoneColor={"f00"} />
-                    <SearchResult zoneColor={"f00"} />
-                    <SearchResult zoneColor={"f00"} />
-                    <SearchResult zoneColor={"f00"} />
+                    {dummyData.map((dummyData) => (
+                        <SearchResult
+                            listingTitle={dummyData.listingTitle}
+                            listingAddress={dummyData.listingAddress}
+                            listerName={dummyData.listerName}
+                            listingZone={dummyData.listingZone}
+                            listingImage={dummyData.listingImage}
+                            listingCrop={dummyData.listingCrop}
+                            listingFarmArea={dummyData.listingFarmArea}
+                            listingSoilType={dummyData.listingSoilType}
+                        />
+                    ))}
                 </div>
                 {/* Navigation Bar */}
                 <NavBar SearchColor={"#00B761"} SproutPath={Sprout} />
