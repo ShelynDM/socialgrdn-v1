@@ -1,3 +1,4 @@
+"use client"
 import React, { useState, useEffect } from "react";
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
@@ -13,6 +14,7 @@ import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../_utils/firebase";
 //import { PiFolder } from "react-icons/pi";
+import { useUser } from "../../UserContext"; // Import useUser to get the userID
 
 export default function Profile() {
     const [firstname, setFirstName] = useState('');
@@ -21,15 +23,17 @@ export default function Profile() {
     const [userAddress, setUserAddress] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [profession, setProfession] = useState('');
-    const email = auth.currentUser.email;
     const [createdAt, setCreatedAt] = useState('');
+    const { userId } = useUser(); // Get the userID from UserContext
+    const email = auth.currentUser.email;
 
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUserProfile = async () => {
             try {
-                const response = await fetch(`/api/profile?email=${email}`);
+                // Fetch user profile based on userID
+                const response = await fetch(`/api/getProfile?userID=${userId}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -50,8 +54,10 @@ export default function Profile() {
             }
         };
 
-        fetchUserProfile();
-    }, [email]);
+        if (userId) {
+            fetchUserProfile(); // Only fetch profile if userId exists
+        }
+    }, [userId]);
 
     const handleLogOut = async () => {
         try {
@@ -66,7 +72,6 @@ export default function Profile() {
         navigate("../ViewMyListings");
     };
 
-    // Updated onClick handler to navigate to EditProfile page
     const handleEditProfile = () => {
         navigate("/EditProfile");
     };
@@ -118,7 +123,7 @@ export default function Profile() {
                     </div>
                     <div className='flex flex-col items-center justify-center gap-4 pb-6 w-full'>
                         <LongButton buttonName='Edit Profile'
-                            onClick={handleEditProfile} // Navigate to EditProfile page
+                            onClick={handleEditProfile}
                             className='p-2 w-full rounded shadow-lg bg-green-600 text-white font-bold' />
                     </div>
                 </div>
