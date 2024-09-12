@@ -10,6 +10,7 @@ const getIDRoutes = require('./api/GetuserIDAPI');
 const editProfileRoutes = require('./api/EditProfileAPI');
 const getProfileRoutes = require('./api/GetUserProfileAPI');
 const getUserPropertiesRoutes = require('./api/GetUserPropAPI'); // Import your new GetUserPropAPI
+const getPropDetailsRoutes = require('./api/GetPropDetailsAPI');  // Import your new GetPropDetailsAPI
 
 const app = express();
 const port = 3000;
@@ -28,6 +29,7 @@ app.use('/api/profile', getIDRoutes);
 app.use('/api/editProfile', editProfileRoutes);
 app.use('/api/getProfile', getProfileRoutes);
 app.use('/api/getUserProperties', getUserPropertiesRoutes); // Add the new route for GetUserPropAPI
+app.use('/api/getPropertyDetails', getPropDetailsRoutes); // Add the new route for GetPropDetailsAPI
 
 // The "catchall" handler
 app.get('*', (req, res) => {
