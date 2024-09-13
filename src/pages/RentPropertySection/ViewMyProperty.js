@@ -94,7 +94,7 @@ export default function ViewMyProperty() {
                             <p className="text-sm text-gray-700 mb-2"><strong>Soil Type:</strong> {property.soil_type}</p>
                             <p className="text-sm text-gray-700 mb-2"><strong>Amenities:</strong> {property.amenities ? property.amenities.join(', ') : 'N/A'}</p>
                             <p className="text-sm text-gray-700 mb-2"><strong>Restrictions:</strong> {property.restrictions ? property.restrictions.join(', ') : 'N/A'}</p>
-                            <p className="text-sm text-gray-700 mb-2"><strong>Crops:</strong> {property.possible_crops ? property.possible_crops.join(', ') : 'N/A'}</p>
+                            <p className="text-sm text-gray-700 mb-2"><strong>Crops:</strong> {property.crops ? property.crops.join(', ') : 'N/A'}</p>
                             <p className="text-xl text-gray-700 font-semibold mb-2">CAD ${property.rent_base_price}/month</p>
                         </div>
                         {/* Owner Information */}
