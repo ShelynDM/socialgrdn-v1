@@ -16,7 +16,7 @@ export default function PopupSearchFilter({ isOpen, onClose }) {
                     <label className="mt-2 text-gray-600">
                         <h2>Price</h2>
                         <div>
-                            <input type="range" min="0" max="1000" className="w-full" />
+                            <input type="range" min="0" max="1000" className="w-full range-slider"/>
                         </div>
                         <div className="flex flex-row items-center">
                             <p>$</p>
