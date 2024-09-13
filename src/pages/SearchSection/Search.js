@@ -100,11 +100,11 @@ export default function Search() {
     
 
     // Fetch search results and user location on component mount
-    // eslint-disable-next-line
+    
     useEffect(() => {
         fetchSearchResults();
         getUserLocation();
-    // eslint-disable-next-line
+    //eslint-disable-next-line
     }, []);
 
     // Calculate nearest results when the user's location or search results change
@@ -114,7 +114,7 @@ export default function Search() {
             setNearestResults(nearby); // Set the nearest results
             console.log("Nearest results:", nearestResults);
         }
-        //eslint-disable-next-line
+    //eslint-disable-next-line    
     }, [userLocation, searchResults]);
 
     return (
