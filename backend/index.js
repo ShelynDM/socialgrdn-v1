@@ -1,5 +1,5 @@
 const express = require('express');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
@@ -10,6 +10,7 @@ const getIDRoutes = require('./api/GetuserIDAPI');
 const editProfileRoutes = require('./api/EditProfileAPI');
 const getProfileRoutes = require('./api/GetUserProfileAPI');
 const getUserPropertiesRoutes = require('./api/GetUserPropAPI'); // Import your new GetUserPropAPI
+const getSearchResultsRoutes = require('./api/GetSearchResultsAPI'); // Import your new GetSearchResultsAPI
 
 const app = express();
 const port = 3000;
@@ -28,6 +29,7 @@ app.use('/api/profile', getIDRoutes);
 app.use('/api/editProfile', editProfileRoutes);
 app.use('/api/getProfile', getProfileRoutes);
 app.use('/api/getUserProperties', getUserPropertiesRoutes); // Add the new route for GetUserPropAPI
+app.use('/api/getSearchResults', getSearchResultsRoutes); // Add the new route for GetSearchResultsAPI
 
 // The "catchall" handler
 app.get('*', (req, res) => {
@@ -40,10 +42,10 @@ app.listen(port, (err) => {
   } else {
     // Establish MySQL connection
     const db = mysql.createConnection({
-      host: "camysocialgrdn.cbsqsgmsu22j.ca-central-1.rds.amazonaws.com", // Replace with your MySQL host
-      user: "admin", // MySQL username
-      password: "!SocialGrdn1!", // MySQL password
-      database: "camysocialgrdn" // MySQL database name
+      host: "127.0.0.1", // Replace with your MySQL host
+      user: "root", // MySQL username
+      password: "password", // MySQL password
+      database: "SocialGrdnLocal" // MySQL database name
     });
 
     db.connect((err) => {
