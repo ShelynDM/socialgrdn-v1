@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
@@ -14,13 +14,14 @@ import { LuMapPin } from "react-icons/lu";
 export default function RentConfirmation() {
     const [zoneColor] = useState("#00f");
 
+
     return (
         <div className='bg-main-background'>
             {/* Main Content */}
             <div className="flex flex-col items-center justify-center min-h-screen mx-4 pb-20 bg-main-background">
                 {/* Logo */}
                 <div className='p-2 fixed top-0 left-0 w-auto sm:w-2/4 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-main-background'>
-                    <InAppLogo/>
+                    <InAppLogo />
                 </div>
 
                 {/* Top Bar Section (Back Button, Search, Filter) */}
@@ -37,7 +38,7 @@ export default function RentConfirmation() {
                 <div className="w-96 rounded-lg border-2 py-1 border-gray-200 bg-main-background">
                     <h1 className="font-semibold text-2xl mx-4">Booking Confirmed</h1>
                     {/* Listing Duration */}
-                    <div className="mx-4 flex">                        
+                    <div className="mx-4 flex">
                         <p className="text-sm">September 1, 2024</p>
                         <p className="mx-1 text-sm"> - </p>
                         <p className="text-sm">September 30, 2024</p>
@@ -54,8 +55,8 @@ export default function RentConfirmation() {
 
                             {/* Listing Address */}
                             <div className="flex">
-                                <LuMapPin/>
-                                <p className="text-xs">Address St, Calgary AB</p> 
+                                <LuMapPin />
+                                <p className="text-xs">Address St, Calgary AB</p>
                             </div>
                             {/* Farming Zone */}
                             <div className="flex flex-row gap-1">

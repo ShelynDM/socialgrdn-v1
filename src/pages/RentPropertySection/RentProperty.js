@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState, useEffect } from "react";
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
@@ -8,12 +8,58 @@ import ExampleImage from "../../assets/exampleAssets/imgExample.jpg";
 import AgreeAndPay from "../../components/Buttons/longButton";
 import { LuMapPin } from "react-icons/lu";
 
-
-
-
-
 export default function RentProperty() {
-    const [zoneColor] = useState("#00f");
+
+    const [renter_ID, setRenter_ID] = useState('');
+
+    //Property Information
+    const [propertyID, setPropertyID] = useState('');
+    const [propertyZone, setPropertyZone] = useState('');
+    const [zoneColor] = useState("#00f");                         //FOR UPDATE
+    const [propertyLocationID, setPropertyLocationID] = useState('');
+    const [propertyName, setPropertyName] = useState('');
+
+    //For Rental Table
+    // const [renter_ID, setRenter_ID] = useState('');
+    // const [start_date, setStart_date] = useState('');
+    // const [end_date, setEnd_date] = useState('');
+    // const [status, setStatus] = useState('');
+    // const [rent_base_price, setRent_base_price] = useState('');
+    // const [tax_amount, setTax_amount] = useState('');
+    // const [total_price, setTotal_price] = useState('');
+    // const [transaction_fee, setTransaction_fee] = useState('');
+
+    setRenter_ID(4);
+    setPropertyID(1);
+
+    useEffect(() => {
+        const fetchPropertyDetails = async () => {
+            try {
+                const response = await fetch(`http://localhost:3000/api/rentProperty?propertyID=${propertyID}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const propertyData = await response.json();
+
+                setPropertyZone(propertyData.growth_zone);
+                setPropertyName(propertyData.property_name);
+                setPropertyLocationID(propertyData.location_id);
+                // const date = new Date(userData.created_at);
+                // const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                // setCreatedAt(date.toLocaleDateString('en-US', options));
+            } catch (error) {
+                console.error('Error fetching user profile:', error);
+            }
+        };
+        fetchPropertyDetails();
+        // eslint-disable-next-line
+    }, [propertyID]);
+
+    console.log('Renter: ' + renter_ID);
+    console.log('Property ID: ' + propertyID);
+    console.log('Property zone: ' + propertyZone);
+    console.log('Property location: ' + propertyLocationID);
+    console.log('Property name: ' + propertyName);
 
     return (
         <div className='bg-main-background'>
@@ -21,7 +67,7 @@ export default function RentProperty() {
             <div className="flex flex-col items-center justify-center min-h-screen mx-4 pb-20 bg-main-background">
                 {/* Logo */}
                 <div className='p-2 fixed top-0 left-0 w-auto sm:w-2/4 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-main-background'>
-                    <InAppLogo/>
+                    <InAppLogo />
                 </div>
 
                 {/* Top Bar Section (Back Button, Search, Filter) */}
@@ -48,8 +94,8 @@ export default function RentProperty() {
 
                             {/* Listing Address */}
                             <div className="flex">
-                                <LuMapPin/>
-                                <p className="text-xs">Address St, Calgary AB</p> 
+                                <LuMapPin />
+                                <p className="text-xs">Address St, Calgary AB</p>
                             </div>
                             {/* Farming Zone */}
                             <div className="flex flex-row gap-1">
@@ -63,7 +109,7 @@ export default function RentProperty() {
                     <div className="w-auto h-52 flex justify-center items-center mx-4 p-1">
                         <img className="w-full h-full rounded-lg border-2 border-gray-200" src={ExampleImage} alt="Garden" />
                     </div>
-                        
+
                     {/* Listing Duration */}
                     <div className="flex flex-col">
                         <div className="mx-4 flex">
@@ -111,10 +157,10 @@ export default function RentProperty() {
                     </div>
                 </div>
                 <div className="mx-4 my-2 text-center text-xs">
-                        <p>By continuing with this booking, I agree to SocialGrdn's Terms of use and Privacy Policy</p>
+                    <p>By continuing with this booking, I agree to SocialGrdn's Terms of use and Privacy Policy</p>
                 </div>
-                <AgreeAndPay 
-                    buttonName='Agree and Pay' 
+                <AgreeAndPay
+                    buttonName='Agree and Pay'
                     type='submit'
                     className='p-2 w-full rounded-lg bg-emerald-200'
                 />
