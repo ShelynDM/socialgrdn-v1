@@ -1,3 +1,5 @@
+//Import the credentials from the _credentials.js file
+const credentials = require('./_credentials');
 const express = require('express');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
@@ -42,10 +44,11 @@ app.listen(port, (err) => {
   } else {
     // Establish MySQL connection
     const db = mysql.createConnection({
-      host: "127.0.0.1", // Replace with your MySQL host
-      user: "root", // MySQL username
-      password: "password", // MySQL password
-      database: "SocialGrdnLocal" // MySQL database name
+      // Use the credentials from the _credentials.js file
+      host: credentials.host,
+      user: credentials.user,
+      password: credentials.password,
+      database: credentials.database
     });
 
     db.connect((err) => {
