@@ -44,7 +44,7 @@ app.listen(port, (err) => {
   } else {
     // Establish MySQL connection
     const db = mysql.createConnection({
-      // Use the credentials from the _credentials.js file
+      // Use the db credentials from the _credentials.js file
       host: credentials.host,
       user: credentials.user,
       password: credentials.password,
