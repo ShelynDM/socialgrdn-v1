@@ -54,71 +54,71 @@ export default function App() {
   const { currentUser } = useUserAuth();
 
   return (
-    <UserProvider>
-      <Router>
-        <Routes>
-          {currentUser ? (
-            <>
-              {/* Search Section */}
-              <Route path="/" element={<Navigate to="/Search" />} />
-              <Route path="/Search" element={<ProtectedRoute><Search /></ProtectedRoute>} />
-              <Route path="/MapSearch" element={<ProtectedRoute><MapSearch /></ProtectedRoute>} />
+      <UserProvider>
+        <Router>
+          <Routes>
+            {currentUser ? (
+              <>
+                {/* Search Section */}
+                <Route path="/" element={<Navigate to="/Search" />} />
+                <Route path="/Search" element={<ProtectedRoute><Search /></ProtectedRoute>} />
+                <Route path="/MapSearch" element={<ProtectedRoute><MapSearch /></ProtectedRoute>} />
 
-              {/* Sign Up Section */}
-              <Route path="/LandingPage" element={<LandingPage />} />
-              <Route path="/SignUp" element={<SignUp />} />
-              <Route path="/VerifyEmail" element={<VerifyEmail />} />
+                {/* Sign Up Section */}
+                <Route path="/LandingPage" element={<LandingPage />} />
+                <Route path="/SignUp" element={<SignUp />} />
+                <Route path="/VerifyEmail" element={<VerifyEmail />} />
 
-              {/* Sign In Section */}
-              <Route path="/SignIn" element={<SignIn />} />
-              <Route path="/ForgotPassword" element={<ForgotPassword />} />
+                {/* Sign In Section */}
+                <Route path="/SignIn" element={<SignIn />} />
+                <Route path="/ForgotPassword" element={<ForgotPassword />} />
 
-              {/* Profile Section */}
-              <Route path="/Profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-              <Route path="/EditProfile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
-              <Route path="/ViewProfile" element={<ProtectedRoute><ViewProfile /></ProtectedRoute>} />
+                {/* Profile Section */}
+                <Route path="/Profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                <Route path="/EditProfile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
+                <Route path="/ViewProfile" element={<ProtectedRoute><ViewProfile /></ProtectedRoute>} />
 
-              {/* Rent Property Section */}
-              <Route path="/Listing" element={<ProtectedRoute><Listing /></ProtectedRoute>} />
-              <Route path="/RentProperty" element={<ProtectedRoute><RentProperty /></ProtectedRoute>} />
-              <Route path="/RentConfirmation" element={<ProtectedRoute><RentConfirmation /></ProtectedRoute>} />
-              <Route path="/ViewProperty" element={<ProtectedRoute><ViewProperty /></ProtectedRoute>} />
-              
-              {/* This route now dynamically receives the property_id as a URL param */}
-              <Route path="/ViewMyProperty/:id" element={<ProtectedRoute><ViewMyProperty /></ProtectedRoute>} />
+                {/* Rent Property Section */}
+                <Route path="/Listing" element={<ProtectedRoute><Listing /></ProtectedRoute>} />
+                <Route path="/RentProperty" element={<ProtectedRoute><RentProperty /></ProtectedRoute>} />
+                <Route path="/RentConfirmation" element={<ProtectedRoute><RentConfirmation /></ProtectedRoute>} />
+                <Route path="/ViewProperty" element={<ProtectedRoute><ViewProperty /></ProtectedRoute>} />
+                
+                {/* This route now dynamically receives the property_id as a URL param */}
+                <Route path="/ViewMyProperty/:id" element={<ProtectedRoute><ViewMyProperty /></ProtectedRoute>} />
 
-              {/* Listing Section */}
-              <Route path="/PropertyLists" element={<ProtectedRoute><PropertyLists /></ProtectedRoute>} />
-              <Route path="/DeletionConfirmation" element={<ProtectedRoute><DeletionConfirmation /></ProtectedRoute>} />
-              <Route path="/ListingConfirmation" element={<ProtectedRoute><ListingConfirmation /></ProtectedRoute>} />
-              <Route path="/ViewMyListings" element={<ProtectedRoute><ViewMyListings /></ProtectedRoute>} />
-              <Route path="/AddProperty" element={<ProtectedRoute><AddProperty /></ProtectedRoute>} />
-              <Route path="/EditProperty" element={<ProtectedRoute><EditProperty /></ProtectedRoute>} />
+                {/* Listing Section */}
+                <Route path="/PropertyLists" element={<ProtectedRoute><PropertyLists /></ProtectedRoute>} />
+                <Route path="/DeletionConfirmation" element={<ProtectedRoute><DeletionConfirmation /></ProtectedRoute>} />
+                <Route path="/ListingConfirmation" element={<ProtectedRoute><ListingConfirmation /></ProtectedRoute>} />
+                <Route path="/ViewMyListings" element={<ProtectedRoute><ViewMyListings /></ProtectedRoute>} />
+                <Route path="/AddProperty" element={<ProtectedRoute><AddProperty /></ProtectedRoute>} />
+                <Route path="/EditProperty" element={<ProtectedRoute><EditProperty /></ProtectedRoute>} />
 
-              {/* Pay Property Section */}
-              <Route path="/PayProperty" element={<ProtectedRoute><PayProperty /></ProtectedRoute>} />
+                {/* Pay Property Section */}
+                <Route path="/PayProperty" element={<ProtectedRoute><PayProperty /></ProtectedRoute>} />
 
-              {/* Reservation Section */}
-              <Route path="/ReservationCancelled" element={<ProtectedRoute><ReservationCancelled /></ProtectedRoute>} />
-              <Route path="/ReservationDetails" element={<ProtectedRoute><ReservationDetails /></ProtectedRoute>} />
-              <Route path="/Reservations" element={<ProtectedRoute><Reservations /></ProtectedRoute>} />
+                {/* Reservation Section */}
+                <Route path="/ReservationCancelled" element={<ProtectedRoute><ReservationCancelled /></ProtectedRoute>} />
+                <Route path="/ReservationDetails" element={<ProtectedRoute><ReservationDetails /></ProtectedRoute>} />
+                <Route path="/Reservations" element={<ProtectedRoute><Reservations /></ProtectedRoute>} />
 
-              {/* Landowner Gross Earnings Section */}
-              <Route path="/GrossEarnings" element={<ProtectedRoute><GrossEarnings /></ProtectedRoute>} />
-              <Route path="/Payouts" element={<ProtectedRoute><Payouts /></ProtectedRoute>} />
-            </>
-          ) : (
-            <>
-              <Route path="/" element={<Navigate to="/LandingPage" />} />
-              <Route path="/LandingPage" element={<LandingPage />} />
-              <Route path="/SignIn" element={<SignIn />} />
-              <Route path="/SignUp" element={<SignUp />} />
-              <Route path="/ForgotPassword" element={<ForgotPassword />} />
-              <Route path="/VerifyEmail" element={<VerifyEmail />} />
-            </>
-          )}
-        </Routes>
-      </Router>
-    </UserProvider>
+                {/* Landowner Gross Earnings Section */}
+                <Route path="/GrossEarnings" element={<ProtectedRoute><GrossEarnings /></ProtectedRoute>} />
+                <Route path="/Payouts" element={<ProtectedRoute><Payouts /></ProtectedRoute>} />
+              </>
+            ) : (
+              <>
+                <Route path="/" element={<Navigate to="/LandingPage" />} />
+                <Route path="/LandingPage" element={<LandingPage />} />
+                <Route path="/SignIn" element={<SignIn />} />
+                <Route path="/SignUp" element={<SignUp />} />
+                <Route path="/ForgotPassword" element={<ForgotPassword />} />
+                <Route path="/VerifyEmail" element={<VerifyEmail />} />
+              </>
+            )}
+          </Routes>
+        </Router>
+      </UserProvider>
   );
 }
