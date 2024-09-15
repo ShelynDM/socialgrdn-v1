@@ -1,6 +1,7 @@
 import React from "react";
-import { SlArrowLeft } from "react-icons/sl";
 import { useNavigate } from "react-router-dom";
+import { IoArrowBackSharp } from "react-icons/io5";
+
 
 // This is a back button component that can be used throughout the application
 export default function BackButton() {
@@ -12,7 +13,7 @@ export default function BackButton() {
                 onClick={() => navigate(-1)} 
                 className="flex text-gray-500 hover:text-black focus:outline-none"
             >
-                <SlArrowLeft /> 
+                <IoArrowBackSharp /> 
                 
             </button>
         </div>

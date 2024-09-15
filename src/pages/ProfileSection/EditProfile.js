@@ -120,10 +120,16 @@ export default function EditProfile() {
     }
 
     return (
-        <div className="bg-main-background relative">
-            <InAppLogo />
-            <BackButton />
-            <div className="flex flex-col items-center justify-center gap-2 min-h-screen pb-20">
+        <div className='bg-main-background'>
+            <div className="flex flex-col items-center justify-center gap-2 min-h-screen mx-4 pb-20 bg-main-background">
+                <div className='p-2 fixed top-0 left-0 w-auto sm:w-2/4 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-main-background'>
+                    <InAppLogo />
+                </div>
+                <div className='fixed top-12 flex w-full items-center justify-between bg-main-background'>
+                    <div className="flex-grow w-full">
+                        <BackButton/>
+                    </div>
+                </div>
                 <FaUserCircle className="text-green-500 text-9xl w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 mb-2" />
                 <div className="px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3">
                     <form className="flex flex-col flex-grow w-full gap-4 mb-8">
