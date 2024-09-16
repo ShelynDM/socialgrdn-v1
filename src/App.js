@@ -17,7 +17,7 @@ import MapSearch from './pages/SearchSection/MapSearch';
 import Profile from './pages/ProfileSection/Profile';
 import EditProfile from './pages/ProfileSection/EditProfile';
 import ViewProfile from './pages/ProfileSection/ViewProfile';
-
+import Test from './pages/ProfileSection/Test';
 // Rent Property Section
 import Listing from './pages/RentPropertySection/Listing';
 import RentProperty from './pages/RentPropertySection/RentProperty';
@@ -26,6 +26,7 @@ import ViewProperty from './pages/RentPropertySection/ViewProperty';
 import ViewMyProperty from './pages/RentPropertySection/ViewMyProperty';
 import AddProperty from './pages/RentPropertySection/AddProperty';
 import EditProperty from './pages/RentPropertySection/EditProperty';
+
 
 // Listing Section
 import PropertyLists from './pages/ListingSection/PropertyLists';
@@ -88,9 +89,10 @@ export default function App() {
             <Route path="/Profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/EditProfile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
             <Route path="/ViewProfile" element={<ProtectedRoute><ViewProfile /></ProtectedRoute>} />
-
+            <Route path="/Test" element={<ProtectedRoute><Test /></ProtectedRoute>} />
 
             {/* Rent Property Section */}
+            
             <Route path="/Listing" element={<ProtectedRoute><Listing /></ProtectedRoute>} />
             <Route path="/RentProperty" element={<ProtectedRoute><RentProperty /></ProtectedRoute>} />
             <Route path="/RentConfirmation" element={<ProtectedRoute><RentConfirmation /></ProtectedRoute>} />

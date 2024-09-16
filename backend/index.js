@@ -1,6 +1,6 @@
 // backend/index.js
 const express = require('express');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
@@ -37,10 +37,10 @@ app.listen(port, (err) => {
   } else {
     // Establish MySQL connection
     const db = mysql.createConnection({
-      host: "camysocialgrdn.cbsqsgmsu22j.ca-central-1.rds.amazonaws.com", // Replace with your MySQL host
-      user: "admin", // MySQL username
-      password: "!SocialGrdn1!", // MySQL password
-      database: "camysocialgrdn" // MySQL database name
+      host: "127.0.0.1", // Replace with your MySQL host
+      user: "root", // MySQL username
+      password: "password", // MySQL password
+      database: "SocialGrdnLocal" // MySQL database name
     });
 
     db.connect((err) => {
