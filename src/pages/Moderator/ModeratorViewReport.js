@@ -35,21 +35,16 @@ export default function ModeratorViewReport() {
                         <p className="text-2xl font-bold text-left ">Reports</p>
                     </div>
 
-                    {/* Year header */}
                     <h1 className="text-2xl font-semibold text-left ml-4">2024</h1>
 
-                    {/* Table for Monthly Report */}
                     <table className="min-w-full ">
                         <tbody>
                             {reports.map((report) => (
                                 <tr key={report.id} >
-                                    {/* Month column, aligned to the left */}
                                     <td className="py-2 px-4 text-left">{report.month}</td>
 
-                                    {/* Amount column, aligned to the right */}
                                     <td className="text-right px-4">{report.amount}</td>
 
-                                    {/* Arrow column, aligned to the right */}
                                     <td className="text-right px-2">
                                         <SlArrowRight />
                                     </td>
@@ -60,7 +55,7 @@ export default function ModeratorViewReport() {
                 </div>
             </div>
 
-            {/* NavBar at the bottom */}
+
             <NavBar SearchColor={"#00B761"} SproutPath={Sprout} />
         </div>
     );

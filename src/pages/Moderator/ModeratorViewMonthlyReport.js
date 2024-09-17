@@ -30,13 +30,12 @@ export default function ModeratorViewMonthlyReport() {
                         <p className="text-2xl font-bold text-left ml-2 ">Monthly Reports</p>
                     </div>
 
-                    {/* Report details */}
+
                     <div className="flex justify-between items-center pb-5 text-left ml-4">
                         <h1 className="text-2xl font-semibold">May 2024</h1>
                         <button className="text-green-500 font-bold py-2 px-4">Download Report PDF</button>
                     </div>
 
-                    {/* Table for Monthly Report */}
                     <table className="min-w-full">
                         <tbody>
                             {MonthlyReport.map((report) => (
@@ -62,7 +61,7 @@ export default function ModeratorViewMonthlyReport() {
                 </div>
             </div>
 
-            {/* NavBar at the bottom */}
+
             <NavBar ProfileColor={"#00B761"} SproutPath={Sprout} />
         </div>
     );
