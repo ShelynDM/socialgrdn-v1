@@ -1,7 +1,7 @@
 //Import the credentials from the _credentials.js file
 const credentials = require('./_credentials');
 const express = require('express');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
