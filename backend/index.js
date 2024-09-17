@@ -1,14 +1,18 @@
-// backend/index.js
+//Import the credentials from the _credentials.js file
+const credentials = require('./_credentials');
 const express = require('express');
-const mysql = require('mysql2');
+const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const path = require('path');
 
 const userRoutes = require('./api/RegisterAPI');
-const profileRoutes = require('./api/GetProfileAPI');
+const getIDRoutes = require('./api/GetuserIDAPI');
 const editProfileRoutes = require('./api/EditProfileAPI');
+const getProfileRoutes = require('./api/GetUserProfileAPI');
+const getUserPropertiesRoutes = require('./api/GetUserPropAPI'); // Import your new GetUserPropAPI
+const getSearchResultsRoutes = require('./api/GetSearchResultsAPI'); // Import your new GetSearchResultsAPI
 
 const app = express();
 const port = 3000;
@@ -23,13 +27,16 @@ app.use(express.static(path.join(__dirname, '../build')));
 
 // Use route files
 app.use('/api/users', userRoutes);
-app.use('/api/profile', profileRoutes);
+app.use('/api/profile', getIDRoutes);
 app.use('/api/editProfile', editProfileRoutes);
+app.use('/api/getProfile', getProfileRoutes);
+app.use('/api/getUserProperties', getUserPropertiesRoutes); // Add the new route for GetUserPropAPI
+app.use('/api/getSearchResults', getSearchResultsRoutes); // Add the new route for GetSearchResultsAPI
+
 // The "catchall" handler
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../build/index.html'));
 });
-
 // Server and database setup
 app.listen(port, (err) => {
   if (err) {
@@ -37,10 +44,11 @@ app.listen(port, (err) => {
   } else {
     // Establish MySQL connection
     const db = mysql.createConnection({
-      host: "127.0.0.1", // Replace with your MySQL host
-      user: "root", // MySQL username
-      password: "password", // MySQL password
-      database: "SocialGrdnLocal" // MySQL database name
+      // Use the db credentials from the _credentials.js file
+      host: credentials.host,
+      user: credentials.user,
+      password: credentials.password,
+      database: credentials.database
     });
 
     db.connect((err) => {
