@@ -46,6 +46,14 @@ import Reservations from './pages/ReservationSection/Reservations';
 import GrossEarnings from './pages/LandownerEarnings/GrossEarnings';
 import Payouts from './pages/LandownerEarnings/Payouts';
 
+//Moderator Section
+import ModeratorViewMonthlyReport from './pages/Moderator/ModeratorViewMonthlyReport';
+import ModeratorViewAllUsers from './pages/Moderator/ModeratorViewAllUsers';
+import ModeratorViewReport from './pages/Moderator/ModeratorViewReport';
+import ModeratorViewProfile from './pages/Moderator/ModeratorViewProfile';
+
+
+
 // import LandingPage from './pages/SignUpSection/LandingPage';
 // import SignUp from './pages/SignUpSection/SignUp';
 // import SignIn from './pages/SignInSection/SignIn';
@@ -75,6 +83,15 @@ export default function App() {
             <Route path="/" element={<Navigate to="/Search" />} />
             <Route path="/Search" element={<ProtectedRoute><Search /></ProtectedRoute>} />
             <Route path="/MapSearch" element={<ProtectedRoute><MapSearch /></ProtectedRoute>} />
+
+            {/* Moderator Section */}
+            <Route path="/ModeratorViewMonthlyReport" element={<ProtectedRoute><ModeratorViewMonthlyReport /></ProtectedRoute>} />
+            <Route path="/ModeratorViewAllUsers" element={<ProtectedRoute><ModeratorViewAllUsers /></ProtectedRoute>} />
+            <Route path="/ModeratorViewReport" element={<ProtectedRoute><ModeratorViewReport /></ProtectedRoute>} />
+            <Route path="/ModeratorViewProfile" element={<ProtectedRoute><ModeratorViewProfile /></ProtectedRoute>} />
+
+
+
 
             {/* Sign Up Section */}
             <Route path="/LandingPage" element={<LandingPage />} />
