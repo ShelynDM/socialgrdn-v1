@@ -17,7 +17,7 @@ import MapSearch from './pages/SearchSection/MapSearch';
 import Profile from './pages/ProfileSection/Profile';
 import EditProfile from './pages/ProfileSection/EditProfile';
 import ViewProfile from './pages/ProfileSection/ViewProfile';
-import Test from './pages/ProfileSection/Test';
+
 // Rent Property Section
 import Listing from './pages/RentPropertySection/Listing';
 import RentProperty from './pages/RentPropertySection/RentProperty';
@@ -51,22 +51,11 @@ import ModeratorViewAllUsers from './pages/Moderator/ModeratorViewAllUsers';
 import ModeratorViewReport from './pages/Moderator/ModeratorViewReport';
 import ModeratorViewProfile from './pages/Moderator/ModeratorViewProfile';
 
-
-
-// import LandingPage from './pages/SignUpSection/LandingPage';
-// import SignUp from './pages/SignUpSection/SignUp';
-// import SignIn from './pages/SignInSection/SignIn';
-// import Search from './pages/SearchSection/Search';
-// import Profile from './pages/ProfileSection/Profile';
-// import MapSearch from './pages/SearchSection/MapSearch';
-// import Listing from './pages/RentPropertySection/Listing';
-// import ForgotPassword from './pages/SignInSection/ForgotPassword';
-// import VerifyEmail from './pages/SignUpSection/VerifyEmail';
-
-
+// Utility components
 import ProtectedRoute from './pages/ProtectedRoute';
 import { useUserAuth } from './_utils/auth-context';
 import { UserProvider } from './UserContext'; // Import the UserProvider
+
 
 export default function App() {
   const { currentUser } = useUserAuth();
@@ -120,6 +109,14 @@ export default function App() {
                 <Route path="/ReservationCancelled" element={<ProtectedRoute><ReservationCancelled /></ProtectedRoute>} />
                 <Route path="/ReservationDetails" element={<ProtectedRoute><ReservationDetails /></ProtectedRoute>} />
                 <Route path="/Reservations" element={<ProtectedRoute><Reservations /></ProtectedRoute>} />
+
+                 {/* Moderator Section */}
+                <Route path="/ModeratorViewMonthlyReport" element={<ProtectedRoute><ModeratorViewMonthlyReport /></ProtectedRoute>} />
+                <Route path="/ModeratorViewAllUsers" element={<ProtectedRoute><ModeratorViewAllUsers /></ProtectedRoute>} />
+                <Route path="/ModeratorViewReport" element={<ProtectedRoute><ModeratorViewReport /></ProtectedRoute>} />
+                <Route path="/ModeratorViewProfile" element={<ProtectedRoute><ModeratorViewProfile /></ProtectedRoute>} />
+
+
 
                 {/* Landowner Gross Earnings Section */}
                 <Route path="/GrossEarnings" element={<ProtectedRoute><GrossEarnings /></ProtectedRoute>} />
