@@ -56,7 +56,7 @@ export default function Search() {
                 });
                 return { ...result, distance };
             })
-            .filter((result) => result.distance <= 5) // Filter within 10km
+            .filter((result) => result.distance <= 10) // Filter within 10km
             .sort((a, b) => a.distance - b.distance) // Sort by distance
             .slice(0, 10); // Get the first 10 results
 

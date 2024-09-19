@@ -1,3 +1,5 @@
+//Import the credentials from the _credentials.js file
+const credentials = require('./_credentials');
 const express = require('express');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
@@ -11,6 +13,7 @@ const editProfileRoutes = require('./api/EditProfileAPI');
 const getProfileRoutes = require('./api/GetUserProfileAPI');
 const getUserPropertiesRoutes = require('./api/GetUserPropAPI'); // Import your new GetUserPropAPI
 const getSearchResultsRoutes = require('./api/GetSearchResultsAPI'); // Import your new GetSearchResultsAPI
+const getPropDetailsRoutes = require('./api/GetPropDetailsAPI'); // Import the GetPropDetailsAPI
 const getPropertyDetailsRoutes = require('./api/GetPropertyDetailsAPI'); // Import your new GetPropertyDetailsAPI (tiana)
 
 const app = express();
@@ -31,7 +34,8 @@ app.use('/api/editProfile', editProfileRoutes);
 app.use('/api/getProfile', getProfileRoutes);
 app.use('/api/getUserProperties', getUserPropertiesRoutes); // Add the new route for GetUserPropAPI
 app.use('/api/getSearchResults', getSearchResultsRoutes); // Add the new route for GetSearchResultsAPI
-app.use('/api/getPropertyDetails', getPropertyDetailsRoutes); // Add the new route for GetPropertyDetailsAPI (tiana)
+app.use('/api/getPropertyDetails', getPropDetailsRoutes); // Add the new route for GetPropDetailsAPI
+app.use('/api/getPropertyDetails2', getPropertyDetailsRoutes); // Add the new route for GetPropertyDetailsAPI (tiana)
 
 // The "catchall" handler
 app.get('*', (req, res) => {
@@ -44,10 +48,11 @@ app.listen(port, (err) => {
   } else {
     // Establish MySQL connection
     const db = mysql.createConnection({
-      host: "127.0.0.1", // Replace with your MySQL host
-      user: "root", // MySQL username
-      password: "password", // MySQL password
-      database: "SocialGrdnLocal" // MySQL database name
+      // Use the db credentials from the _credentials.js file
+      host: credentials.host,
+      user: credentials.user,
+      password: credentials.password,
+      database: credentials.database
     });
 
     db.connect((err) => {
