@@ -16,7 +16,7 @@ export default function RentProperty() {
     //Property Information
     const [propertyID] = useState(1);                            //FOR UPDATE
     const [propertyZone, setPropertyZone] = useState('');
-    const [zoneColor, setZoneColor] = useState('');                         //FOR UPDATE
+    const [zoneColor, setZoneColor] = useState('');
     const [propertyName, setPropertyName] = useState('');
     const [propertyAddress, setPropertyAddress] = useState('');
     const [propertyPrice, setPropertyPrice] = useState(0.00);
@@ -39,7 +39,7 @@ export default function RentProperty() {
     useEffect(() => {
         const fetchPropertyDetails = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/api/getPropertyDetails?property_id=${propertyID}`);
+                const response = await fetch(`http://localhost:3000/api/getPropertyDetails2?property_id=${propertyID}`);
                 if (!response.ok) {
                     console.log("Network response was not ok");
                 }
@@ -127,6 +127,10 @@ export default function RentProperty() {
         assignZoneColor(propertyZone);
         //eslint-disable-next-line
     }, [propertyPrice]);
+
+    const handlePaymentPage = () => {
+        //pending code to navigate to payment page
+    };
 
     return (
         <div className='bg-main-background'>
@@ -234,6 +238,7 @@ export default function RentProperty() {
                     buttonName='Agree and Pay'
                     type='submit'
                     className='p-2 w-full rounded-lg bg-emerald-200'
+                    onClick={handlePaymentPage}
                 />
             </div>
             <NavBar SproutPath={GreenSprout} />
