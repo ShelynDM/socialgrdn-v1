@@ -55,8 +55,6 @@ export default function RentProperty() {
 
 
         fetchPropertyDetails();
-        //computePrice();
-        //computeDuration();
         //eslint - disable - next - line
     }, [propertyID]);
 
