@@ -11,6 +11,7 @@ const editProfileRoutes = require('./api/EditProfileAPI');
 const getProfileRoutes = require('./api/GetUserProfileAPI');
 const getUserPropertiesRoutes = require('./api/GetUserPropAPI'); // Import your new GetUserPropAPI
 const getSearchResultsRoutes = require('./api/GetSearchResultsAPI'); // Import your new GetSearchResultsAPI
+const getPropertyDetailsRoutes = require('./api/GetPropertyDetailsAPI'); // Import your new GetPropertyDetailsAPI (tiana)
 
 const app = express();
 const port = 3000;
@@ -30,6 +31,7 @@ app.use('/api/editProfile', editProfileRoutes);
 app.use('/api/getProfile', getProfileRoutes);
 app.use('/api/getUserProperties', getUserPropertiesRoutes); // Add the new route for GetUserPropAPI
 app.use('/api/getSearchResults', getSearchResultsRoutes); // Add the new route for GetSearchResultsAPI
+app.use('/api/getPropertyDetails', getPropertyDetailsRoutes); // Add the new route for GetPropertyDetailsAPI (tiana)
 
 // The "catchall" handler
 app.get('*', (req, res) => {
