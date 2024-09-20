@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import NavBar from "../../components/Navbar/navbar";
 import InAppLogo from "../../components/Logo/inAppLogo";
 import Sprout from "../../assets/navbarAssets/sprout.png";
@@ -6,14 +6,35 @@ import SearchResult from "../../components/SearchComponents/searchResult";
 import SearchBar from "../../components/SearchComponents/search";
 import SearchFilter from "../../components/SearchComponents/popupSearchFilter";
 import FilterButton from "../../components/SearchComponents/filterButton";
+import axios from "axios";
 
 export default function Search() {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [searchResults, setSearchResults] = useState([]);
-    const [userLocation, setUserLocation] = useState(null); // Should be null initially
-    const [nearestResults, setNearestResults] = useState([]);
+    const [propertyResult, setPropertyResult] = useState([]);
+    const [userLocation, setUserLocation] = useState(null);
+    //const [userPointLocation, setUserPointLocation] = useState(null);
+    const [filteredResults, setFilteredResults] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [isDropDownVisible, setIsDropDownVisible] = useState(false);
 
-    const searchClicked = () => {
+    const handleInputChange = (e) => {
+        const query = e.target.value.toLowerCase();
+        setSearchQuery(query);
+        setIsDropDownVisible(query.length > 0);
+    
+        if (query.length > 0) {
+            const filtered = propertyResult.filter((result) =>
+                [result.property_name, result.address_line1 , result.city, result.province, 
+                 result.growth_zone, result.crops, result.soil_type, result.first_name, result.last_name]
+                .some(field => field?.toLowerCase().startsWith(query))  // Use startsWith for matching at the start of the string
+            );
+            setFilteredResults(filtered.slice(0, 10)); // Limit results to top 10
+        } else {
+            setFilteredResults([]);
+        }
+    };
+
+    const filterClicked = () => {
         openPopup();
         console.log("Search Filter Clicked");
     };
@@ -26,96 +47,114 @@ export default function Search() {
         setIsPopupOpen(false);
     };
 
-    // Helper function to convert degrees to radians
-    const deg2rad = (deg) => {
-        return deg * (Math.PI / 180);
-    };
-
-    // Haversine formula to calculate the distance between two points
-    const haversineDistance = (userLocation, searchResults) => {
-        const R = 6371; // Radius of the earth in km
-        const dLat = deg2rad(searchResults.latitude - userLocation.latitude);  
-        const dLon = deg2rad(searchResults.longitude - userLocation.longitude);
-        const a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(deg2rad(userLocation.latitude)) * Math.cos(deg2rad(searchResults.latitude)) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        const distance = R * c; // Distance in km
-        return distance;
-    };
-
-
-    // Get the nearest properties to the user's location
-    const getNearestResults = (userLocation, searchResults) => {
-        return searchResults
-            .map((result) => {
-                const distance = haversineDistance(userLocation, {
-                    latitude: result.latitude,
-                    longitude: result.longitude,
-                });
-                return { ...result, distance };
-            })
-            .filter((result) => result.distance <= 10) // Filter within 10km
-            .sort((a, b) => a.distance - b.distance) // Sort by distance
-            .slice(0, 10); // Get the first 10 results
-
-    };
-
-    // Fetch search results from the database using the API
-    const fetchSearchResults = async () => {
+    // Fetch property data from the API
+    const fetchPropertyResults = async () => {
         try {
             const response = await fetch(`/api/getSearchResults`);
             if (!response.ok) {
                 throw new Error("Network response was not ok");
             }
-            const searchData = await response.json();
-            setSearchResults(searchData);
-            console.log(searchData);
+            const propertyData = await response.json();
+            setPropertyResult(propertyData);
         } catch (error) {
             console.error("Error fetching search results:", error);
         }
     };
 
-    // Get the current location of the user
-    const getUserLocation = () => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    setUserLocation({
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude,
-                    });
-                },
-                console.log("User location:", userLocation),
-                (error) => {
-                    console.error("Error getting location", error);
-                }
-            );
-        } else {
-            console.error("Geolocation is not supported by this browser.");
+    // const getUserPointLocation = () => {
+    //     if (navigator.geolocation) {
+    //         navigator.geolocation.getCurrentPosition(
+    //             (position) => {
+    //                 setUserPointLocation({
+    //                     latitude: position.coords.latitude,
+    //                     longitude: position.coords.longitude,
+    //                 });
+    //             },
+    //             console.log("User location:", userLocation),
+    //             (error) => {
+    //                 console.error("Error getting location", error);
+    //             }
+    //         );
+    //     } else {
+    //         console.error("Geolocation is not supported by this browser.");
+    //     }
+    // };
+
+    // Fetch user's location
+    const fetchLocation = async () => {
+        try {
+            const response = await axios.get('https://ipapi.co/json/');
+
+            setUserLocation(response.data);
+        } catch (error) {
+            console.error("Error fetching location:", error);
         }
     };
 
-    
+    // get the actual user location based on the user's IP address and user point location
+    // const getUserLocation = () => {
+    //     getUserPointLocation();
+    //     fetchLocation();
+    //     if (userPointLocation.latitude && userPointLocation.longitude === userLocation.latitude && userLocation.longitude) {
+    //         return userLocation;
+    //     }
+    // };
 
-    // Fetch search results and user location on component mount
-    
+
+    const getSamePostalResults = (userLocation, propertyResult) => {
+        return propertyResult.filter((result) => result.postal_code.replace(/\s/g, '').substring(0, 3) === userLocation.postal);
+    };
+
+    const getSameCityResults = (userLocation, propertyResult) => {
+        return propertyResult.filter((result) => result.city === userLocation.city);
+    };
+
+    const getSameRegionResults = (userLocation, propertyResult) => {
+        return propertyResult.filter((result) => result.province === userLocation.region_code);
+    };
+
+    const filterResults = useCallback(() => {
+        if (userLocation && propertyResult.length > 0) {
+            let results = [];
+
+            const postalResults = getSamePostalResults(userLocation, propertyResult);
+            results = results.concat(postalResults);
+
+            if (results.length < 10) {
+                const cityResults = getSameCityResults(userLocation, propertyResult);
+                results = results.concat(cityResults.filter(result => !results.includes(result))); 
+            }
+
+            if (results.length < 10) {
+                const regionResults = getSameRegionResults(userLocation, propertyResult);
+                results = results.concat(regionResults.filter(result => !results.includes(result))); 
+            }
+
+            if (searchQuery) {
+                results = results.filter(result =>
+                    [result.property_name, result.address_line1, result.city, result.province, 
+                    result.growth_zone, result.crops, result.soil_type, result.first_name, result.last_name]
+                    .some(field => field?.toLowerCase().includes(searchQuery.toLowerCase()))
+                );
+            }
+
+            setFilteredResults(results.slice(0, 10));
+        }
+    }, [userLocation, propertyResult, searchQuery]);
+
     useEffect(() => {
-        fetchSearchResults();
-        getUserLocation();
-    //eslint-disable-next-line
+        const fetchData = async () => {
+            await fetchLocation();
+            await fetchPropertyResults();
+        };
+        fetchData();
     }, []);
 
-    // Calculate nearest results when the user's location or search results change
     useEffect(() => {
-        if (userLocation && searchResults.length > 0) {
-            const nearby = getNearestResults(userLocation, searchResults);
-            setNearestResults(nearby); // Set the nearest results
-            console.log("Nearest results:", nearestResults);
+        if (userLocation && propertyResult.length > 0) {
+            filterResults();
         }
-    //eslint-disable-next-line    
-    }, [userLocation, searchResults]);
+    }, [userLocation, propertyResult, searchQuery]);
 
     return (
         <div className='bg-main-background'>
@@ -126,22 +165,52 @@ export default function Search() {
                 {/* Search Bar Section */}
                 <div className='mx-2 px-2 fixed top-12 flex w-full items-center justify-between bg-main-background'>
                     <div className="flex-grow w-full">
-                        <SearchBar className="w-full" />
+                        <SearchBar className="w-full" value={searchQuery} onChange={handleInputChange} />
+                        {isDropDownVisible && filteredResults.length > 0 && (
+                        <ul className="dropdown w-full max-h-64 overflow-y-auto">
+                            {filteredResults.map((result, index) => {
+                                const matchedFields = [
+                                    result.property_name,
+                                    result.address_line1,
+                                    result.city,
+                                    result.province,
+                                    result.growth_zone,
+                                    result.crops,
+                                    result.soil_type,
+                                    result.first_name,
+                                    result.last_name,
+                                ].filter(field => field?.toLowerCase().startsWith(searchQuery.toLowerCase()));
+
+                                return matchedFields.length > 0 && (
+                                    <li key={index} className="mx-2 p-2 border-b border-x bg-white border-gray-200 hover:bg-gray-100 transition-all text-sm" 
+                                    onClick={() => {
+                                        //set the search query to the selected field
+                                        setSearchQuery(matchedFields[0]);
+                                        setIsDropDownVisible(false);
+                                    }}>
+                                        {matchedFields.map((field, i) => (
+                                            <p key={i} className="text-black">{field}</p>
+                                        ))}
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    )}
                     </div>
                     <div>
-                        <FilterButton onclick={searchClicked} />
+                        <FilterButton onclick={filterClicked} />
                     </div>
                 </div>
                 <div className="w-auto">
-                    <SearchFilter isOpen={isPopupOpen} onClose={closePopup} />
+                    <SearchFilter isOpen={isPopupOpen} onClose={closePopup} className="flex items-start"/>
                 </div>
                 {/* Search Results Section */}
                 <div className="flex flex-col w-full justify-center items-center mt-20 gap-8">
-                    <div className="flex w-full justify-start pt-4 items-start  ">
+                    <div className="flex w-full justify-start pt-4 items-start">
                         <p className="text-start">Recommendations</p>
                     </div>
-                    {nearestResults.length > 0 ? (
-                        nearestResults.map((result, index) => (
+                    {filteredResults.length > 0 ? (
+                        filteredResults.map((result, index) => (
                             <SearchResult
                                 key={index}
                                 propertyName={result.property_name}
@@ -152,7 +221,7 @@ export default function Search() {
                                 last_name={result.last_name}
                                 growthZone={result.growth_zone}
                                 propertyImage={result.photo}
-                                propertyCrop={result.crop_name}
+                                propertyCrop={result.crops}
                                 dimensionLength={result.dimensions_length}
                                 dimensionWidth={result.dimensions_width}
                                 dimensionHeight={result.dimensions_height}
@@ -160,7 +229,7 @@ export default function Search() {
                             />
                         ))
                     ) : (
-                        <p>No locations within 10km.</p>
+                        <p>No locations found.</p>
                     )}
                 </div>
                 {/* Navigation Bar */}
