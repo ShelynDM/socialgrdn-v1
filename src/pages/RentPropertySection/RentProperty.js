@@ -8,10 +8,10 @@ import ExampleImage from "../../assets/exampleAssets/imgExample.jpg";
 import AgreeAndPay from "../../components/Buttons/longButton";
 import { LuMapPin } from "react-icons/lu";
 import { differenceInMonths, differenceInDays, parseISO } from 'date-fns';
+//import { useUser } from "../../UserContext"; // Import useUser to get the userID
 
 export default function RentProperty() {
 
-    //const [renter_ID] = useState(4);                           //passed as parameter from view property page
 
     //Property Information
     const [propertyID] = useState(1);                            //FOR UPDATE
@@ -24,9 +24,10 @@ export default function RentProperty() {
 
 
     // Rental Information 
+    //const { renter_ID } = useUser(); // Get the userID from UserContext
     const [startDate] = useState('2024-09-01');                   //passed as parameter from view property page
     const [endDate] = useState('2024-12-05');                     //passed as parameter from view property page
-    const [durationMonths, setDurationMonths] = useState(null); // need to finalize issues with duration rules and pricing
+    const [durationMonths, setDurationMonths] = useState(null);   // need to finalize issues with duration rules and pricing
     const [durationDays, setDurationDays] = useState(null);       //need to finalize issues with duration rules and pricing
 
     const [rent_base_price, setRent_base_price] = useState(0.00);
@@ -79,7 +80,7 @@ export default function RentProperty() {
     const computePrice = () => {
         console.log('Property Price is set');
         // Use propertyPrice directly for calculations
-        const basePrice = parseFloat(propertyPrice); // Ensure it's a number
+        const basePrice = parseFloat(propertyPrice) * durationMonths;
         const taxAmount = basePrice * 0.13;          // 13% tax
         const transactionFee = basePrice * 0.03;     // 3% transaction fee
         const totalPrice = basePrice + taxAmount + transactionFee;
