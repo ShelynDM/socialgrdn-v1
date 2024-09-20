@@ -13,9 +13,11 @@ import { LuMapPin } from "react-icons/lu";
 
 export default function RentConfirmation() {
     const [zoneColor] = useState("#00f");
+    const [paymentStatus] = useState(0);
 
 
     return (
+
         <div className='bg-main-background'>
             {/* Main Content */}
             <div className="flex flex-col items-center justify-center min-h-screen mx-4 pb-20 bg-main-background">
@@ -33,6 +35,17 @@ export default function RentConfirmation() {
                         <SearchBar className="w-full" />
                     </div>
                 </div>
+                {/* Checks if payment was successful */}
+                {paymentStatus === 0 ?
+                    //If payment was successful
+                    <div className="w-96 rounded-lg border-2 py-1 border-gray-200 bg-main-background">
+                        <h1 className="font-semibold text-2xl mx-4">Payment Failed</h1>
+                    </div> :
+                    //If payment was not successful
+                    <div>
+
+                    </div>
+                }
 
                 {/* Rent Information */}
                 <div className="w-96 rounded-lg border-2 py-1 border-gray-200 bg-main-background">
