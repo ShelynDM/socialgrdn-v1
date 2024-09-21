@@ -100,7 +100,7 @@ export default function App() {
                 <Route path="/ListingConfirmation" element={<ProtectedRoute><ListingConfirmation /></ProtectedRoute>} />
                 <Route path="/ViewMyListings" element={<ProtectedRoute><ViewMyListings /></ProtectedRoute>} />
                 <Route path="/AddProperty" element={<ProtectedRoute><AddProperty /></ProtectedRoute>} />
-                <Route path="/EditProperty" element={<ProtectedRoute><EditProperty /></ProtectedRoute>} />
+                <Route path="/EditProperty/:property_id" element={<ProtectedRoute><EditProperty /></ProtectedRoute>} />
 
                 {/* Pay Property Section */}
                 <Route path="/PayProperty" element={<ProtectedRoute><PayProperty /></ProtectedRoute>} />

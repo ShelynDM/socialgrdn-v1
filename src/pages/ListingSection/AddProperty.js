@@ -1,14 +1,36 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import Sprout from "../../assets/navbarAssets/sprout.png";
 import LongButton from "../../components/Buttons/longButton";
 import BackButton from "../../components/Buttons/backButton";
+import { useUser } from "../../UserContext"; // Import useUser to get the userID
 
 export default function AddProperty() {
+    const navigate = useNavigate();
     const [isLocationEnabled, setIsLocationEnabled] = useState(false);
     const [selectedZone, setSelectedZone] = useState({ value: "", color: "" });
+    const { userId } = useUser(); // Get the userID from UserContext
     const [image, setImage] = useState(null);
+    const [formData, setFormData] = useState({
+        property_name: "",
+        address_line1: "",
+        city: "",
+        province: "",
+        postal_code: "",
+        country: "",
+        growth_zone: "",
+        description: "",
+        dimensions_length: "",
+        dimensions_width: "",
+        dimensions_height: "",
+        soil_type: "",
+        amenities: "",
+        possible_crops: "",
+        restrictions: "",
+        rent_base_price: "",
+    });
 
     const handleToggle = () => {
         setIsLocationEnabled(!isLocationEnabled);
@@ -18,12 +40,53 @@ export default function AddProperty() {
         const selectedValue = event.target.value;
         const selectedColor = event.target.options[event.target.selectedIndex].style.backgroundColor;
         setSelectedZone({ value: selectedValue, color: selectedColor });
+        setFormData({ ...formData, growth_zone: selectedValue });
     };
 
     const handleImageChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            setImage(URL.createObjectURL(file));
+        const files = Array.from(event.target.files);
+        if (files.length > 0) {
+            setImage(files); // Store array of images
+        }
+    };
+
+    const handleInputChange = (event) => {
+        const { id, value } = event.target;
+        setFormData({ ...formData, [id]: value });
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        
+        const submitData = new FormData();
+        for (const [key, value] of Object.entries(formData)) {
+            submitData.append(key, value);
+        }
+        
+        // Append the image if it exists
+        if (image) {
+            submitData.append('images', image);
+        }
+
+        // Append the user ID (you might want to get this from a context or state management system)
+        submitData.append('userID', '1'); // Replace with actual user ID
+
+        try {
+            const response = await fetch('/api/addProperty', {
+                method: 'PUT',
+                body: submitData
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to add property');
+            }
+
+            const result = await response.json();
+            console.log(result);
+            navigate('/Profile'); // Redirect to profile page after successful submission
+        } catch (error) {
+            console.error('Error:', error);
+            // Handle error (e.g., show error message to user)
         }
     };
 
@@ -33,29 +96,34 @@ export default function AddProperty() {
             <BackButton />
             <div className="flex flex-col items-center justify-center gap-2 min-h-screen pb-20">
                 <div className="px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3">
-                    <form className="flex flex-col flex-grow w-full gap-4 mb-8">
+                    <form className="flex flex-col flex-grow w-full gap-4 mb-8" onSubmit={handleSubmit}>
+                        {/* Image Upload Section */}
                         <div className="flex items-center justify-center gap-4">
-                            {/* Image Upload Section */}
                             <div className="flex flex-col items-center gap-4 my-24">
                                 <label
                                     htmlFor="imageUpload"
                                     className="cursor-pointer bg-white text-green-500 font-bold py-2 px-4 border-2 border-green-500 rounded-lg  hover:bg-green-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                                 >
-                                + Upload Picture
+                                    + Upload Picture
                                 </label>
-
                                 <input
-                                    type="file"s
+                                    type="file"
                                     id="imageUpload"
                                     className="hidden"
+                                    multiple // Allow multiple images
                                     onChange={handleImageChange}
                                 />
                                 {image && (
+                                <div className="flex gap-2">
+                                    {image.map((img, index) => (
                                     <img
-                                        src={image}
-                                        alt="Uploaded"
+                                        key={index}
+                                        src={URL.createObjectURL(img)}
+                                        alt={`Uploaded ${index}`}
                                         className="mt-4 w-40 h-40 object-cover rounded-full shadow-lg"
                                     />
+                                    ))}
+                                </div>
                                 )}
                             </div>
                         </div>
@@ -66,43 +134,55 @@ export default function AddProperty() {
                             <input
                                 type="text"
                                 placeholder="Property Name"
-                                id="propertyName"
+                                id="property_name"
                                 className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                value={formData.property_name}
+                                onChange={handleInputChange}
                             />
                         </div>
                         
                         {/* Address and Other Fields */}
                         <div className="flex flex-col gap-4">
-                            <label htmlFor="address" className="text-lg font-semibold">Property Location:</label>
+                            <label htmlFor="address_line1" className="text-lg font-semibold">Property Location:</label>
                             <input 
                                 type="text" 
                                 placeholder="Address Line 1" 
-                                id="address" 
+                                id="address_line1" 
                                 className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                value={formData.address_line1}
+                                onChange={handleInputChange}
                             />
                             <input 
                                 type="text" 
                                 placeholder="City" 
                                 id="city" 
                                 className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                value={formData.city}
+                                onChange={handleInputChange}
                             />
                             <input 
                                 type="text" 
                                 placeholder="Province" 
                                 id="province" 
                                 className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                value={formData.province}
+                                onChange={handleInputChange}
                             />
                             <input 
                                 type="text" 
                                 placeholder="Postal Code" 
-                                id="postalCode" 
+                                id="postal_code" 
                                 className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                value={formData.postal_code}
+                                onChange={handleInputChange}
                             />
                             <input 
                                 type="text" 
                                 placeholder="Country" 
                                 id="country" 
                                 className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                value={formData.country}
+                                onChange={handleInputChange}
                             />
                             <div className="flex items-center gap-4">
                                 <div className="flex flex-col items-start">
@@ -123,14 +203,14 @@ export default function AddProperty() {
                             </div>
                         </div>
                         {/* Farming zone */}
-                         <div className="flex items-center gap-4">
-                            <label className="text-lg font-semibold" htmlFor="zone">Farming Zone:</label>
+                        <div className="flex items-center gap-4">
+                            <label className="text-lg font-semibold" htmlFor="growth_zone">Farming Zone:</label>
                             <select
-                                id="farmingZone"
+                                id="growth_zone"
                                 className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
                                 onChange={handleZoneChange}
                                 value={selectedZone.value}
-                                style={{ backgroundColor: selectedZone.color, color: '#000000' }} // Applying selected color
+                                style={{ backgroundColor: selectedZone.color, color: '#000000' }}
                             >
                                 <option value="0a" style={{ backgroundColor: '#d7bde2' }}>0a</option>
                                 <option value="0b" style={{ backgroundColor: '#c39bd3' }}>0b</option>
@@ -151,59 +231,64 @@ export default function AddProperty() {
                             >Check farming zone</a>
                         </div>
 
-
                         {/* Property Description */}
                         <div className="flex flex-col gap-4">
-                            <label className="text-lg font-semibold" htmlFor="propertyDescription">Describe your property:</label>
+                            <label className="text-lg font-semibold" htmlFor="description">Describe your property:</label>
                             <textarea
-                                id="propertyDescription"
+                                id="description"
                                 placeholder="Describe your property"
                                 className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
                                 rows="4"
+                                value={formData.description}
+                                onChange={handleInputChange}
                             />
                         </div>
-                        
 
                         {/* Dimensions Fields */}
                         <div className="flex flex-col gap-4">
-    <label className="text-lg font-semibold" htmlFor="dimensions">Dimensions:</label>
-    <div className="flex items-center gap-2">
-    <input 
-        type="number" 
-        placeholder="Length" 
-        id="length" 
-        className=" w-1/3 p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-    />
-    <span className="text-lg font-semibold">x</span>
-    <input 
-        type="number" 
-        placeholder="Width" 
-        id="width" 
-        className="w-1/3  p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-    />
-    <span className="text-lg font-semibold">x</span>
-    <input 
-        type="number" 
-        placeholder="Height" 
-        id="height" 
-        className=" w-1/3  p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-    />
-    <span className="text-lg font-semibold">ft</span>
-    </div>
-</div>
+                            <label className="text-lg font-semibold" htmlFor="dimensions">Dimensions:</label>
+                            <div className="flex items-center gap-2">
+                                <input 
+                                    type="number" 
+                                    placeholder="Length" 
+                                    id="dimensions_length" 
+                                    className="w-1/3 p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                    value={formData.dimensions_length}
+                                    onChange={handleInputChange}
+                                />
+                                <span className="text-lg font-semibold">x</span>
+                                <input 
+                                    type="number" 
+                                    placeholder="Width" 
+                                    id="dimensions_width" 
+                                    className="w-1/3 p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                    value={formData.dimensions_width}
+                                    onChange={handleInputChange}
+                                />
+                                <span className="text-lg font-semibold">x</span>
+                                <input 
+                                    type="number" 
+                                    placeholder="Height" 
+                                    id="dimensions_height" 
+                                    className="w-1/3 p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                    value={formData.dimensions_height}
+                                    onChange={handleInputChange}
+                                />
+                                <span className="text-lg font-semibold">ft</span>
+                            </div>
+                        </div>
 
-                        
                         <div className="flex items-center gap-4">
-                            <label className="text-lg font-semibold" htmlFor="soilType">Type of Soil:</label>
+                            <label className="text-lg font-semibold" htmlFor="soil_type">Type of Soil:</label>
                             <input 
                                 type="text" 
                                 placeholder="e.g. Clay, Loam, Sand" 
-                                id="soilType" 
+                                id="soil_type" 
                                 className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                value={formData.soil_type}
+                                onChange={handleInputChange}
                             />
                         </div>
-                        
-                        
                         
                         <div className="flex items-center gap-4">
                             <label className="text-lg font-semibold" htmlFor="amenities">Amenities:</label>
@@ -212,21 +297,24 @@ export default function AddProperty() {
                                 placeholder="e.g. Shed, Electricity, Fencing" 
                                 id="amenities" 
                                 className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                value={formData.amenities}
+                                onChange={handleInputChange}
                             />
                         </div>
                         
                         <div className="flex items-center gap-4">
-                            <label className="text-lg font-semibold" htmlFor="possibleCrops">Possible Crops:</label>
+                            <label className="text-lg font-semibold" htmlFor="possible_crops">Possible Crops:</label>
                             <input 
                                 type="text" 
                                 placeholder="e.g. Carrot, Barley, Corn" 
-                                id="possibleCrops" 
+                                id="possible_crops" 
                                 className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                value={formData.possible_crops}
+                                onChange={handleInputChange}
                             />
                         </div>
 
-                        
-<div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-4">
                             <label className="text-lg font-semibold" htmlFor="restrictions">Restrictions:</label>
                             <textarea
                                 id="restrictions"

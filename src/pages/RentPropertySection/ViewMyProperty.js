@@ -38,7 +38,7 @@ export default function ViewMyProperty() {
     };
 
     const handleEditClick = () => {
-        navigate(`/edit-property/${id}`);
+        navigate(`/EditProperty/${id}`);
     };
 
     if (!property) {
@@ -77,9 +77,9 @@ export default function ViewMyProperty() {
                             {property.images && property.images.length > 0 ? (
                                 <>
                                     <img
-                                        src={property.images[currentImageIndex].image_url}
-                                        alt={property.images[currentImageIndex].image_name}
-                                        className="w-full h-60 object-cover rounded-md"
+                                    src={property.images[currentImageIndex].image_url}
+                                    alt={property.images[currentImageIndex].image_name}
+                                    className="w-full h-60 object-cover rounded-md"
                                     />
                                     <button onClick={handlePrevImage} className="absolute left-0 top-1/2 -translate-y-1/2 px-2">Prev</button>
                                     <button onClick={handleNextImage} className="absolute right-0 top-1/2 -translate-y-1/2 px-2">Next</button>
@@ -99,7 +99,8 @@ export default function ViewMyProperty() {
                         </div>
 
                         <div className="mb-6">
-                            <p className="text-sm text-gray-700 mb-2"><strong>Dimensions:</strong> {property.dimension}</p>
+                        <p className="text-sm text-gray-700 mb-2">
+                            <strong>Dimensions:</strong> {`${property.length} L x ${property.width} W x ${property.height} H`}</p>
                             <p className="text-sm text-gray-700 mb-2"><strong>Soil Type:</strong> {property.soil_type}</p>
                             <p className="text-sm text-gray-700 mb-2"><strong>Amenities:</strong> {property.amenities ? property.amenities.join(', ') : 'N/A'}</p>
                             <p className="text-sm text-gray-700 mb-2"><strong>Restrictions:</strong> {property.restrictions ? property.restrictions.join(', ') : 'N/A'}</p>

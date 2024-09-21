@@ -1,17 +1,51 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
 import InAppLogo from "../../components/Logo/inAppLogo";
+import Swal from 'sweetalert2';
 import NavBar from "../../components/Navbar/navbar";
-import Sprout from "../../assets/navbarAssets/sprout.png";
 import LongButton from "../../components/Buttons/longButton";
 import BackButton from "../../components/Buttons/backButton";
+import Sprout from "../../assets/navbarAssets/sprout.png";
+import withReactContent from 'sweetalert2-react-content';
 
 export default function EditProperty() {
+    const { property_id } = useParams(); // Get property_id from URL
+    const [property, setProperty] = useState({});
     const [isLocationEnabled, setIsLocationEnabled] = useState(false);
     const [selectedZone, setSelectedZone] = useState({ value: "", color: "" });
     const [image, setImage] = useState(null);
+    const navigate = useNavigate(); // Initialize navigate
+
+    useEffect(() => {
+        const fetchProperty = async () => {
+            try {
+                console.log('Property ID:', property_id); // Log Property ID
+                const apiUrl = `/api/getPropertyDetails?property_id=${property_id}`;
+                console.log('API URL being sent:', apiUrl); // Log API URL
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch property details');
+                }
+                const data = await response.json();
+                setProperty(data);
+                setImage(data.photo); // Assuming the photo is part of the property data
+            } catch (error) {
+                console.error('Error fetching property details:', error);
+            }
+        };
+    
+        if (property_id) {
+            fetchProperty();
+        }
+    }, [property_id]);
 
     const handleToggle = () => {
         setIsLocationEnabled(!isLocationEnabled);
+    };
+
+    const handleInputChange = (event) => {
+        const { id, value } = event.target;
+        setProperty((prevData) => ({ ...prevData, [id]: value }));
     };
 
     const handleZoneChange = (event) => {
@@ -27,37 +61,107 @@ export default function EditProperty() {
         }
     };
 
-    return (
+    const MySwal = withReactContent(Swal);
+    const handleSaveChanges = async () => {
+        // Extract and transform variables from property state
+        const { 
+            property_name: propertyName, 
+            photo, 
+            description, 
+            dimensions_length: dimensionsLength, 
+            dimensions_width: dimensionsWidth, 
+            dimensions_height: dimensionsHeight, 
+            soil_type: soilType, 
+            amenities, 
+            restrictions, 
+            rent_base_price: rentBasePrice, 
+            address_line1: addressLine1, 
+            city, 
+            province, 
+            postal_code: postalCode, 
+            crops 
+        } = property;
+    
+        // Split crops into an array if they're entered as a comma-separated string
+        const cropsArray = crops ? crops.split(',').map(crop => crop.trim()) : [];
+    
+        try {
+            // Make the PATCH request, passing the propertyId as a query parameter
+            const response = await fetch(`/api/editPropertyDetails?property_id=${property_id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    property_id,
+                    property_name: propertyName,
+                    photo,
+                    description,
+                    dimensions_length: dimensionsLength,
+                    dimensions_width: dimensionsWidth,
+                    dimensions_height: dimensionsHeight,
+                    soil_type: soilType,
+                    amenities,
+                    restrictions,
+                    rent_base_price: rentBasePrice,
+                    address_line1: addressLine1,
+                    city,
+                    province,
+                    postal_code: postalCode,
+                    crops: cropsArray // Pass crops as an array
+                }),
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to update property');
+            }
+    
+            // Show success modal and redirect
+            MySwal.fire({
+                title: 'Update Successful',
+                text: 'The property details have been updated.',
+                icon: 'success',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#00B761'
+            }).then(() => {
+                navigate(`/ViewMyProperty/${property_id}`);
+            });
+    
+        } catch (error) {
+            console.error('Error updating property:', error);
+        }
+    };
+    
+
+
+ return (
         <div className="bg-main-background relative">
             <InAppLogo />
             <BackButton />
             <div className="flex flex-col items-center justify-center gap-2 min-h-screen pb-20">
                 <div className="px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3">
                     <form className="flex flex-col flex-grow w-full gap-4 mb-8">
-                        <div className="flex items-center justify-center gap-4">
-                            {/* Image Upload Section */}
-                            <div className="flex flex-col items-center gap-4 my-24">
-                                <label
-                                    htmlFor="imageUpload"
-                                    className="cursor-pointer bg-white text-green-500 font-bold py-2 px-4 border-2 border-green-500 rounded-lg  hover:bg-green-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                >
+                        {/* Image Upload Section */}
+                        <div className="flex flex-col items-center gap-4 my-24">
+                            <label
+                                htmlFor="imageUpload"
+                                className="cursor-pointer bg-white text-green-500 font-bold py-2 px-4 border-2 border-green-500 rounded-lg hover:bg-green-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                            >
                                 + Upload Picture
-                                </label>
-
-                                <input
-                                    type="file"s
-                                    id="imageUpload"
-                                    className="hidden"
-                                    onChange={handleImageChange}
+                            </label>
+                            <input
+                                type="file"
+                                id="imageUpload"
+                                className="hidden"
+                                onChange={handleImageChange}
+                            />
+                            {image && (
+                                <img
+                                    src={image}
+                                    alt="Uploaded"
+                                    className="mt-4 w-40 h-40 object-cover rounded-full shadow-lg"
                                 />
-                                {image && (
-                                    <img
-                                        src={image}
-                                        alt="Uploaded"
-                                        className="mt-4 w-40 h-40 object-cover rounded-full shadow-lg"
-                                    />
-                                )}
-                            </div>
+                            )}
                         </div>
 
                         {/* Property Name Field */}
@@ -66,43 +170,47 @@ export default function EditProperty() {
                             <input
                                 type="text"
                                 placeholder="Property Name"
-                                id="propertyName"
+                                id="property_name"
+                                value={property.property_name || ''}
+                                onChange={handleInputChange}
                                 className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
                             />
                         </div>
-                        
+
                         {/* Address and Other Fields */}
                         <div className="flex flex-col gap-4">
                             <label htmlFor="address" className="text-lg font-semibold">Property Location:</label>
-                            <input 
-                                type="text" 
-                                placeholder="Address Line 1" 
-                                id="address" 
-                                className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                            <input
+                                type="text"
+                                placeholder="Address Line 1"
+                                id="address_line1"
+                                value={property.address_line1 || ''}
+                                onChange={handleInputChange}
+                                className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
                             />
-                            <input 
-                                type="text" 
-                                placeholder="City" 
-                                id="city" 
-                                className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                            <input
+                                type="text"
+                                placeholder="City"
+                                id="city"
+                                value={property.city || ''}
+                                onChange={handleInputChange}
+                                className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
                             />
-                            <input 
-                                type="text" 
-                                placeholder="Province" 
-                                id="province" 
-                                className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                            <input
+                                type="text"
+                                placeholder="Province"
+                                id="province"
+                                value={property.province || ''}
+                                onChange={handleInputChange}
+                                className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
                             />
-                            <input 
-                                type="text" 
-                                placeholder="Postal Code" 
-                                id="postalCode" 
-                                className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-                            />
-                            <input 
-                                type="text" 
-                                placeholder="Country" 
-                                id="country" 
-                                className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                            <input
+                                type="text"
+                                placeholder="Postal Code"
+                                id="postalCode"
+                                value={property.postal_code || ''}
+                                onChange={handleInputChange}
+                                className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
                             />
                             <div className="flex items-center gap-4">
                                 <div className="flex flex-col items-start">
@@ -122,15 +230,16 @@ export default function EditProperty() {
                                 </div>
                             </div>
                         </div>
-                        {/* Farming zone */}
-                         <div className="flex items-center gap-4">
-                            <label className="text-lg font-semibold" htmlFor="zone">Farming Zone:</label>
+
+                        {/* Farming Zone */}
+                        <div className="flex items-center gap-4">
+                            <label className="text-lg font-semibold" htmlFor="farmingZone">Farming Zone:</label>
                             <select
                                 id="farmingZone"
                                 className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
                                 onChange={handleZoneChange}
                                 value={selectedZone.value}
-                                style={{ backgroundColor: selectedZone.color, color: '#000000' }} // Applying selected color
+                                style={{ backgroundColor: selectedZone.color, color: '#000000' }}
                             >
                                 <option value="0a" style={{ backgroundColor: '#d7bde2' }}>0a</option>
                                 <option value="0b" style={{ backgroundColor: '#c39bd3' }}>0b</option>
@@ -148,114 +257,131 @@ export default function EditProperty() {
                                 className="text-sm font-semibold underline hover:text-blue-600 visited:text-purple-600"
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                            >Check farming zone</a>
+                            >
+                                Check farming zone
+                            </a>
                         </div>
-
 
                         {/* Property Description */}
                         <div className="flex flex-col gap-4">
-                            <label className="text-lg font-semibold" htmlFor="propertyDescription">Describe your property:</label>
+                            <label className="text-lg font-semibold" htmlFor="description">Describe your property:</label>
                             <textarea
-                                id="propertyDescription"
+                                id="description"
                                 placeholder="Describe your property"
+                                value={property.description || ''}
+                                onChange={handleInputChange}
                                 className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
                                 rows="4"
                             />
                         </div>
-                        
 
                         {/* Dimensions Fields */}
                         <div className="flex flex-col gap-4">
-    <label className="text-lg font-semibold" htmlFor="dimensions">Dimensions:</label>
-    <div className="flex items-center gap-2">
-    <input 
-        type="number" 
-        placeholder="Length" 
-        id="length" 
-        className=" w-1/3 p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-    />
-    <span className="text-lg font-semibold">x</span>
-    <input 
-        type="number" 
-        placeholder="Width" 
-        id="width" 
-        className="w-1/3  p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-    />
-    <span className="text-lg font-semibold">x</span>
-    <input 
-        type="number" 
-        placeholder="Height" 
-        id="height" 
-        className=" w-1/3  p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-    />
-    <span className="text-lg font-semibold">ft</span>
-    </div>
-</div>
+                            <label className="text-lg font-semibold" htmlFor="dimensions">Dimensions:</label>
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="number"
+                                    placeholder="Length"
+                                    id="length"
+                                    value={property.length || ''}
+                                    onChange={handleInputChange}
+                                    className="w-1/3 p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                />
+                                <span className="text-lg font-semibold">x</span>
+                                <input
+                                    type="number"
+                                    placeholder="Width"
+                                    id="width"
+                                    value={property.width || ''}
+                                    onChange={handleInputChange}
+                                    className="w-1/3 p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                />
+                                <span className="text-lg font-semibold">x</span>
+                                <input
+                                    type="number"
+                                    placeholder="Height"
+                                    id="height"
+                                    value={property.height || ''}
+                                    onChange={handleInputChange}
+                                    className="w-1/3 p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                />
+                                <span className="text-lg font-semibold">ft</span>
+                            </div>
+                        </div>
 
-                        
+                        {/* Soil Type */}
                         <div className="flex items-center gap-4">
                             <label className="text-lg font-semibold" htmlFor="soilType">Type of Soil:</label>
-                            <input 
-                                type="text" 
-                                placeholder="e.g. Clay, Loam, Sand" 
-                                id="soilType" 
-                                className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-                            />
-                        </div>
-                        
-                        
-                        
-                        <div className="flex items-center gap-4">
-                            <label className="text-lg font-semibold" htmlFor="amenities">Amenities:</label>
-                            <input 
-                                type="text" 
-                                placeholder="e.g. Shed, Electricity, Fencing" 
-                                id="amenities" 
-                                className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-                            />
-                        </div>
-                        
-                        <div className="flex items-center gap-4">
-                            <label className="text-lg font-semibold" htmlFor="possibleCrops">Possible Crops:</label>
-                            <input 
-                                type="text" 
-                                placeholder="e.g. Carrot, Barley, Corn" 
-                                id="possibleCrops" 
-                                className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                            <input
+                                type="text"
+                                placeholder="e.g. Clay, Loam, Sand"
+                                id="soilType"
+                                value={property.soil_type || ''}
+                                onChange={handleInputChange}
+                                className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
                             />
                         </div>
 
-                        
-<div className="flex flex-col gap-4">
+                        {/* Amenities */}
+                        <div className="flex items-center gap-4">
+                            <label className="text-lg font-semibold" htmlFor="amenities">Amenities:</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. Shed, Electricity, Fencing"
+                                id="amenities"
+                                value={property.amenities || ''}
+                                onChange={handleInputChange}
+                                className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
+                            />
+                        </div>
+
+                        {/* Possible Crops */}
+                        <div className="flex items-center gap-4">
+                            <label className="text-lg font-semibold" htmlFor="possibleCrops">Possible Crops:</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. Carrot, Barley, Corn"
+                                id="crops"
+                                value={property.crops || ''}
+                                onChange={handleInputChange}
+                                className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
+                            />
+                        </div>
+
+                        {/* Restrictions */}
+                        <div className="flex flex-col gap-4">
                             <label className="text-lg font-semibold" htmlFor="restrictions">Restrictions:</label>
                             <textarea
                                 id="restrictions"
-                                placeholder="e.g. No pets, No smoking, No planting marijuana" 
+                                placeholder="e.g. No pets, No smoking, No planting marijuana"
+                                value={property.restrictions || ''}
+                                onChange={handleInputChange}
                                 className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
                                 rows="3"
                             />
                         </div>
 
+                        {/* Price */}
                         <div className="flex items-center gap-4">
                             <label className="text-lg font-semibold" htmlFor="price">Price:</label>
-
-                                <h1 className="text-lg font-semibold  ">$</h1>
-                                    <input 
-                                    type="number" 
-                                    placeholder="CAD" 
-                                    id="price" 
-                                    className="flex-grow  p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-                                />
-                                <h1 className="text-lg font-semibold">/month</h1>
-
+                            <h1 className="text-lg font-semibold">$</h1>
+                            <input
+                                type="number"
+                                placeholder="CAD"
+                                id="price"
+                                value={property.rent_base_price || ''}
+                                onChange={handleInputChange}
+                                className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
+                            />
+                            <h1 className="text-lg font-semibold">/month</h1>
                         </div>
 
-                        
                         <LongButton
-                            buttonName="Save Changes"
-                            className="w-full rounded shadow-lg bg-green-500 text-white font-bold"
-                            pagePath="/Profile"
-                        />
+                        buttonName="Save Changes"
+                        className="w-full rounded shadow-lg bg-green-500 text-white font-bold"
+                        type="button"
+                        onClick={handleSaveChanges}
+/>
                     </form>
                 </div>
             </div>
