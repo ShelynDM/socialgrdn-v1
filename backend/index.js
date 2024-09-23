@@ -15,6 +15,7 @@ const getUserPropertiesRoutes = require('./api/GetUserPropAPI'); // Import your 
 const getSearchResultsRoutes = require('./api/GetSearchResultsAPI'); // Import your new GetSearchResultsAPI
 const getPropDetailsRoutes = require('./api/GetPropDetailsAPI'); // Import the GetPropDetailsAPI
 const getPropertyDetailsRoutes = require('./api/GetPropertyDetailsAPI'); // Import your new GetPropertyDetailsAPI (tiana)
+const getRentalDetailsRoutes = require('./api/GetRentalDetailsAPI'); // Import your new GetRentalDetailsAPI (tiana)
 
 const app = express();
 const port = 3000;
@@ -36,6 +37,7 @@ app.use('/api/getUserProperties', getUserPropertiesRoutes); // Add the new route
 app.use('/api/getSearchResults', getSearchResultsRoutes); // Add the new route for GetSearchResultsAPI
 app.use('/api/getPropertyDetails', getPropDetailsRoutes); // Add the new route for GetPropDetailsAPI
 app.use('/api/getPropertyDetails2', getPropertyDetailsRoutes); // Add the new route for GetPropertyDetailsAPI (tiana)
+app.use('/api/GetRentalDetails', getRentalDetailsRoutes); // Add the new route for GetRentalDetailsAPI(tiana)
 
 // The "catchall" handler
 app.get('*', (req, res) => {
