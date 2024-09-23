@@ -17,11 +17,11 @@ router.get('/', (req, res) => {
         up.last_name, 
         pl.growth_zone,
         pl.photo, 
-        GROUP_CONCAT(pc.crop_name ORDER BY pc.crop_name SEPARATOR ', ') AS crops,  -- Aggregate crops into a single field
+        MIN(pc.crop_name) AS crop,  -- Select the first crop for each property
         pl.dimensions_length, 
         pl.dimensions_width, 
-        pl.dimensions_height, 
-        pl.soil_type
+        pl.dimensions_height,
+        MIN(pl.soil_type) AS soil_type 
     FROM 
         UserProfile up
     JOIN 
@@ -45,8 +45,7 @@ router.get('/', (req, res) => {
         pl.photo, 
         pl.dimensions_length, 
         pl.dimensions_width, 
-        pl.dimensions_height, 
-        pl.soil_type`;
+        pl.dimensions_height`;
 
 
   db.query(query, (err, results) => {

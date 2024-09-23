@@ -8,44 +8,68 @@ import SearchFilter from "../../components/SearchComponents/popupSearchFilter";
 import FilterButton from "../../components/SearchComponents/filterButton";
 import axios from "axios";
 
+
 export default function Search() {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [propertyResult, setPropertyResult] = useState([]);
     const [userLocation, setUserLocation] = useState(null);
-    //const [userPointLocation, setUserPointLocation] = useState(null);
+    const [userPointLocation, setUserPointLocation] = useState(null);
     const [filteredResults, setFilteredResults] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [isDropDownVisible, setIsDropDownVisible] = useState(false);
+    const [suggestions, setSuggestions] = useState([]);
+    const [locationFetched, setLocationFetched] = useState(false);
 
-    const handleInputChange = (e) => {
-        const query = e.target.value.toLowerCase();
-        setSearchQuery(query);
-        setIsDropDownVisible(query.length > 0);
-    
-        if (query.length > 0) {
-            const filtered = propertyResult.filter((result) =>
-                [result.property_name, result.address_line1 , result.city, result.province, 
-                 result.growth_zone, result.crops, result.soil_type, result.first_name, result.last_name]
-                .some(field => field?.toLowerCase().startsWith(query))  // Use startsWith for matching at the start of the string
-            );
-            setFilteredResults(filtered.slice(0, 10)); // Limit results to top 10
+
+    // Get user's location based on the user's IP address
+    const getUserPointLocation = useCallback(async () => {
+        if (navigator.geolocation) {
+            try {
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject);
+                });
+                const { latitude, longitude } = position.coords;
+                setUserPointLocation({ latitude, longitude });
+                await fetchLocation(latitude, longitude);
+                setLocationFetched(true);
+            } catch (error) {
+                console.error("Error getting location", error);
+            }
         } else {
-            setFilteredResults([]);
+            console.error("Geolocation is not supported by this browser.");
         }
-    };
+        //eslint-disable-next-line
+    }, []);
 
-    const filterClicked = () => {
-        openPopup();
-        console.log("Search Filter Clicked");
-    };
+    const fetchLocation = useCallback(async (lat, lon) => {
+        try {
+            const key = process.env.REACT_APP_GEOAPIFY_API_KEY; // Replace with your actual API key
+            const response = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&type=street&lang=en&limit=5&format=json&apiKey=${key}`);
+            setUserLocation(response.data);
 
-    const openPopup = () => {
-        setIsPopupOpen(true);
-    };
+            console.log("Response data:", response.data);
+        } catch (error) {
+            console.error("Error fetching location:", error);
+        }
+    }, []);
 
-    const closePopup = () => {
-        setIsPopupOpen(false);
-    };
+    useEffect(() => {
+        if (!locationFetched) {
+            getUserPointLocation();
+        }
+    }, [getUserPointLocation, locationFetched]);
+
+    useEffect(() => {
+        if (userLocation && propertyResult.length > 0) {
+            filterResults();
+
+            console.log("Point Location:", userPointLocation);
+            console.log("User Location Results:", userLocation);
+            console.log("Filtered Results:", filteredResults);
+        }
+        //eslint-disable-next-line
+    }, [userLocation, propertyResult, searchQuery]);
+
 
     // Fetch property data from the API
     const fetchPropertyResults = async () => {
@@ -61,100 +85,127 @@ export default function Search() {
         }
     };
 
-    // const getUserPointLocation = () => {
-    //     if (navigator.geolocation) {
-    //         navigator.geolocation.getCurrentPosition(
-    //             (position) => {
-    //                 setUserPointLocation({
-    //                     latitude: position.coords.latitude,
-    //                     longitude: position.coords.longitude,
-    //                 });
-    //             },
-    //             console.log("User location:", userLocation),
-    //             (error) => {
-    //                 console.error("Error getting location", error);
-    //             }
-    //         );
-    //     } else {
-    //         console.error("Geolocation is not supported by this browser.");
-    //     }
-    // };
 
-    // Fetch user's location
-    const fetchLocation = async () => {
-        try {
-            const response = await axios.get('https://ipapi.co/json/');
+    useEffect(() => {
+        fetchPropertyResults();
+    }, []);
 
-            setUserLocation(response.data);
-        } catch (error) {
-            console.error("Error fetching location:", error);
+
+    // Handle filter button click
+    const filterClicked = () => {
+        openPopup();
+        console.log("Search Filter Clicked");
+    };
+
+    // Open the popup
+    const openPopup = () => {
+        setIsPopupOpen(true);
+    };
+
+    // Close the popup
+    const closePopup = () => {
+        setIsPopupOpen(false);
+    };
+
+
+    // Get unique suggestions from the property result
+    function getUniqueSuggestions(propertyResult) {
+        let wordsSet = new Set();
+        propertyResult.forEach((result) => {
+            const propertyName = result.property_name.toLowerCase().split(/\s+/);
+            const propertyAddress = result.address_line1.toLowerCase().split(/\s+/);
+            const propertyCity = result.city.toLowerCase().split(/\s+/);
+            const propertyProvince = result.province.toLowerCase().split(/\s+/);
+            const propertyGrowthZone = result.growth_zone.toLowerCase().split(/\s+/);
+            const propertyCrop = result.crop.toLowerCase().split(/\s+/);
+            const propertySoilType = result.soil_type.toLowerCase().split(/\s+/);
+            const propertyFirstName = result.first_name.toLowerCase().split(/\s+/);
+            const propertyLastName = result.last_name.toLowerCase().split(/\s+/);
+            const propertyPostalCode = result.postal_code.toLowerCase().split(/\s+/);
+
+            propertyName.forEach((word) => wordsSet.add(word.toLowerCase()));
+            propertyAddress.forEach((word) => wordsSet.add(word.toLowerCase()));
+            propertyCity.forEach((word) => wordsSet.add(word.toLowerCase()));
+            propertyProvince.forEach((word) => wordsSet.add(word.toLowerCase()));
+            propertyGrowthZone.forEach((word) => wordsSet.add(word.toLowerCase()));
+            propertyCrop.forEach((word) => wordsSet.add(word.toLowerCase()));
+            propertySoilType.forEach((word) => wordsSet.add(word.toLowerCase()));
+            propertyFirstName.forEach((word) => wordsSet.add(word.toLowerCase()));
+            propertyLastName.forEach((word) => wordsSet.add(word.toLowerCase()));
+            propertyPostalCode.forEach((word) => wordsSet.add(word.toLowerCase()));
+        });
+        return Array.from(wordsSet);
+    };
+    
+    
+    // Handle input change in the search bar
+    const handleInputChange = (e) => {
+        const query = e.target.value.toLowerCase();
+        setSearchQuery(query);
+        setIsDropDownVisible(query.length > 0);
+        setSuggestions(getUniqueSuggestions(propertyResult));
+    
+        if (query.length > 0) {
+            const filtered = suggestions.filter((field) =>
+                [field]
+                .some(field => field?.toLowerCase().startsWith(query))  // Use startsWith for matching at the start of the string
+            );
+            setFilteredResults(filtered.slice(0, 10)); // Limit results to top 10
+        } else {
+            setFilteredResults([]);
         }
     };
 
-    // get the actual user location based on the user's IP address and user point location
-    // const getUserLocation = () => {
-    //     getUserPointLocation();
-    //     fetchLocation();
-    //     if (userPointLocation.latitude && userPointLocation.longitude === userLocation.latitude && userLocation.longitude) {
-    //         return userLocation;
-    //     }
-    // };
-
-
-    const getSamePostalResults = (userLocation, propertyResult) => {
-        return propertyResult.filter((result) => result.postal_code.replace(/\s/g, '').substring(0, 3) === userLocation.postal);
-    };
-
-    const getSameCityResults = (userLocation, propertyResult) => {
-        return propertyResult.filter((result) => result.city === userLocation.city);
-    };
-
-    const getSameRegionResults = (userLocation, propertyResult) => {
-        return propertyResult.filter((result) => result.province === userLocation.region_code);
-    };
 
     const filterResults = useCallback(() => {
+        const getSamePostalResults = (userLocation, propertyResult) => {
+            return propertyResult.filter((result) => result.postal_code.trim().slice(0,3) === userLocation.results[0].postcode.trim().slice(0,3));
+        };
+        console.log("ulr:", userLocation.results[0].postcode);
+        
+        
+        const getSameCityResults = (userLocation, propertyResult) => {
+            return propertyResult.filter((result) => result.city === userLocation.results[0].city);
+        };
+        
+        const getSameRegionResults = (userLocation, propertyResult) => {
+            return propertyResult.filter((result) => result.province === userLocation.results[0].state_code);
+        };
+
         if (userLocation && propertyResult.length > 0) {
             let results = [];
-
-            const postalResults = getSamePostalResults(userLocation, propertyResult);
-            results = results.concat(postalResults);
-
-            if (results.length < 10) {
-                const cityResults = getSameCityResults(userLocation, propertyResult);
-                results = results.concat(cityResults.filter(result => !results.includes(result))); 
-            }
-
-            if (results.length < 10) {
-                const regionResults = getSameRegionResults(userLocation, propertyResult);
-                results = results.concat(regionResults.filter(result => !results.includes(result))); 
-            }
-
+            
+            // Add same postcode results (up to 10)
+            const postalResults = getSamePostalResults(userLocation, propertyResult).slice(0, 10);
+            results.push(...postalResults);
+    
+            // Add same city results (up to 10 - results.length)
+            const cityResults = getSameCityResults(userLocation, propertyResult);
+            const uniqueCityResults = cityResults.filter(result => !results.includes(result));
+            const cityResultsToAdd = uniqueCityResults.slice(0, Math.max(0, 10 - results.length));
+            results.push(...cityResultsToAdd);
+    
+            // Add same region results (up to 10 - results.length)
+            const regionResults = getSameRegionResults(userLocation, propertyResult);
+            const uniqueRegionResults = regionResults.filter(result => !results.includes(result));
+            const regionResultsToAdd = uniqueRegionResults.slice(0, Math.max(0, 10 - results.length));
+            results.push(...regionResultsToAdd);
+    
+            // Apply search query filter
             if (searchQuery) {
                 results = results.filter(result =>
-                    [result.property_name, result.address_line1, result.city, result.province, 
-                    result.growth_zone, result.crops, result.soil_type, result.first_name, result.last_name]
+                    [result.property_name, result.address_line1, result.city, result.province,
+                    result.growth_zone, result.crop, result.soil_type, result.first_name, result.last_name]
                     .some(field => field?.toLowerCase().includes(searchQuery.toLowerCase()))
                 );
             }
-
+    
             setFilteredResults(results.slice(0, 10));
         }
     }, [userLocation, propertyResult, searchQuery]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            await fetchLocation();
-            await fetchPropertyResults();
-        };
-        fetchData();
-    }, []);
 
-    useEffect(() => {
-        if (userLocation && propertyResult.length > 0) {
-            filterResults();
-        }
-    }, [userLocation, propertyResult, searchQuery]);
+
 
     return (
         <div className='bg-main-background'>
@@ -163,40 +214,30 @@ export default function Search() {
                     <InAppLogo />
                 </div>
                 {/* Search Bar Section */}
-                <div className='mx-2 px-2 fixed top-12 flex w-full items-center justify-between bg-main-background'>
+                <div className='mx-2 px-2 fixed top-12 flex w-full justify-between bg-main-background'>
                     <div className="flex-grow w-full">
                         <SearchBar className="w-full" value={searchQuery} onChange={handleInputChange} />
-                        {isDropDownVisible && filteredResults.length > 0 && (
+                        {isDropDownVisible && suggestions.length > 0 && (
                         <ul className="dropdown w-full max-h-64 overflow-y-auto">
-                            {filteredResults.map((result, index) => {
-                                const matchedFields = [
-                                    result.property_name,
-                                    result.address_line1,
-                                    result.city,
-                                    result.province,
-                                    result.growth_zone,
-                                    result.crops,
-                                    result.soil_type,
-                                    result.first_name,
-                                    result.last_name,
-                                ].filter(field => field?.toLowerCase().startsWith(searchQuery.toLowerCase()));
-
-                                return matchedFields.length > 0 && (
-                                    <li key={index} className="mx-2 p-2 border-b border-x bg-white border-gray-200 hover:bg-gray-100 transition-all text-sm" 
-                                    onClick={() => {
-                                        //set the search query to the selected field
-                                        setSearchQuery(matchedFields[0]);
-                                        setIsDropDownVisible(false);
-                                    }}>
-                                        {matchedFields.map((field, i) => (
-                                            <p key={i} className="text-black">{field}</p>
-                                        ))}
+                            {suggestions
+                                .filter((suggestion) => suggestion.includes(searchQuery.toLowerCase())) // Filter suggestions based on searchQuery
+                                .map((suggestion, index) => (
+                                    <li 
+                                        key={index} 
+                                        className="mx-2 p-2 border-b border-x bg-white border-gray-200 hover:bg-gray-100 transition-all text-sm" 
+                                        onClick={() => {
+                                            // Set the search query to the selected suggestion
+                                            setSearchQuery(suggestion);
+                                            setIsDropDownVisible(false);
+                                        }}
+                                    >
+                                        <p className="text-black">{suggestion}</p>
                                     </li>
-                                );
-                            })}
+                                ))}
                         </ul>
                     )}
-                    </div>
+
+                        </div>
                     <div>
                         <FilterButton onclick={filterClicked} />
                     </div>
@@ -221,7 +262,7 @@ export default function Search() {
                                 last_name={result.last_name}
                                 growthZone={result.growth_zone}
                                 propertyImage={result.photo}
-                                propertyCrop={result.crops}
+                                propertyCrop={result.crop}
                                 dimensionLength={result.dimensions_length}
                                 dimensionWidth={result.dimensions_width}
                                 dimensionHeight={result.dimensions_height}
