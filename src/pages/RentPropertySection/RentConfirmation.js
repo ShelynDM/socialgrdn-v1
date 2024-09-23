@@ -1,19 +1,78 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
-import { IoArrowBackSharp } from "react-icons/io5";
-import SearchBar from "../../components/SearchComponents/search";
-import ExampleImage from "../../assets/exampleAssets/imgExample.jpg";
+//import { IoArrowBackSharp } from "react-icons/io5";
+//import SearchBar from "../../components/SearchComponents/search";
 import { LuMapPin } from "react-icons/lu";
+import ExampleImage from "../../assets/exampleAssets/imgExample.jpg";   //to be deleted
 
-
-
+import zoneFormat from "../../components/ZoneColor/zoneColor";
 
 
 export default function RentConfirmation() {
-    const [zoneColor] = useState("#00f");
-    const [paymentStatus] = useState(0);
+    const navigate = useNavigate();
+    const [paymentStatus] = useState(1);  //passed as parameter from view property page
+    const [rental_id] = useState(1);      //passed as parameter from view property page
+    // Rental Information 
+    const [propertyZone, setPropertyZone] = useState('');
+    const [zoneColor, setZoneColor] = useState('');
+    const [propertyAddress, setPropertyAddress] = useState('');
+    const [propertyName, setPropertyName] = useState('');
+    //property name, address
+    //const { renter_ID } = useUser(); // Get the userID from UserContext
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+
+    //Fetching Rent Details from API
+    useEffect(() => {
+        const fetchRentalDetails = async () => {
+            try {
+                const response = await fetch(`http://localhost:3000/api/GetRentalDetails?rental_id=${rental_id}`);
+                if (!response.ok) {
+                    console.log("Network response was not ok");
+                }
+                const rentalData = await response.json();
+
+                // Convert timestamps to 'Month Day, Year' format
+                const formattedStartDate = new Date(rentalData.start_date).toLocaleDateString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                });
+                const formattedEndDate = new Date(rentalData.end_date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                });
+
+                setPropertyAddress(rentalData.address_line1 + ', ' + rentalData.city + ', ' + rentalData.province);
+                setPropertyZone(rentalData.growth_zone);
+                setPropertyName(rentalData.property_name);
+                setStartDate(formattedStartDate);
+                setEndDate(formattedEndDate);
+            } catch (error) {
+                console.error('Error fetching property details:', error);
+            }
+        };
+        fetchRentalDetails();
+        //eslint - disable - next - line
+    }, [rental_id]);
+
+    //setZoneColor
+    const assignZoneColor = (zone) => {
+        setZoneColor(zoneFormat(zone));
+    };
+
+    const handleBackToReservations = () => {
+        navigate('/Reservations');
+    };
+
+    useEffect(() => {
+        assignZoneColor(propertyZone);
+        //eslint-disable-next-line
+    }, [propertyZone]);
 
 
     return (
@@ -27,63 +86,68 @@ export default function RentConfirmation() {
                 </div>
 
                 {/* Top Bar Section (Back Button, Search, Filter) */}
-                <div className="flex items-center justify-between fixed top-0 left-0 right-0 mt-10 px-4 bg-main-background">
+                {/* <div className="flex items-center justify-between fixed top-0 left-0 right-0 mt-10 px-4 bg-main-background">
                     <button>
                         <IoArrowBackSharp size={25} />
                     </button>
                     <div className="flex-grow w-full">
                         <SearchBar className="w-full" />
                     </div>
-                </div>
-                {/* Checks if payment was successful */}
-                {paymentStatus === 0 ?
-                    //If payment was successful
-                    <div className="w-96 rounded-lg border-2 py-1 border-gray-200 bg-main-background">
-                        <h1 className="font-semibold text-2xl mx-4">Payment Failed</h1>
-                    </div> :
-                    //If payment was not successful
-                    <div>
-
-                    </div>
-                }
-
-                {/* Rent Information */}
-                <div className="w-96 rounded-lg border-2 py-1 border-gray-200 bg-main-background">
-                    <h1 className="font-semibold text-2xl mx-4">Booking Confirmed</h1>
-                    {/* Listing Duration */}
-                    <div className="mx-4 flex">
-                        <p className="text-sm">September 1, 2024</p>
-                        <p className="mx-1 text-sm"> - </p>
-                        <p className="text-sm">September 30, 2024</p>
-                    </div>
-                    <div className="px-6 pt-2">
-                        {/* Listing Title */}
-                        <div className="flex flex-row justify-between mb-2">
-                            <div>
-                                <h1 className="font-bold text-lg ">John’s Yard</h1>
-                            </div>
+                </div> */}
+                <div className="w-96 h-5/6 rounded-lg border-2 py-1 border-gray-200 bg-main-background">
+                    {/* Checks if payment was successful */}
+                    {paymentStatus === 0 ?
+                        //If payment was not successful
+                        <div className="">
+                            <h1 className="font-semibold text-2xl mx-4">Payment Failed</h1>
                         </div>
-                        {/* Listing Description */}
-                        <div className="flex flex-row justify-between">
+                        :
+                        //Payment successful start
+                        <div>
+                            {/* Rent Information */}
+                            <div className="">
+                                <h1 className="font-semibold text-2xl mx-4">Booking# {rental_id} is Confirmed</h1>
+                                {/* Listing Duration */}
+                                <div className="mx-4 flex">
+                                    <p className="text-sm">{startDate}</p>
+                                    <p className="mx-1 text-sm"> - </p>
+                                    <p className="text-sm">{endDate}</p>
+                                </div>
+                                <div className="px-6 pt-2">
+                                    {/* Listing Title */}
+                                    <div className="flex flex-row justify-between mb-2">
+                                        <div>
+                                            <h1 className="font-bold text-lg ">{propertyName}</h1>
+                                        </div>
+                                    </div>
+                                    {/* Listing Description */}
+                                    <div className="flex flex-row justify-between">
 
-                            {/* Listing Address */}
-                            <div className="flex">
-                                <LuMapPin />
-                                <p className="text-xs">Address St, Calgary AB</p>
+                                        {/* Listing Address */}
+                                        <div className="flex">
+                                            <LuMapPin />
+                                            <p className="text-xs">{propertyAddress}</p>
+                                        </div>
+                                        {/* Farming Zone */}
+                                        <div className="flex flex-row gap-1">
+                                            <div className="w-4 h-4 border-1 border-gray-400" style={{ backgroundColor: zoneColor }}></div>
+                                            <p className="text-xs text-gray-500">Zone {propertyZone}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {/* Listing Image */}
+                                <div className="w-auto h-52 flex justify-center items-center mx-4 p-1">
+                                    <img className="w-full h-full rounded-lg border-2 border-gray-200" src={ExampleImage} alt="Garden" />
+                                </div>
                             </div>
-                            {/* Farming Zone */}
-                            <div className="flex flex-row gap-1">
-                                <div className="w-4 h-4 border-1 border-gray-400" style={{ backgroundColor: zoneColor }}></div>
-                                <p className="text-xs text-gray-500">Zone 4A</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Listing Image */}
-                    <div className="w-auto h-52 flex justify-center items-center mx-4 p-1">
-                        <img className="w-full h-full rounded-lg border-2 border-gray-200" src={ExampleImage} alt="Garden" />
+                        </div>//Payment successful end
+                    }
+                    <div className="self-center p-5">
+                        <p className="text-green-600 text-base font-bold text-center cursor-pointer" onClick={handleBackToReservations}>Back to Reservation</p>
                     </div>
                 </div>
+
+
             </div>
             <NavBar SproutPath={GreenSprout} />
 

@@ -9,6 +9,7 @@ import AgreeAndPay from "../../components/Buttons/longButton";
 import { LuMapPin } from "react-icons/lu";
 import { differenceInMonths, differenceInDays, parseISO } from 'date-fns';
 //import { useUser } from "../../UserContext"; // Import useUser to get the userID
+import zoneFormat from "../../components/ZoneColor/zoneColor";
 
 export default function RentProperty() {
 
@@ -94,27 +95,7 @@ export default function RentProperty() {
 
     //setZoneColor
     const assignZoneColor = (zone) => {
-        if (zone === '0a') {
-            setZoneColor('#d7bde2');
-        } else if (zone === '0b') {
-            setZoneColor('#c39bd3');
-        } else if (zone === '1a') {
-            setZoneColor('#7fb3d5');
-        } else if (zone === '1b') {
-            setZoneColor('#a9cce3');
-        } else if (zone === '2a') {
-            setZoneColor('#a3e4d7');
-        } else if (zone === '2b') {
-            setZoneColor('#7dcea0');
-        } else if (zone === '3a') {
-            setZoneColor('#28b463');
-        } else if (zone === '3b') {
-            setZoneColor('#a9dfbf');
-        } else if (zone === '4a') {
-            setZoneColor('#BCE864');
-        } else if (zone === '4b') {
-            setZoneColor('#f4d03f');
-        };
+        setZoneColor(zoneFormat(zone));
     };
 
 
