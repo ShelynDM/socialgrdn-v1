@@ -8,7 +8,7 @@ import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
 //import SearchBar from "../../components/SearchComponents/search";
 import { LuMapPin } from "react-icons/lu";
 import ExampleImage from "../../assets/exampleAssets/imgExample.jpg";   //to be deleted
-
+import LongButton from "../../components/Buttons/longButton";
 import zoneFormat from "../../components/ZoneColor/zoneColor";
 
 
@@ -79,7 +79,7 @@ export default function RentConfirmation() {
 
         <div className='bg-main-background'>
             {/* Main Content */}
-            <div className="flex flex-col items-center justify-center min-h-screen mx-4 pb-20 bg-main-background">
+            <div className="flex flex-col items-center min-h-screen mx-4 pb-20  pt-20 bg-main-background">
                 {/* Logo */}
                 <div className='p-2 fixed top-0 left-0 w-auto sm:w-2/4 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-main-background'>
                     <InAppLogo />
@@ -143,7 +143,10 @@ export default function RentConfirmation() {
                         </div>//Payment successful end
                     }
                     <div className="self-center p-5">
-                        <p className="text-green-600 text-base font-bold text-center cursor-pointer" onClick={handleBackToReservations}>Back to Reservation</p>
+
+                        <LongButton buttonName='Back to Reservations'
+                            onClick={handleBackToReservations}
+                            className='p-2 w-full rounded shadow-lg bg-green-600 text-white font-bold' />
                     </div>
                 </div>
 
