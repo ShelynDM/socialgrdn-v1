@@ -63,60 +63,53 @@ export default function EditProperty() {
 
     const MySwal = withReactContent(Swal);
     const handleSaveChanges = async () => {
-        // Extract and transform variables from property state
-        const { 
-            property_name: propertyName, 
-            photo, 
-            description, 
-            dimensions_length: dimensionsLength, 
-            dimensions_width: dimensionsWidth, 
-            dimensions_height: dimensionsHeight, 
-            soil_type: soilType, 
-            amenities, 
-            restrictions, 
-            rent_base_price: rentBasePrice, 
-            address_line1: addressLine1, 
-            city, 
-            province, 
-            postal_code: postalCode, 
-            crops 
-        } = property;
-    
-        // Split crops into an array if they're entered as a comma-separated string
-        const cropsArray = crops ? crops.split(',').map(crop => crop.trim()) : [];
-    
         try {
-            // Make the PATCH request, passing the propertyId as a query parameter
+            const formData = new FormData();
+            formData.append('property_id', property_id);
+            formData.append('photo', image);
+
+            // Extract and transform variables from property state
+            const { 
+                property_name: propertyName, 
+                description, 
+                dimensions_length: dimensionsLength, 
+                dimensions_width: dimensionsWidth, 
+                dimensions_height: dimensionsHeight, 
+                soil_type: soilType, 
+                amenities, 
+                restrictions, 
+                rent_base_price: rentBasePrice, 
+                address_line1: addressLine1, 
+                city, 
+                province, 
+                postal_code: postalCode, 
+                crops 
+            } = property;
+
+            formData.append('property_name', propertyName);
+            formData.append('description', description);
+            formData.append('dimensions_length', dimensionsLength);
+            formData.append('dimensions_width', dimensionsWidth);
+            formData.append('dimensions_height', dimensionsHeight);
+            formData.append('soil_type', soilType);
+            formData.append('amenities', amenities);
+            formData.append('restrictions', restrictions);
+            formData.append('rent_basePrice', rentBasePrice);
+            formData.append('address_line1', addressLine1);
+            formData.append('city', city);
+            formData.append('province', province);
+            formData.append('postal_code', postalCode);
+            formData.append('crops', crops ? crops.split(',').map(crop => crop.trim()) : []);
+
             const response = await fetch(`/api/editPropertyDetails?property_id=${property_id}`, {
                 method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    property_id,
-                    property_name: propertyName,
-                    photo,
-                    description,
-                    dimensions_length: dimensionsLength,
-                    dimensions_width: dimensionsWidth,
-                    dimensions_height: dimensionsHeight,
-                    soil_type: soilType,
-                    amenities,
-                    restrictions,
-                    rent_base_price: rentBasePrice,
-                    address_line1: addressLine1,
-                    city,
-                    province,
-                    postal_code: postalCode,
-                    crops: cropsArray // Pass crops as an array
-                }),
+                body: formData,
             });
-    
+
             if (!response.ok) {
                 throw new Error('Failed to update property');
             }
-    
-            // Show success modal and redirect
+
             MySwal.fire({
                 title: 'Update Successful',
                 text: 'The property details have been updated.',
@@ -126,9 +119,14 @@ export default function EditProperty() {
             }).then(() => {
                 navigate(`/ViewMyProperty/${property_id}`);
             });
-    
         } catch (error) {
             console.error('Error updating property:', error);
+            MySwal.fire({
+                title: 'Error',
+                text: 'There was an issue updating the property. Please try again.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+            });
         }
     };
     
@@ -142,23 +140,19 @@ export default function EditProperty() {
                 <div className="px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3">
                     <form className="flex flex-col flex-grow w-full gap-4 mb-8">
                         {/* Image Upload Section */}
-                        <div className="flex flex-col items-center gap-4 my-24">
-                            <label
-                                htmlFor="imageUpload"
-                                className="cursor-pointer bg-white text-green-500 font-bold py-2 px-4 border-2 border-green-500 rounded-lg hover:bg-green-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                            >
-                                + Upload Picture
-                            </label>
+                        <div className="flex items-center gap-4">
+                            <label className="text-lg font-semibold" htmlFor="imageUpload">Image:</label>
                             <input
                                 type="file"
                                 id="imageUpload"
-                                className="hidden"
+                                accept="image/*"
                                 onChange={handleImageChange}
+                                className="hidden"
                             />
-                            {image && (
+                            {imagePreview && (
                                 <img
-                                    src={image}
-                                    alt="Uploaded"
+                                    src={imagePreview}
+                                    alt="Uploaded Image"
                                     className="mt-4 w-40 h-40 object-cover rounded-full shadow-lg"
                                 />
                             )}

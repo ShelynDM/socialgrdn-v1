@@ -1,7 +1,24 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 
-router.patch('/', (req, res) => {
+// Configure multer storage
+const upload = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+// Use multer middleware for file uploads
+router.use(upload.single('photo'));
+
+router.patch('/', async (req, res) => {
     const { 
         property_id, 
         crops,
@@ -78,94 +95,80 @@ router.patch('/', (req, res) => {
     `;
 
     const deleteCropsQuery = `DELETE FROM PropertyCrops WHERE property_id = ?`;
-
     const insertCropsQuery = cropsArray.length > 0
         ? `INSERT INTO PropertyCrops (property_id, crop_name) VALUES ${cropsArray.map(() => '(?, ?)').join(', ')}`
         : null;
 
-    db.beginTransaction((err) => {
+    db.beginTransaction(async (err) => {
         if (err) {
             console.error('Error starting transaction:', err);
             return res.status(500).json({ error: 'Transaction error' });
         }
 
-        db.query(updatePropertyQuery, [
-            property_name,
-            photo,
-            description,
-            dimensions_length,
-            dimensions_width,
-            dimensions_height,
-            soil_type,
-            fieldsToUpdate.amenities,
-            fieldsToUpdate.restrictions,
-            rent_base_price,
-            address_line1,
-            city,
-            province,
-            postal_code,
-            property_id
-        ], (err, result) => {
-            if (err) {
-                return db.rollback(() => {
-                    console.error('Error updating property:', err);
-                    res.status(500).json({ error: 'Error updating property' });
-                });
-            }
+        try {
+            // Save image to disk
+            const imagePath = path.join(__dirname, 'uploads', photo.filename);
 
-            if (result.affectedRows === 0) {
-                return db.rollback(() => {
-                    res.status(404).json({ error: 'Property not found' });
-                });
-            }
+            // Update the database query to include the new photo
+            const updatePropertyWithPhotoQuery = `
+                UPDATE PropertyListing p
+                JOIN PropertyLocation l ON p.location_id = l.location_id
+                SET 
+                    p.property_name = COALESCE(?, p.property_name),
+                    p.photo = COALESCE(?, p.photo),
+                    // ... other fields...
+                WHERE p.property_id = ?
+            `;
+            
+            // Insert image path into ImagePaths table
+            const insertImagePathQuery = `
+                INSERT INTO ImagePaths (property_id, image_path)
+                VALUES (?, ?)
+                ON DUPLICATE KEY UPDATE image_path = VALUES(image_path)
+            `;
 
-            if (cropsArray.length > 0) {
-                db.query(deleteCropsQuery, [property_id], (err) => {
-                    if (err) {
-                        return db.rollback(() => {
-                            console.error('Error deleting crops:', err);
-                            res.status(500).json({ error: 'Error deleting crops' });
-                        });
-                    }
+            await db.query(updatePropertyWithPhotoQuery, [
+                property_name,
+                imagePath,
+                description,
+                dimensions_length,
+                dimensions_width,
+                dimensions_height,
+                soil_type,
+                fieldsToUpdate.amenities,
+                fieldsToUpdate.restrictions,
+                rent_base_price,
+                address_line1,
+                city,
+                province,
+                postal_code,
+                property_id
+            ]);
 
-                    const cropParams = cropsArray.reduce((acc, crop) => {
-                        acc.push(property_id, crop);
-                        return acc;
-                    }, []);
+            await db.query(insertImagePathQuery, [property_id, imagePath]);
 
-                    db.query(insertCropsQuery, cropParams, (err) => {
-                        if (err) {
-                            return db.rollback(() => {
-                                console.error('Error inserting crops:', err);
-                                res.status(500).json({ error: 'Error inserting crops' });
-                            });
-                        }
+            // Delete existing crops
+            await db.query(deleteCropsQuery, [property_id]);
 
-                        db.commit((err) => {
-                            if (err) {
-                                return db.rollback(() => {
-                                    console.error('Error committing transaction:', err);
-                                    res.status(500).json({ error: 'Transaction commit error' });
-                                });
-                            }
-                            console.log('Property and crops updated successfully');
-                            res.status(200).json({ message: 'Property and crops updated successfully' });
-                        });
-                    });
-                });
-            } else {
-                db.commit((err) => {
-                    if (err) {
-                        return db.rollback(() => {
-                            console.error('Error committing transaction:', err);
-                            res.status(500).json({ error: 'Transaction commit error' });
-                        });
-                    }
-                    console.log('Property updated successfully without crop changes');
-                    res.status(200).json({ message: 'Property updated successfully' });
-                });
-            }
-        });
+            // Insert new crops
+            const cropParams = cropsArray.reduce((acc, crop) => {
+                acc.push(property_id, crop);
+                return acc;
+            }, []);
+
+            await db.query(insertCropsQuery, cropParams);
+
+            // Commit transaction
+            await db.commit();
+
+            console.log('Property and crops updated successfully');
+            res.status(200).json({ message: 'Property and crops updated successfully' });
+        } catch (err) {
+            console.error('Error updating property:', err);
+            await db.rollback(() => {
+                res.status(500).json({ error: 'Error updating property' });
+            });
+        }
     });
 });
 
