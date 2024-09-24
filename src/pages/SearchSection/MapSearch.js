@@ -2,13 +2,17 @@ import React, {useState, useEffect} from "react";
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import Sprout from "../../assets/navbarAssets/sprout.png";
-import SearchBar from "../../components/SearchComponents/search";
 import SearchResult from "../../components/SearchComponents/searchResult";
+import SearchWithSuggestions from "../../components/SearchComponents/searchWithSuggestions";
+import usePropertyResult from "../../components/SearchComponents/propertyResult";
 
 export default function MapSearch() {
     const [searchResults, setSearchResults] = useState([]);
     const [userLocation, setUserLocation] = useState(null); // Should be null initially
     const [nearestResults, setNearestResults] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const propertyResult = usePropertyResult();
 
     // Helper function to convert degrees to radians
     const deg2rad = (deg) => {
@@ -81,7 +85,11 @@ export default function MapSearch() {
         }
     };
 
-    
+    // Handle suggestion select
+    const handleSuggestionSelect = (selectedSuggestion) => {
+        console.log("Selected Suggestion:", selectedSuggestion);
+        setSearchQuery(selectedSuggestion);
+    };
 
     // Fetch search results and user location on component mount
     
@@ -111,7 +119,7 @@ export default function MapSearch() {
             {/* Search Bar Section */}
             <div className=' px-2 fixed top-12 flex w-full items-center justify-between bg-main-background'>
                 <div className="flex-grow w-full">
-                    <SearchBar className="w-full" />
+                    <SearchWithSuggestions  propertyResult={propertyResult} onSuggestionSelect={handleSuggestionSelect} className="w-full" />
                 </div>
             </div>
 

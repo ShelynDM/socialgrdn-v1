@@ -10,17 +10,18 @@ router.get('/', (req, res) => {
         plo.address_line1, 
         plo.city, 
         plo.province,
+        plo.postal_code,
         plo.longitude,
         plo.latitude, 
         up.first_name, 
         up.last_name, 
         pl.growth_zone,
         pl.photo, 
-        pc.crop_name, 
+        MIN(pc.crop_name) AS crop,  -- Select the first crop for each property
         pl.dimensions_length, 
         pl.dimensions_width, 
-        pl.dimensions_height, 
-        pl.soil_type
+        pl.dimensions_height,
+        MIN(pl.soil_type) AS soil_type 
     FROM 
         UserProfile up
     JOIN 
@@ -28,7 +29,24 @@ router.get('/', (req, res) => {
     JOIN 
         PropertyLocation plo ON pl.location_id = plo.location_id
     JOIN 
-        PropertyCrops pc ON pl.property_id = pc.property_id`;
+        PropertyCrops pc ON pl.property_id = pc.property_id
+    GROUP BY 
+        pl.property_id, 
+        pl.property_name, 
+        plo.address_line1, 
+        plo.city, 
+        plo.province,
+        plo.postal_code,
+        plo.longitude,
+        plo.latitude, 
+        up.first_name, 
+        up.last_name, 
+        pl.growth_zone,
+        pl.photo, 
+        pl.dimensions_length, 
+        pl.dimensions_width, 
+        pl.dimensions_height`;
+
 
   db.query(query, (err, results) => {
     if (err) {
