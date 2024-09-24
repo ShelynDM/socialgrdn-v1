@@ -1,12 +1,10 @@
-import React, {useState} from "react";
 import PlantIcon from "../../assets/listingAssets/Plant-icon.png";
 import FarmAreaIcon from "../../assets/listingAssets/FarmArea-icon.png";
 import SoilIcon from "../../assets/listingAssets/Soil-icon.png";
 import { Link } from "react-router-dom";
-//import ExampleImage from "../../assets/exampleAssets/imgExample.jpg";
+import ZoneColor from "../ZoneColor/zoneColor";
 
 export default function SearchResult({propertyName, addressLine1, city, province, first_name, last_name, growthZone, propertyImage ,propertyCrop, dimensionLength, dimensionWidth, dimensionHeight, soilType}) {
-    const [zoneColor] = useState("#00f");
 
     return (
         <div className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 rounded-lg border-2 py-1 border-gray-200 bg-main-background">
@@ -25,7 +23,7 @@ export default function SearchResult({propertyName, addressLine1, city, province
                         <p className="text-xs text-gray-500">Listed by {first_name} {last_name}</p> 
                     </div>
                     <div className="flex flex-row gap-1">
-                        <div className="w-4 h-4 border-1 border-gray-400" style={{ backgroundColor: zoneColor }}></div>
+                        <div className="w-4 h-4 border-1 border-gray-400" style={{ backgroundColor: ZoneColor(growthZone) }}></div>
                         <p className="text-xs text-gray-500">Zone {growthZone}</p>
                     </div>
                 </div>

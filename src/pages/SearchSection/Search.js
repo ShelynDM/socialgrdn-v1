@@ -3,23 +3,33 @@ import NavBar from "../../components/Navbar/navbar";
 import InAppLogo from "../../components/Logo/inAppLogo";
 import Sprout from "../../assets/navbarAssets/sprout.png";
 import SearchResult from "../../components/SearchComponents/searchResult";
-import SearchBar from "../../components/SearchComponents/search";
 import SearchFilter from "../../components/SearchComponents/popupSearchFilter";
 import FilterButton from "../../components/SearchComponents/filterButton";
 import axios from "axios";
 
+// Import the following components to reuse search components
+import SearchWithSuggestions from "../../components/SearchComponents/searchWithSuggestions";
+import usePropertyResult from "../../components/SearchComponents/propertyResult";
+import { useSearchParams } from "react-router-dom";
 
 export default function Search() {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [propertyResult, setPropertyResult] = useState([]);
     const [userLocation, setUserLocation] = useState(null);
     const [userPointLocation, setUserPointLocation] = useState(null);
     const [filteredResults, setFilteredResults] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
-    const [isDropDownVisible, setIsDropDownVisible] = useState(false);
-    const [suggestions, setSuggestions] = useState([]);
     const [locationFetched, setLocationFetched] = useState(false);
 
+    const propertyResult = usePropertyResult();
+    const [searchParams] = useSearchParams();
+
+    // Get search query from the URL
+    useEffect(() => {
+        const query = searchParams.get("searchQuery");
+        if (query) {
+          setSearchQuery(query); // Update the state with the query from the URL
+        }
+      }, [searchParams]);
 
     // Get user's location based on the user's IP address
     const getUserPointLocation = useCallback(async () => {
@@ -71,25 +81,6 @@ export default function Search() {
     }, [userLocation, propertyResult, searchQuery]);
 
 
-    // Fetch property data from the API
-    const fetchPropertyResults = async () => {
-        try {
-            const response = await fetch(`/api/getSearchResults`);
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
-            const propertyData = await response.json();
-            setPropertyResult(propertyData);
-        } catch (error) {
-            console.error("Error fetching search results:", error);
-        }
-    };
-
-
-    useEffect(() => {
-        fetchPropertyResults();
-    }, []);
-
 
     // Handle filter button click
     const filterClicked = () => {
@@ -107,56 +98,7 @@ export default function Search() {
         setIsPopupOpen(false);
     };
 
-
-    // Get unique suggestions from the property result
-    function getUniqueSuggestions(propertyResult) {
-        let wordsSet = new Set();
-        propertyResult.forEach((result) => {
-            const propertyName = result.property_name.toLowerCase().split(/\s+/);
-            const propertyAddress = result.address_line1.toLowerCase().split(/\s+/);
-            const propertyCity = result.city.toLowerCase().split(/\s+/);
-            const propertyProvince = result.province.toLowerCase().split(/\s+/);
-            const propertyGrowthZone = result.growth_zone.toLowerCase().split(/\s+/);
-            const propertyCrop = result.crop.toLowerCase().split(/\s+/);
-            const propertySoilType = result.soil_type.toLowerCase().split(/\s+/);
-            const propertyFirstName = result.first_name.toLowerCase().split(/\s+/);
-            const propertyLastName = result.last_name.toLowerCase().split(/\s+/);
-            const propertyPostalCode = result.postal_code.toLowerCase().split(/\s+/);
-
-            propertyName.forEach((word) => wordsSet.add(word.toLowerCase()));
-            propertyAddress.forEach((word) => wordsSet.add(word.toLowerCase()));
-            propertyCity.forEach((word) => wordsSet.add(word.toLowerCase()));
-            propertyProvince.forEach((word) => wordsSet.add(word.toLowerCase()));
-            propertyGrowthZone.forEach((word) => wordsSet.add(word.toLowerCase()));
-            propertyCrop.forEach((word) => wordsSet.add(word.toLowerCase()));
-            propertySoilType.forEach((word) => wordsSet.add(word.toLowerCase()));
-            propertyFirstName.forEach((word) => wordsSet.add(word.toLowerCase()));
-            propertyLastName.forEach((word) => wordsSet.add(word.toLowerCase()));
-            propertyPostalCode.forEach((word) => wordsSet.add(word.toLowerCase()));
-        });
-        return Array.from(wordsSet);
-    };
-    
-    
-    // Handle input change in the search bar
-    const handleInputChange = (e) => {
-        const query = e.target.value.toLowerCase();
-        setSearchQuery(query);
-        setIsDropDownVisible(query.length > 0);
-        setSuggestions(getUniqueSuggestions(propertyResult));
-    
-        if (query.length > 0) {
-            const filtered = suggestions.filter((field) =>
-                [field]
-                .some(field => field?.toLowerCase().startsWith(query))  // Use startsWith for matching at the start of the string
-            );
-            setFilteredResults(filtered.slice(0, 10)); // Limit results to top 10
-        } else {
-            setFilteredResults([]);
-        }
-    };
-
-
+    // Filter search results based on user's location
     const filterResults = useCallback(() => {
         const getSamePostalResults = (userLocation, propertyResult) => {
             return propertyResult.filter((result) => result.postal_code.trim().slice(0,3) === userLocation.results[0].postcode.trim().slice(0,3));
@@ -204,7 +146,11 @@ export default function Search() {
         }
     }, [userLocation, propertyResult, searchQuery]);
 
-
+    // Handle suggestion select
+    const handleSuggestionSelect = (selectedSuggestion) => {
+        console.log("Selected Suggestion:", selectedSuggestion);
+        setSearchQuery(selectedSuggestion);
+    };
 
 
     return (
@@ -216,39 +162,22 @@ export default function Search() {
                 {/* Search Bar Section */}
                 <div className='mx-2 px-2 fixed top-12 flex w-full justify-between bg-main-background'>
                     <div className="flex-grow w-full">
-                        <SearchBar className="w-full" value={searchQuery} onChange={handleInputChange} />
-                        {isDropDownVisible && suggestions.length > 0 && (
-                        <ul className="dropdown w-full max-h-64 overflow-y-auto">
-                            {suggestions
-                                .filter((suggestion) => suggestion.includes(searchQuery.toLowerCase())) // Filter suggestions based on searchQuery
-                                .map((suggestion, index) => (
-                                    <li 
-                                        key={index} 
-                                        className="mx-2 p-2 border-b border-x bg-white border-gray-200 hover:bg-gray-100 transition-all text-sm" 
-                                        onClick={() => {
-                                            // Set the search query to the selected suggestion
-                                            setSearchQuery(suggestion);
-                                            setIsDropDownVisible(false);
-                                        }}
-                                    >
-                                        <p className="text-black">{suggestion}</p>
-                                    </li>
-                                ))}
-                        </ul>
-                    )}
-
-                        </div>
+                        <SearchWithSuggestions value={searchQuery} propertyResult={propertyResult} onSuggestionSelect={handleSuggestionSelect}/>
+                    </div>
                     <div>
-                        <FilterButton onclick={filterClicked} />
+                        {searchQuery ? <FilterButton onclick={filterClicked} /> :
+                        null
+                        }
                     </div>
                 </div>
                 <div className="w-auto">
                     <SearchFilter isOpen={isPopupOpen} onClose={closePopup} className="flex items-start"/>
                 </div>
                 {/* Search Results Section */}
-                <div className="flex flex-col w-full justify-center items-center mt-20 gap-8">
+                <div className="flex flex-col w-full justify-start items-center mt-20 gap-8">
                     <div className="flex w-full justify-start pt-4 items-start">
-                        <p className="text-start">Recommendations</p>
+                        {/* <p className="text-start">Recommendations</p> */}
+                        {searchQuery ? <p className="text-start"></p> : <p className="text-start">Recommendations</p>}
                     </div>
                     {filteredResults.length > 0 ? (
                         filteredResults.map((result, index) => (
