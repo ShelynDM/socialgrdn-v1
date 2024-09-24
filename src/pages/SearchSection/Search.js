@@ -53,8 +53,10 @@ export default function Search() {
 
     const fetchLocation = useCallback(async (lat, lon) => {
         try {
-            const key = process.env.REACT_APP_GEOAPIFY_API_KEY; // Replace with your actual API key
-            const response = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&type=street&lang=en&limit=5&format=json&apiKey=${key}`);
+            const key = process.env.REACT_APP_GOOGLE_MAPS_API_KEY; // Replace with your actual API key
+            //const response = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&type=street&lang=en&limit=5&format=json&apiKey=${key}`);
+            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat}%20,%20${lon}&language=en&key=${key}`);
+
             setUserLocation(response.data);
 
             console.log("Response data:", response.data);
@@ -101,17 +103,17 @@ export default function Search() {
     // Filter search results based on user's location
     const filterResults = useCallback(() => {
         const getSamePostalResults = (userLocation, propertyResult) => {
-            return propertyResult.filter((result) => result.postal_code.trim().slice(0,3) === userLocation.results[0].postcode.trim().slice(0,3));
+            return propertyResult.filter((result) => result.postal_code.trim().slice(0,3) === userLocation.results[0].address_components[6].short_name);
         };
         console.log("ulr:", userLocation.results[0].postcode);
         
         
         const getSameCityResults = (userLocation, propertyResult) => {
-            return propertyResult.filter((result) => result.city === userLocation.results[0].city);
+            return propertyResult.filter((result) => result.city === userLocation.results[0].address_components[3].long_name);
         };
         
         const getSameRegionResults = (userLocation, propertyResult) => {
-            return propertyResult.filter((result) => result.province === userLocation.results[0].state_code);
+            return propertyResult.filter((result) => result.province === userLocation.results[0].address_components[4].long_name);
         };
 
         if (userLocation && propertyResult.length > 0) {

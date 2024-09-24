@@ -86,7 +86,8 @@ export default function SearchWithSuggestions({ propertyResult, onSuggestionSele
                 <FaSearch className="search-icon mx-1"/>
                 <input placeholder="Search" className="w-full" value={searchQuery} onChange={handleInputChange}/>
             </div>
-            {isDropDownVisible && filteredResults.length > 0 && (
+            
+            {isDropDownVisible && filteredResults.length > 0 && (  
                 <ul className="dropdown w-full max-h-64 overflow-y-auto">
                     {filteredResults.map((suggestion, index) => (
                         <li
