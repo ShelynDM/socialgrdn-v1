@@ -4,6 +4,7 @@ import NavBar from "../../components/Navbar/navbar";
 import Sprout from "../../assets/navbarAssets/sprout.png";
 import LongButton from "../../components/Buttons/longButton";
 import BackButton from "../../components/Buttons/backButton";
+import list from "../ReservationSection/ReservationList.json";
 
 export default function EditProperty() {
     const [isLocationEnabled, setIsLocationEnabled] = useState(false);
