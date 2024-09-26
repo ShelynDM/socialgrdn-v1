@@ -78,6 +78,7 @@ export default function SearchWithSuggestions({ propertyResult, onSuggestionSele
         onSuggestionSelect(suggestion);  // Pass the selected suggestion to the parent component
         handleRedirect(suggestion);
         setIsDropDownVisible(false);
+        //setSearchQuery(suggestion);
     };
 
     return (

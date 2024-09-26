@@ -6,6 +6,10 @@ import SearchResult from "../../components/SearchComponents/searchResult";
 import SearchFilter from "../../components/SearchComponents/popupSearchFilter";
 import FilterButton from "../../components/SearchComponents/filterButton";
 import axios from "axios";
+import {ref, onValue} from "firebase/database";
+import {realtimeDb} from "../../_utils/firebase";
+
+
 
 // Import the following components to reuse search components
 import SearchWithSuggestions from "../../components/SearchComponents/searchWithSuggestions";
@@ -14,11 +18,14 @@ import { useSearchParams } from "react-router-dom";
 
 export default function Search() {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [userLocation, setUserLocation] = useState(null);
+    const [userLocation, setUserLocation] = useState();
     const [userPointLocation, setUserPointLocation] = useState(null);
     const [filteredResults, setFilteredResults] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [locationFetched, setLocationFetched] = useState(false);
+    const [cropData, setCropData] = useState({});
+    const [popupSearchFilter, setPopupSearchFilter] = useState({});
+
 
     const propertyResult = usePropertyResult();
     const [searchParams] = useSearchParams();
@@ -51,15 +58,16 @@ export default function Search() {
         //eslint-disable-next-line
     }, []);
 
+    // Fetch location based on latitude and longitude
     const fetchLocation = useCallback(async (lat, lon) => {
+        
         try {
             const key = process.env.REACT_APP_GOOGLE_MAPS_API_KEY; // Replace with your actual API key
-            //const response = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&type=street&lang=en&limit=5&format=json&apiKey=${key}`);
-            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat}%20,%20${lon}&language=en&key=${key}`);
+            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&language=en&key=${key}`);
 
-            setUserLocation(response.data);
+            setUserLocation(response.data.results[0]);
 
-            console.log("Response data:", response.data);
+            console.log("Response data:", response.data.results[0]);
         } catch (error) {
             console.error("Error fetching location:", error);
         }
@@ -100,20 +108,87 @@ export default function Search() {
         setIsPopupOpen(false);
     };
 
+    // Get crop types from the database
+    const handleCropTypes = (e) => {
+        const dataRef = ref(realtimeDb, 'crops');
+        const unsubscribe = onValue(dataRef, (snapshot) => {
+            try {
+                const fetchedData = snapshot.val();
+                setCropData(fetchedData);
+                console.log("Crop Data:", cropData);
+            } catch (err) {
+                console.error('Error processing data:', err);
+            }
+        }, (error) => {
+            console.error('Error fetching data:', error);
+        });
+        return () => unsubscribe();
+    }
+
+    useEffect(() => {
+        handleCropTypes();
+        // console.log("Crop Data:", cropData.fruits);
+        // console.log("Crop Data:", cropData.vegetables);
+        // console.log("Crop Data:", cropData.cereal);
+        // console.log("Crop Data:", cropData.spices);
+    }, []);
+
+    const handlePopupSearchFilter = (filters) => {
+        // handlePopupSearchFilter 
+        // takes in the filter values from the popup and applies them to the filtered results
+        const { priceRange, cropType, gardenSize, soilType } = filters;
+
+
+        // Define the custom matchesCropType function to check if the crop belongs to the selected category
+        const matchesCropType = (result) => {
+            if (!cropType || cropType === "All") return true; // If no crop type is selected or "All" is selected, return all results.
+
+            // Check if the result.crop exists in the selected crop category
+            switch (cropType) {
+                case "Fruit":
+                    return cropData.fruits && cropData.fruits.includes(result.crop.toLowerCase());
+                case "Vegetable":
+                    return cropData.vegetables && cropData.vegetables.includes(result.crop.toLowerCase());
+                case "Cereal":
+                    return cropData.cereals && cropData.cereals.includes(result.crop.toLowerCase());
+                case "Spices":
+                    return cropData.spices && cropData.spices.includes(result.crop.toLowerCase());
+                default:
+                    return true;
+            }
+        };
+
+        const filtered =  propertyResult.filter((result) => {
+            //Price Range Filter
+            const isWithinPriceRange = result.rent_base_price >= priceRange.min && result.rent_base_price <= priceRange.max;
+
+            //Garden Size Filter
+            const isWithinGardenSize = result.area >= gardenSize.min && result.area <= gardenSize.max;
+
+            //Soil Type Filter
+            const matchesSoilType = soilType ? result.soil_type === soilType : true;
+        
+            return isWithinPriceRange && matchesCropType(result) && isWithinGardenSize && matchesSoilType;
+        });
+
+        setFilteredResults(filtered);
+
+    }
+
     // Filter search results based on user's location
     const filterResults = useCallback(() => {
         const getSamePostalResults = (userLocation, propertyResult) => {
-            return propertyResult.filter((result) => result.postal_code.trim().slice(0,3) === userLocation.results[0].address_components[6].short_name);
+            return propertyResult.filter((result) => result.postal_code.trim().slice(0,3) === userLocation.address_components[6].short_name.trim().slice(0,3));
         };
-        console.log("ulr:", userLocation.results[0].postcode);
+        console.log("ulr:", userLocation.address_components[6].short_name);
         
         
         const getSameCityResults = (userLocation, propertyResult) => {
-            return propertyResult.filter((result) => result.city === userLocation.results[0].address_components[3].long_name);
+            return propertyResult.filter((result) => result.city === userLocation.address_components[3].long_name);
         };
         
         const getSameRegionResults = (userLocation, propertyResult) => {
-            return propertyResult.filter((result) => result.province === userLocation.results[0].address_components[4].long_name);
+            return propertyResult.filter((result) => result.province === userLocation.address_components[4].long_name);
         };
 
         if (userLocation && propertyResult.length > 0) {
@@ -164,7 +239,7 @@ export default function Search() {
                 {/* Search Bar Section */}
                 <div className='mx-2 px-2 fixed top-12 flex w-full justify-between bg-main-background'>
                     <div className="flex-grow w-full">
-                        <SearchWithSuggestions value={searchQuery} propertyResult={propertyResult} onSuggestionSelect={handleSuggestionSelect}/>
+                        <SearchWithSuggestions value={searchQuery} propertyResult={propertyResult} onSuggestionSelect={(selectedSuggestion) => handleSuggestionSelect(selectedSuggestion)}/>
                     </div>
                     <div>
                         {searchQuery ? <FilterButton onclick={filterClicked} /> :
