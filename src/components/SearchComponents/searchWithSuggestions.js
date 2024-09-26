@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 
 
-export default function SearchWithSuggestions({ propertyResult, onSuggestionSelect, searchQuery}) {
+export default function SearchWithSuggestions({ propertyResult, onSuggestionSelect, searchQuery, onSearchQueryChange }) {
     const [isDropDownVisible, setIsDropDownVisible] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
     const [filteredResults, setFilteredResults] = useState([]);
@@ -59,8 +59,8 @@ export default function SearchWithSuggestions({ propertyResult, onSuggestionSele
     // Handle input change in the search bar
     const handleInputChange = (e) => {
         const query = e.target.value.toLowerCase();
-        //setSearchQuery(query);
-
+        onSearchQueryChange(query);
+        
         setIsDropDownVisible(query.length > 0);
 
         if (query.length > 0) {
@@ -73,12 +73,21 @@ export default function SearchWithSuggestions({ propertyResult, onSuggestionSele
         }
     };
 
+    // handle Enter key press
+    const handleKeyPress = (e) => {
+        if (e.key === "Enter") {
+            setIsDropDownVisible(false);
+            handleRedirect(searchQuery);
+        }
+    };
+
     // Handle selecting a suggestion
     const handleSuggestionSelect = (suggestion) => {
         onSuggestionSelect(suggestion);  // Pass the selected suggestion to the parent component
+        handleKeyPress(suggestion);  // Handle Enter key press
         handleRedirect(suggestion);
+        //onSearchQueryChange(suggestion);
         setIsDropDownVisible(false);
-        //setSearchQuery(suggestion);
     };
 
     return (

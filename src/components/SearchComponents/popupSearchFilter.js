@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactSlider from "react-slider";
 
 export default function PopupSearchFilter({ isOpen, onClose, onApplyFilters }) {
@@ -21,6 +21,16 @@ export default function PopupSearchFilter({ isOpen, onClose, onApplyFilters }) {
         onApplyFilters(filters);
         onClose();
     };
+
+    useEffect(() => {
+        if (!isOpen) {
+            setPriceRange([0, 10000]);
+            setCropType("");
+            setGardenSize([0, 1000]);
+            setSoilType("");
+        }
+    }, [isOpen]);
+
 
     return (
         <div
@@ -64,6 +74,16 @@ export default function PopupSearchFilter({ isOpen, onClose, onApplyFilters }) {
                     {/* Crop Type Filter */}
                     <div className="mt-2">
                         <h2>Type of Crops</h2>
+                        <div className="m-1">
+                            <input 
+                                type="radio" 
+                                name="Crops" 
+                                value="All" 
+                                checked={cropType === "All"}
+                                onChange={() => setCropType("All")} 
+                            />
+                            <label> All</label>
+                        </div>
                         <div className="m-1">
                             <input 
                                 type="radio" 
@@ -134,11 +154,11 @@ export default function PopupSearchFilter({ isOpen, onClose, onApplyFilters }) {
                                 <input 
                                     type="radio" 
                                     name="Soil" 
-                                    value="Loam" 
-                                    checked={soilType === "Loam"} 
-                                    onChange={() => setSoilType("Loam")} 
+                                    value="Loamy" 
+                                    checked={soilType === "Loamy"} 
+                                    onChange={() => setSoilType("Loamy")} 
                                 />
-                                <label> Loam</label>
+                                <label> Loamy</label>
                             </div>
                             <div className="m-1">
                                 <input 

@@ -24,7 +24,6 @@ export default function Search() {
     const [searchQuery, setSearchQuery] = useState("");
     const [locationFetched, setLocationFetched] = useState(false);
     const [cropData, setCropData] = useState({});
-    const [popupSearchFilter, setPopupSearchFilter] = useState({});
 
 
     const propertyResult = usePropertyResult();
@@ -37,6 +36,19 @@ export default function Search() {
           setSearchQuery(query); // Update the state with the query from the URL
         }
       }, [searchParams]);
+
+    
+    // Function to reset filters
+    const resetFilters = () => {
+        setSearchQuery(""); // Clear search query
+        //filterResults(); // Reset filtered results to default
+    };
+
+    // Add reset on Navbar search icon click
+    const handleNavbarSearchClick = () => {
+        resetFilters(); // Reset search query and filtered results
+    };
+
 
     // Get user's location based on the user's IP address
     const getUserPointLocation = useCallback(async () => {
@@ -106,6 +118,7 @@ export default function Search() {
     // Close the popup
     const closePopup = () => {
         setIsPopupOpen(false);
+        //handlePopupSearchFilter(null);
     };
 
     // Get crop types from the database
@@ -134,30 +147,43 @@ export default function Search() {
     }, []);
 
     const handlePopupSearchFilter = (filters) => {
-        // handlePopupSearchFilter 
-        // takes in the filter values from the popup and applies them to the filtered results
         const { priceRange, cropType, gardenSize, soilType } = filters;
+        console.log("Filters:");
+        console.log(filters.priceRange);
+        console.log(filters.cropType);
+        console.log(filters.gardenSize);
+        console.log(filters.soilType);
 
 
         // Define the custom matchesCropType function to check if the crop belongs to the selected category
         const matchesCropType = (result) => {
-            if (!cropType || cropType === "All") return true; // If no crop type is selected or "All" is selected, return all results.
-
-            // Check if the result.crop exists in the selected crop category
+            // If no crop type is selected or "All" is selected, return all results.
+            if (!cropType || cropType === "All") return true;
+        
+            // Utility function to normalize crop names (remove plural "s" if present)
+            const normalizeCropName = (crop) => {
+                if (!crop) return "";
+                return crop.toLowerCase().endsWith('s') ? crop.toLowerCase().slice(0, -1) : crop.toLowerCase();
+            };
+        
+            // Normalizing the result.crop and comparing to normalized category crop names
+            const normalizedCrop = normalizeCropName(result.crop);
+        
+            // Ensure the cropType matches a category and check if the normalized result.crop exists in the selected category
             switch (cropType) {
                 case "Fruit":
-                    return cropData.fruits && cropData.fruits.includes(result.crop.toLowerCase());
+                    return cropData.fruits && cropData.fruits.map(c => normalizeCropName(c)).includes(normalizedCrop);
                 case "Vegetable":
-                    return cropData.vegetables && cropData.vegetables.includes(result.crop.toLowerCase());
+                    return cropData.vegetables && cropData.vegetables.map(c => normalizeCropName(c)).includes(normalizedCrop);
                 case "Cereal":
-                    return cropData.cereals && cropData.cereals.includes(result.crop.toLowerCase());
+                    return cropData.cereals && cropData.cereals.map(c => normalizeCropName(c)).includes(normalizedCrop);
                 case "Spices":
-                    return cropData.spices && cropData.spices.includes(result.crop.toLowerCase());
+                    return cropData.spices && cropData.spices.map(c => normalizeCropName(c)).includes(normalizedCrop);
                 default:
                     return true;
             }
         };
-
+                
         const filtered =  propertyResult.filter((result) => {
             //Price Range Filter
             const isWithinPriceRange = result.rent_base_price >= priceRange.min && result.rent_base_price <= priceRange.max;
@@ -172,6 +198,7 @@ export default function Search() {
         });
 
         setFilteredResults(filtered);
+        console.log("Modal Results:", filtered);
 
     }
 
@@ -229,6 +256,16 @@ export default function Search() {
         setSearchQuery(selectedSuggestion);
     };
 
+    // handle SeacrhQueryChange
+    const handleSearchQueryChange = (query) => {
+        setSearchQuery(query);
+    };
+
+    // Reset results on page refresh/load
+    useEffect(() => {
+        resetFilters();
+    }, []);
+
 
     return (
         <div className='bg-main-background'>
@@ -239,7 +276,13 @@ export default function Search() {
                 {/* Search Bar Section */}
                 <div className='mx-2 px-2 fixed top-12 flex w-full justify-between bg-main-background'>
                     <div className="flex-grow w-full">
-                        <SearchWithSuggestions value={searchQuery} propertyResult={propertyResult} onSuggestionSelect={(selectedSuggestion) => handleSuggestionSelect(selectedSuggestion)}/>
+                        <SearchWithSuggestions 
+                            value={searchQuery}
+                            searchQuery={searchQuery} 
+                            propertyResult={propertyResult} 
+                            onSuggestionSelect={(selectedSuggestion) => handleSuggestionSelect(selectedSuggestion)}
+                            onSearchQueryChange={handleSearchQueryChange}
+                            />
                     </div>
                     <div>
                         {searchQuery ? <FilterButton onclick={filterClicked} /> :
@@ -248,7 +291,7 @@ export default function Search() {
                     </div>
                 </div>
                 <div className="w-auto">
-                    <SearchFilter isOpen={isPopupOpen} onClose={closePopup} className="flex items-start"/>
+                    <SearchFilter isOpen={isPopupOpen} onClose={closePopup} onApplyFilters={handlePopupSearchFilter} className="flex items-start"/>
                 </div>
                 {/* Search Results Section */}
                 <div className="flex flex-col w-full justify-start items-center mt-20 gap-8">
@@ -276,11 +319,11 @@ export default function Search() {
                             />
                         ))
                     ) : (
-                        <p>No locations found.</p>
+                        <p>No property found.</p>
                     )}
                 </div>
                 {/* Navigation Bar */}
-                <NavBar SearchColor={"#00B761"} SproutPath={Sprout} />
+                <NavBar SearchColor={"#00B761"} SproutPath={Sprout} onSearchClick={handleNavbarSearchClick}/>
             </div>
         </div>
     );
