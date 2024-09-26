@@ -21,7 +21,9 @@ router.get('/', (req, res) => {
         pl.dimensions_length, 
         pl.dimensions_width, 
         pl.dimensions_height,
-        MIN(pl.soil_type) AS soil_type 
+        pl.dimensions_length * pl.dimensions_width AS area,
+        MIN(pl.soil_type) AS soil_type,
+        pl.rent_base_price
     FROM 
         UserProfile up
     JOIN 
