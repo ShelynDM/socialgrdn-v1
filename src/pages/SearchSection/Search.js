@@ -6,6 +6,10 @@ import SearchResult from "../../components/SearchComponents/searchResult";
 import SearchFilter from "../../components/SearchComponents/popupSearchFilter";
 import FilterButton from "../../components/SearchComponents/filterButton";
 import axios from "axios";
+import {ref, onValue} from "firebase/database";
+import {realtimeDb} from "../../_utils/firebase";
+
+
 
 // Import the following components to reuse search components
 import SearchWithSuggestions from "../../components/SearchComponents/searchWithSuggestions";
@@ -14,11 +18,13 @@ import { useSearchParams } from "react-router-dom";
 
 export default function Search() {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [userLocation, setUserLocation] = useState(null);
+    const [userLocation, setUserLocation] = useState();
     const [userPointLocation, setUserPointLocation] = useState(null);
     const [filteredResults, setFilteredResults] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [locationFetched, setLocationFetched] = useState(false);
+    const [cropData, setCropData] = useState({});
+
 
     const propertyResult = usePropertyResult();
     const [searchParams] = useSearchParams();
@@ -30,6 +36,19 @@ export default function Search() {
           setSearchQuery(query); // Update the state with the query from the URL
         }
       }, [searchParams]);
+
+    
+    // Function to reset filters
+    const resetFilters = () => {
+        setSearchQuery(""); // Clear search query
+        //filterResults(); // Reset filtered results to default
+    };
+
+    // Add reset on Navbar search icon click
+    const handleNavbarSearchClick = () => {
+        resetFilters(); // Reset search query and filtered results
+    };
+
 
     // Get user's location based on the user's IP address
     const getUserPointLocation = useCallback(async () => {
@@ -51,15 +70,16 @@ export default function Search() {
         //eslint-disable-next-line
     }, []);
 
+    // Fetch location based on latitude and longitude
     const fetchLocation = useCallback(async (lat, lon) => {
+        
         try {
             const key = process.env.REACT_APP_GOOGLE_MAPS_API_KEY; // Replace with your actual API key
-            //const response = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&type=street&lang=en&limit=5&format=json&apiKey=${key}`);
-            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat}%20,%20${lon}&language=en&key=${key}`);
+            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&language=en&key=${key}`);
 
-            setUserLocation(response.data);
+            setUserLocation(response.data.results[0]);
 
-            console.log("Response data:", response.data);
+            console.log("Response data:", response.data.results[0]);
         } catch (error) {
             console.error("Error fetching location:", error);
         }
@@ -98,22 +118,104 @@ export default function Search() {
     // Close the popup
     const closePopup = () => {
         setIsPopupOpen(false);
+        //handlePopupSearchFilter(null);
     };
+
+    // Get crop types from the database
+    const handleCropTypes = (e) => {
+        const dataRef = ref(realtimeDb, 'crops');
+        const unsubscribe = onValue(dataRef, (snapshot) => {
+            try {
+                const fetchedData = snapshot.val();
+                setCropData(fetchedData);
+                console.log("Crop Data:", cropData);
+            } catch (err) {
+                console.error('Error processing data:', err);
+            }
+        }, (error) => {
+            console.error('Error fetching data:', error);
+        });
+        return () => unsubscribe();
+    }
+
+    useEffect(() => {
+        handleCropTypes();
+        // console.log("Crop Data:", cropData.fruits);
+        // console.log("Crop Data:", cropData.vegetables);
+        // console.log("Crop Data:", cropData.cereal);
+        // console.log("Crop Data:", cropData.spices);
+    }, []);
+
+    const handlePopupSearchFilter = (filters) => {
+        const { priceRange, cropType, gardenSize, soilType } = filters;
+        console.log("Filters:");
+        console.log(filters.priceRange);
+        console.log(filters.cropType);
+        console.log(filters.gardenSize);
+        console.log(filters.soilType);
+
+
+        // Define the custom matchesCropType function to check if the crop belongs to the selected category
+        const matchesCropType = (result) => {
+            // If no crop type is selected or "All" is selected, return all results.
+            if (!cropType || cropType === "All") return true;
+        
+            // Utility function to normalize crop names (remove plural "s" if present)
+            const normalizeCropName = (crop) => {
+                if (!crop) return "";
+                return crop.toLowerCase().endsWith('s') ? crop.toLowerCase().slice(0, -1) : crop.toLowerCase();
+            };
+        
+            // Normalizing the result.crop and comparing to normalized category crop names
+            const normalizedCrop = normalizeCropName(result.crop);
+        
+            // Ensure the cropType matches a category and check if the normalized result.crop exists in the selected category
+            switch (cropType) {
+                case "Fruit":
+                    return cropData.fruits && cropData.fruits.map(c => normalizeCropName(c)).includes(normalizedCrop);
+                case "Vegetable":
+                    return cropData.vegetables && cropData.vegetables.map(c => normalizeCropName(c)).includes(normalizedCrop);
+                case "Cereal":
+                    return cropData.cereals && cropData.cereals.map(c => normalizeCropName(c)).includes(normalizedCrop);
+                case "Spices":
+                    return cropData.spices && cropData.spices.map(c => normalizeCropName(c)).includes(normalizedCrop);
+                default:
+                    return true;
+            }
+        };
+                
+        const filtered =  propertyResult.filter((result) => {
+            //Price Range Filter
+            const isWithinPriceRange = result.rent_base_price >= priceRange.min && result.rent_base_price <= priceRange.max;
+
+            //Garden Size Filter
+            const isWithinGardenSize = result.area >= gardenSize.min && result.area <= gardenSize.max;
+
+            //Soil Type Filter
+            const matchesSoilType = soilType ? result.soil_type === soilType : true;
+        
+            return isWithinPriceRange && matchesCropType(result) && isWithinGardenSize && matchesSoilType;
+        });
+
+        setFilteredResults(filtered);
+        console.log("Modal Results:", filtered);
+
+    }
 
     // Filter search results based on user's location
     const filterResults = useCallback(() => {
         const getSamePostalResults = (userLocation, propertyResult) => {
-            return propertyResult.filter((result) => result.postal_code.trim().slice(0,3) === userLocation.results[0].address_components[6].short_name);
+            return propertyResult.filter((result) => result.postal_code.trim().slice(0,3) === userLocation.address_components[6].short_name.trim().slice(0,3));
         };
-        console.log("ulr:", userLocation.results[0].postcode);
+        console.log("ulr:", userLocation.address_components[6].short_name);
         
         
         const getSameCityResults = (userLocation, propertyResult) => {
-            return propertyResult.filter((result) => result.city === userLocation.results[0].address_components[3].long_name);
+            return propertyResult.filter((result) => result.city === userLocation.address_components[3].long_name);
         };
         
         const getSameRegionResults = (userLocation, propertyResult) => {
-            return propertyResult.filter((result) => result.province === userLocation.results[0].address_components[4].long_name);
+            return propertyResult.filter((result) => result.province === userLocation.address_components[4].long_name);
         };
 
         if (userLocation && propertyResult.length > 0) {
@@ -154,6 +256,16 @@ export default function Search() {
         setSearchQuery(selectedSuggestion);
     };
 
+    // handle SeacrhQueryChange
+    const handleSearchQueryChange = (query) => {
+        setSearchQuery(query);
+    };
+
+    // Reset results on page refresh/load
+    useEffect(() => {
+        resetFilters();
+    }, []);
+
 
     return (
         <div className='bg-main-background'>
@@ -164,7 +276,13 @@ export default function Search() {
                 {/* Search Bar Section */}
                 <div className='mx-2 px-2 fixed top-12 flex w-full justify-between bg-main-background'>
                     <div className="flex-grow w-full">
-                        <SearchWithSuggestions value={searchQuery} propertyResult={propertyResult} onSuggestionSelect={handleSuggestionSelect}/>
+                        <SearchWithSuggestions 
+                            value={searchQuery}
+                            searchQuery={searchQuery} 
+                            propertyResult={propertyResult} 
+                            onSuggestionSelect={(selectedSuggestion) => handleSuggestionSelect(selectedSuggestion)}
+                            onSearchQueryChange={handleSearchQueryChange}
+                            />
                     </div>
                     <div>
                         {searchQuery ? <FilterButton onclick={filterClicked} /> :
@@ -173,7 +291,7 @@ export default function Search() {
                     </div>
                 </div>
                 <div className="w-auto">
-                    <SearchFilter isOpen={isPopupOpen} onClose={closePopup} className="flex items-start"/>
+                    <SearchFilter isOpen={isPopupOpen} onClose={closePopup} onApplyFilters={handlePopupSearchFilter} className="flex items-start"/>
                 </div>
                 {/* Search Results Section */}
                 <div className="flex flex-col w-full justify-start items-center mt-20 gap-8">
@@ -201,11 +319,11 @@ export default function Search() {
                             />
                         ))
                     ) : (
-                        <p>No locations found.</p>
+                        <p>No property found.</p>
                     )}
                 </div>
                 {/* Navigation Bar */}
-                <NavBar SearchColor={"#00B761"} SproutPath={Sprout} />
+                <NavBar SearchColor={"#00B761"} SproutPath={Sprout} onSearchClick={handleNavbarSearchClick}/>
             </div>
         </div>
     );
