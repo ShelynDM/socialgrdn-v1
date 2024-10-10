@@ -93,16 +93,32 @@ export default function Search() {
         }
     }, [getUserPointLocation, locationFetched]);
 
-    // Filter results based on user's location
+    // Filter results based on user's location or display random properties if location is not available
     useEffect(() => {
-        if (userLocation && propertyResult.length > 0) {
-            filterResults();
-
-            console.log("Point Location:", userPointLocation);
-            console.log("User Location Results:", userLocation);
-            console.log("Filtered Results:", filteredResults);
+        if (propertyResult.length > 0) {
+            if (userLocation) {
+                try {
+                    filterResults();
+                    console.log("Point Location:", userPointLocation);
+                    console.log("User Location Results:", userLocation);
+                    console.log("Filtered Results:", filteredResults);
+                } catch (error) {
+                    console.error("Error filtering results based on location:", error);
+                }
+            } else {
+                // Display 10 random properties if user location is not available
+                try {
+                    const randomResults = propertyResult
+                        .sort(() => Math.random() - 0.5) // Shuffle the array
+                        .slice(0, 10); // Select the first 10 random items
+                    setFilteredResults(randomResults);
+                    console.log("Displaying random properties as location is not available:", randomResults);
+                } catch (error) {
+                    console.error("Error displaying random properties:", error);
+                }
+            }
         }
-        //eslint-disable-next-line
+        // eslint-disable-next-line
     }, [userLocation, propertyResult, searchQuery]);
 
 
