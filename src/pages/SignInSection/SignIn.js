@@ -4,23 +4,23 @@ import LongButton from '../../components/Buttons/longButton';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../../_utils/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useUser } from '../../UserContext'; // Import the useUser hook to access UserContext
+import { useUser } from '../../UserContext';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { setUserId } = useUser(); // Destructure the setUserId from UserContext
+  const { setUserId } = useUser(); 
 
   // Function to fetch userID from GetProfile API
   const fetchUserId = async (email) => {
     try {
-      const response = await fetch(`/api/profile?email=${email}`); // Call your GetProfile API
+      const response = await fetch(`/api/profile?email=${email}`);
       if (response.ok) {
         const data = await response.json();
-        const userId = data.userID; // Extract userID from the API response
-        setUserId(userId); // Set the userID in the global context
+        const userId = data.userID;
+        setUserId(userId);
         console.log("User ID retrieved and set:", userId); // Console log for verification
       } else {
         console.error('Error fetching user profile:', response.statusText);

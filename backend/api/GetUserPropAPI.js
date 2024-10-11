@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
   }
 
   const query = `
-    SELECT p.property_id, p.property_name, p.photo, 
+    SELECT p.property_id, p.property_name, 
            l.address_line1, l.city, l.province, l.postal_code
     FROM PropertyListing p
     JOIN PropertyLocation l ON p.location_id = l.location_id

@@ -37,7 +37,6 @@ router.get('/', (req, res) => {
       return res.status(500).send(err);
     }
 
-    // Check if results are found
     if (results.length === 0) {
       return res.status(404).send('Property not found');
     } else {
