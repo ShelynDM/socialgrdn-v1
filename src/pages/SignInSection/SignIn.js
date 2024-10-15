@@ -42,7 +42,7 @@ export default function SignIn() {
           // After successful login, fetch and store the userID
           await fetchUserId(email);
 
-          navigate('/Search'); // Navigate to the search page after login
+          navigate('/Profile'); // Navigate to the search page after login
         } else {
           navigate('/VerifyEmail');
         }

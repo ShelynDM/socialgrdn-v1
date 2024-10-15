@@ -16,9 +16,8 @@ const getProfileRoutes = require('./api/GetUserProfileAPI');
 const getUserPropertiesRoutes = require('./api/GetUserPropAPI');
 const getSearchResultsRoutes = require('./api/GetSearchResultsAPI');
 const getPropDetailsRoutes = require('./api/GetPropDetailsAPI');
-const getPropertyDetailsRoutes = require('./api/GetPropertyDetailsAPI');
 const getRentalDetailsRoutes = require('./api/GetRentalDetailsAPI');
-const savePropertyImageRoutes = require('./api/SavePropertyImageAPI'); // Import your new SavePropertyImageAPI
+const addPropertyListingRoutes = require('./api/addPropertyListingAPI');// Import your new addPropertyListingAPI
 
 const app = express();
 const port = 3000;
@@ -39,9 +38,8 @@ app.use('/api/getProfile', getProfileRoutes);
 app.use('/api/getUserProperties', getUserPropertiesRoutes);
 app.use('/api/getSearchResults', getSearchResultsRoutes);
 app.use('/api/getPropertyDetails', getPropDetailsRoutes);
-app.use('/api/getPropertyDetails2', getPropertyDetailsRoutes);
 app.use('/api/GetRentalDetails', getRentalDetailsRoutes);
-app.use('/api/savePropertyImage', savePropertyImageRoutes); // Add the new route for SavePropertyImageAPI
+app.use('/api/addPropertyListing', addPropertyListingRoutes);// Add the new route for addPropertyListingAPI
 
 // The "catchall" handler
 app.get('*', (req, res) => {
