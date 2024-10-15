@@ -11,6 +11,7 @@ import DeletionModal from "../../components/ListingComponents/deletionModal";
 
 
 export default function DeletionConfirmation() {
+    
     const [isModalVisible, setIsModalVisible] = React.useState(false);
 
     const openModal = () => {

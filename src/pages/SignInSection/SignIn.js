@@ -13,22 +13,36 @@ export default function SignIn() {
   const navigate = useNavigate();
   const { setUserId } = useUser(); // Destructure the setUserId from UserContext
 
-  // Function to fetch userID from GetProfile API
-  const fetchUserId = async (email) => {
+ const fetchUserId = async (email) => {
     try {
-      const response = await fetch(`/api/profile?email=${email}`); // Call your GetProfile API
-      if (response.ok) {
-        const data = await response.json();
-        const userId = data.userID; // Extract userID from the API response
-        setUserId(userId); // Set the userID in the global context
-        console.log("User ID retrieved and set:", userId); // Console log for verification
-      } else {
-        console.error('Error fetching user profile:', response.statusText);
-      }
+        const response = await fetch(`/api/profile?email=${email}`);
+        if (response.ok) {
+            const data = await response.json();
+            const userId = data.userID; 
+            const userRole = data.role; // Keep as string since it's char(1)
+
+            setUserId(userId); 
+            
+            console.log("User ID retrieved and set:", userId); 
+            console.log("User Role retrieved and set:", userRole); 
+            console.log("API Response:", data); // Log the entire response
+
+            // Redirect based on the user's role
+            if (userRole === '0') { // Compare with string '0'
+                console.log("Administrator detected. Redirecting to Moderator profile...");
+                navigate('/ModeratorViewProfile'); 
+            } else {
+                console.log("Regular user detected. Redirecting to Search page...");
+                navigate('/Search'); 
+            }
+        } else {
+            console.error('Error fetching user profile:', response.statusText);
+        }
     } catch (err) {
-      console.error('Failed to fetch user profile:', err);
+        console.error('Failed to fetch user profile:', err);
     }
-  };
+};
+
 
   const handleSignIn = async (event) => {
     event.preventDefault();
@@ -39,10 +53,8 @@ export default function SignIn() {
         const user = userCredential.user;
 
         if (user.emailVerified) {
-          // After successful login, fetch and store the userID
-          await fetchUserId(email);
-
-          navigate('/Search'); // Navigate to the search page after login
+          // After successful login, fetch and store the userID and role
+          await fetchUserId(email); // Fetch the user profile and redirect based on the role
         } else {
           navigate('/VerifyEmail');
         }
@@ -88,7 +100,7 @@ export default function SignIn() {
               buttonName='Sign In' 
               type='submit'
               className='p-2 w-full rounded shadow-lg bg-green-600 font-bold text-white'
-              />
+            />
             {error && <p className="text-red-500">{error}</p>}
           </form>
           <div className='flex justify-end '>
@@ -101,7 +113,8 @@ export default function SignIn() {
         <div className='px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3'>
           <LongButton buttonName='Sign up' 
             className='p-2 w-full rounded shadow-lg bg-green-200 font-bold'
-            pagePath="/SignUp"/>
+            pagePath="/SignUp"
+          />
         </div>
       </div>
     </div>
