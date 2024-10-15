@@ -15,7 +15,7 @@ export const UserProvider = ({ children }) => {
 
   const updateUserId = (id) => {
     setUserId(id);
-    localStorage.setItem('userId', id); // Persist the ID in localStorage
+    localStorage.setItem('userId', id);
   };
 
   return (

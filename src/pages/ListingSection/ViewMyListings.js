@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import Sprout from "../../assets/navbarAssets/sprout.png";
@@ -100,7 +99,7 @@ export default function ViewMyListings() {
                             listings.map((listing) => (
                                 <div key={listing.property_id} className="flex items-center bg-white rounded-lg shadow-md p-4 relative">
                                     <img
-                                        src={listing.photo || 'https://via.placeholder.com/150'}
+                                        src={listing.image_url || 'https://via.placeholder.com/150'}
                                         alt={listing.property_name}
                                         className="w-72 h-32 object-cover rounded-lg mr-4"
                                     />

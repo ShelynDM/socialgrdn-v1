@@ -16,7 +16,6 @@ router.get('/', (req, res) => {
         up.first_name, 
         up.last_name, 
         pl.growth_zone,
-        pl.photo, 
         MIN(pc.crop_name) AS crop,  -- Select the first crop for each property
         pl.dimensions_length, 
         pl.dimensions_width, 
@@ -44,7 +43,6 @@ router.get('/', (req, res) => {
         up.first_name, 
         up.last_name, 
         pl.growth_zone,
-        pl.photo, 
         pl.dimensions_length, 
         pl.dimensions_width, 
         pl.dimensions_height`;

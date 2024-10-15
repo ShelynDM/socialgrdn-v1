@@ -1,14 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import InAppLogo from "../../components/Logo/inAppLogo";
+import BackButton from "../../components/Buttons/backButton";
 import NavBar from "../../components/Navbar/navbar";
 import Sprout from "../../assets/navbarAssets/sprout.png";
-import LongButton from "../../components/Buttons/longButton";
-import BackButton from "../../components/Buttons/backButton";
+import { storage } from '../../_utils/firebase';
+import LongButton from '../../components/Buttons/longButton';
+import { useUser } from '../../UserContext';
 
-export default function AddProperty() {
+const AddProperty = () => {
+    const { userId } = useUser(); // Get userId from UserContext
+    const [primaryImage, setPrimaryImage] = useState(null);
+    const [otherImages, setOtherImages] = useState([]);
     const [isLocationEnabled, setIsLocationEnabled] = useState(false);
     const [selectedZone, setSelectedZone] = useState({ value: "", color: "" });
-    const [image, setImage] = useState(null);
+    const [propertyId, setPropertyId] = useState('');
+    const [latitude, setLatitude] = useState('');
+    const [longitude, setLongitude] = useState('');
+    const [propertyName, setPropertyName] = useState('');
+    const [addressLine1, setAddressLine1] = useState('');
+    const [city, setCity] = useState('');
+    const [province, setProvince] = useState('');
+    const [postalCode, setPostalCode] = useState('');
+    const [country, setCountry] = useState('');
+    const [description, setDescription] = useState('');
+    const [length, setLength] = useState('');
+    const [width, setWidth] = useState('');
+    const [height, setHeight] = useState('');
+    const [soilType, setSoilType] = useState('');
+    const [amenities, setAmenities] = useState('');
+    const [possibleCrops, setPossibleCrops] = useState('');
+    const [restrictions, setRestrictions] = useState('');
+    const [price, setPrice] = useState('');
+
+    useEffect(() => {
+        const generatePropertyId = () => {
+            const randomNum = Math.floor(Math.random() * 100000);
+            return `${randomNum}`;
+        };
+        
+        setPropertyId(generatePropertyId());
+
+        console.log('Current User ID:', userId);
+    }, [userId]);
+
+    const handlePrimaryImageChange = (e) => {
+        if (e.target.files[0]) {
+            setPrimaryImage(e.target.files[0]);
+        }
+    };
+
+    const handleOtherImagesChange = (e) => {
+        const selectedFiles = Array.from(e.target.files);
+        setOtherImages(selectedFiles);
+    };
 
     const handleToggle = () => {
         setIsLocationEnabled(!isLocationEnabled);
@@ -20,10 +65,119 @@ export default function AddProperty() {
         setSelectedZone({ value: selectedValue, color: selectedColor });
     };
 
-    const handleImageChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            setImage(URL.createObjectURL(file));
+    const uploadImage = async (image, path) => {
+        const storageRef = ref(storage, path);
+        const uploadTask = uploadBytesResumable(storageRef, image);
+
+        return new Promise((resolve, reject) => {
+            uploadTask.on(
+                "state_changed",
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    console.log(`Upload progress: ${progress}%`);
+                },
+                (error) => {
+                    console.error("Image upload error: ", error);
+                    reject(error);
+                },
+                () => {
+                    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                        console.log('Image available at', downloadURL);
+                        resolve(downloadURL);
+                    });
+                }
+            );
+        });
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+    
+        try {
+
+           // Debugging logs
+            console.log('UserId:', userId);
+            console.log('Primary Image:', primaryImage);
+            console.log('Other Images:', otherImages);
+            console.log('Location Enabled:', isLocationEnabled);
+            console.log('Selected Zone:', selectedZone);
+            console.log('Property ID:', propertyId);
+            console.log('Latitude:', latitude, 'Longitude:', longitude);
+            console.log('Property Name:', propertyName);
+            console.log('Address Line 1:', addressLine1);
+            console.log('City:', city, 'Province:', province, 'Postal Code:', postalCode, 'Country:', country);
+            console.log('Description:', description);
+            console.log('Dimensions - Length:', length, 'Width:', width, 'Height:', height);
+            console.log('Soil Type:', soilType);
+            console.log('Amenities:', amenities);
+            console.log('Possible Crops:', possibleCrops);
+            console.log('Restrictions:', restrictions);
+            console.log('Price:', price);
+            if (!primaryImage) {
+                throw new Error('Primary image is required');
+            }
+
+            // Upload primary image
+            const primaryImageUrl = await uploadImage(primaryImage, `property-images/${propertyId}/PrimaryPhoto/primary-${primaryImage.name}`);
+    
+            // Upload other images
+            const otherImageUrls = await Promise.all(
+                otherImages.map((image, index) => 
+                    uploadImage(image, `property-images/${propertyId}/OtherImages/other-${image.name}`)
+                )
+            );
+    
+            
+            // Collect form data
+            const formData = {
+                userId: parseInt(userId), // Ensure userId is a number
+                propertyId: parseInt(propertyId),
+                propertyName,
+                addressLine1,
+                city,
+                province,
+                postalCode,
+                country,
+                latitude: parseFloat(latitude),
+                longitude: parseFloat(longitude),
+                growthzone: selectedZone.value,
+                description,
+                length: parseFloat(length),
+                width: parseFloat(width),
+                height: parseFloat(height),
+                soilType,
+                amenities,
+                possibleCrops: possibleCrops.split(',').map(crop => crop.trim()), // Convert string to array
+                restrictions,
+                price: parseFloat(price),
+                primaryImageUrl,
+                otherImageUrls,
+                isLocationEnabled
+            };
+
+            console.log('Form Data:', formData);
+    
+            // Send all data in a single request
+            const response = await fetch('/api/addPropertyListing', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to save property details');
+            }
+    
+            const result = await response.json();
+            console.log(result);
+    
+            alert('Property added successfully!');
+            // Redirect or perform any other action after successful submission
+        } catch (error) {
+            console.error('Error adding property: ', error);
+            alert('An error occurred while adding the property.');
         }
     };
 
@@ -33,105 +187,164 @@ export default function AddProperty() {
             <BackButton />
             <div className="flex flex-col items-center justify-center gap-2 min-h-screen pb-20">
                 <div className="px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3">
-                    <form className="flex flex-col flex-grow w-full gap-4 mb-8">
-                        <div className="flex items-center justify-center gap-4">
-                            {/* Image Upload Section */}
-                            <div className="flex flex-col items-center gap-4 my-24">
-                                <label
-                                    htmlFor="imageUpload"
-                                    className="cursor-pointer bg-white text-green-500 font-bold py-2 px-4 border-2 border-green-500 rounded-lg  hover:bg-green-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                >
-                                + Upload Picture
-                                </label>
+                    <form className="flex flex-col flex-grow w-full gap-4 mb-8" onSubmit={handleSubmit}>
+                        {/* Primary Image Upload */}
+                        <div className="flex flex-col gap-4">
+                            <label className="text-lg font-semibold">Primary Image:</label>
+                            <input
+                                type="file"
+                                onChange={handlePrimaryImageChange}
+                                accept="image/*"
+                                className="p-2 border border-gray-400 rounded-lg"
+                                required
+                            />
+                            {primaryImage && (
+                                <img src={URL.createObjectURL(primaryImage)} alt="Primary" className="w-full h-40 object-cover rounded-lg" />
+                            )}
+                        </div>
 
-                                <input
-                                    type="file"s
-                                    id="imageUpload"
-                                    className="hidden"
-                                    onChange={handleImageChange}
-                                />
-                                {image && (
-                                    <img
-                                        src={image}
-                                        alt="Uploaded"
-                                        className="mt-4 w-40 h-40 object-cover rounded-full shadow-lg"
-                                    />
-                                )}
+                        {/* Other Images Upload */}
+                        <div className="flex flex-col gap-4">
+                            <label className="text-lg font-semibold">Other Images:</label>
+                            <input
+                                type="file"
+                                onChange={handleOtherImagesChange}
+                                accept="image/*"
+                                multiple
+                                className="p-2 border border-gray-400 rounded-lg"
+                            />
+                            <div className="flex flex-wrap gap-2">
+                                {otherImages.map((image, index) => (
+                                    <img key={index} src={URL.createObjectURL(image)} alt={`Other ${index + 1}`} className="w-20 h-20 object-cover rounded-lg" />
+                                ))}
                             </div>
                         </div>
 
-                        {/* Property Name Field */}
+                        <div className="flex items-center gap-4">
+                            <label className="text-lg font-semibold">Property ID:</label>
+                            <input
+                                type="text"
+                                value={propertyId}
+                                readOnly
+                                className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
+                            />
+                        </div>
+                        
+                        {/* Property Name */}
                         <div className="flex items-center gap-4">
                             <label className="text-lg font-semibold">Property Name:</label>
                             <input
                                 type="text"
+                                name="propertyName"
+                                value={propertyName}
+                                onChange={(e) => setPropertyName(e.target.value)}
                                 placeholder="Property Name"
-                                id="propertyName"
                                 className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                required
                             />
                         </div>
-                        
-                        {/* Address and Other Fields */}
+
+                        {/* Property Location */}
                         <div className="flex flex-col gap-4">
                             <label htmlFor="address" className="text-lg font-semibold">Property Location:</label>
                             <input 
                                 type="text" 
+                                name="addressLine1"
+                                value={addressLine1}
+                                onChange={(e) => setAddressLine1(e.target.value)}
                                 placeholder="Address Line 1" 
-                                id="address" 
                                 className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                required
                             />
                             <input 
                                 type="text" 
+                                name="city"
+                                value={city}
+                                onChange={(e) => setCity(e.target.value)}
                                 placeholder="City" 
-                                id="city" 
                                 className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                required
                             />
                             <input 
                                 type="text" 
+                                name="province"
+                                value={province}
+                                onChange={(e) => setProvince(e.target.value)}
                                 placeholder="Province" 
-                                id="province" 
                                 className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                required
                             />
                             <input 
                                 type="text" 
+                                name="postalCode"
+                                value={postalCode}
+                                onChange={(e) => setPostalCode(e.target.value)}
                                 placeholder="Postal Code" 
-                                id="postalCode" 
                                 className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                required
                             />
                             <input 
                                 type="text" 
+                                name="country"
+                                value={country}
+                                onChange={(e) => setCountry(e.target.value)}
                                 placeholder="Country" 
-                                id="country" 
                                 className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                required
                             />
-                            <div className="flex items-center gap-4">
-                                <div className="flex flex-col items-start">
-                                    <h1 className="text-lg font-semibold">Show your specific location</h1>
-                                    <p className="text-sm">Your specific location will only be visible once a reservation is made.</p>
-                                </div>
-                                <div className="flex items-center">
-                                    {/* Toggle Button */}
+                            <input 
+                                type="number" 
+                                name="latitude"
+                                placeholder="Latitude" 
+                                className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                value={latitude}
+                                onChange={(e) => setLatitude(e.target.value)}
+                                required
+                                step="any"
+                            />
+                            <input 
+                                type="number" 
+                                name="longitude"
+                                placeholder="Longitude" 
+                                className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                value={longitude}
+                                onChange={(e) => setLongitude(e.target.value)}
+                                required
+                                step="any"
+                            />
+                        </div>
+
+                        {/* Specific Location Toggle */}
+                        <div className="flex items-center gap-4">
+                            <div className="flex flex-col items-start">
+                                <h1 className="text-lg font-semibold">Show your specific location</h1>
+                                <p className="text-sm">Your specific location will only be visible once a reservation is made.</p>
+                            </div>
+                            <div className="flex items-center">
+                                <div
+                                    className={`w-14 h-7 flex items-center rounded-full p-1 cursor-pointer ${isLocationEnabled ? "bg-green-500" : "bg-gray-400"}`}
+                                    onClick={handleToggle}
+                                >
                                     <div
-                                        className={`w-14 h-7 flex items-center rounded-full p-1 cursor-pointer ${isLocationEnabled ? "bg-green-500" : "bg-gray-400"}`}
-                                        onClick={handleToggle}
-                                    >
-                                        <div
-                                            className={`bg-white w-6 h-6 rounded-full shadow-md transform ${isLocationEnabled ? "translate-x-7" : ""}`}
-                                        ></div>
-                                    </div>
+                                        className={`bg-white w-6 h-6 rounded-full shadow-md transform ${isLocationEnabled ? "translate-x-7" : ""}`}
+                                    ></div>
                                 </div>
                             </div>
                         </div>
-                        {/* Farming zone */}
-                         <div className="flex items-center gap-4">
+
+                        {/* Farming Zone */}
+                        <div className="flex items-center gap-4">
                             <label className="text-lg font-semibold" htmlFor="zone">Farming Zone:</label>
                             <select
-                                id="farmingZone"
+                                id="growth_zone"
+                                name="growth_zone"
                                 className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
                                 onChange={handleZoneChange}
                                 value={selectedZone.value}
-                                style={{ backgroundColor: selectedZone.color, color: '#000000' }} // Applying selected color
+                                style={{ backgroundColor: selectedZone.color, color: '#000000' }} 
+                                required
                             >
+                                <option value="">Select a zone</option>
                                 <option value="0a" style={{ backgroundColor: '#d7bde2' }}>0a</option>
                                 <option value="0b" style={{ backgroundColor: '#c39bd3' }}>0b</option>
                                 <option value="1a" style={{ backgroundColor: '#7fb3d5' }}>1a</option>
@@ -139,76 +352,81 @@ export default function AddProperty() {
                                 <option value="2a" style={{ backgroundColor: '#a3e4d7' }}>2a</option>
                                 <option value="2b" style={{ backgroundColor: '#7dcea0' }}>2b</option>
                                 <option value="3a" style={{ backgroundColor: '#28b463' }}>3a</option> 
-                                <option value="3b" style={{ backgroundColor: '#a9dfbf' }}>3b</option> 
-                                <option value="4a" style={{ backgroundColor: '#BCE864' }}>4a</option> 
-                                <option value="4b" style={{ backgroundColor: '#f4d03f' }}>4b</option> 
+                                <option value="3b" style={{ backgroundColor: '#a9dfbf' }}>3b</option>
                             </select>
-                            <a 
-                                href="https://plantagreenhouses.com/blogs/planting-zones/alberta?c=ca" 
-                                className="text-sm font-semibold underline hover:text-blue-600 visited:text-purple-600"
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                            >Check farming zone</a>
                         </div>
 
-
-                        {/* Property Description */}
+                        {/* Description */}
                         <div className="flex flex-col gap-4">
-                            <label className="text-lg font-semibold" htmlFor="propertyDescription">Describe your property:</label>
+                            <label className="text-lg font-semibold">Description:</label>
                             <textarea
-                                id="propertyDescription"
-                                placeholder="Describe your property"
+                                name="description"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                placeholder="Provide a detailed description of your property"
+                                rows="3"
                                 className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
-                                rows="4"
-                            />
+                                required
+                            ></textarea>
                         </div>
-                        
 
                         {/* Dimensions Fields */}
                         <div className="flex flex-col gap-4">
-    <label className="text-lg font-semibold" htmlFor="dimensions">Dimensions:</label>
-    <div className="flex items-center gap-2">
-    <input 
-        type="number" 
-        placeholder="Length" 
-        id="length" 
-        className=" w-1/3 p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-    />
-    <span className="text-lg font-semibold">x</span>
-    <input 
-        type="number" 
-        placeholder="Width" 
-        id="width" 
-        className="w-1/3  p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-    />
-    <span className="text-lg font-semibold">x</span>
-    <input 
-        type="number" 
-        placeholder="Height" 
-        id="height" 
-        className=" w-1/3  p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-    />
-    <span className="text-lg font-semibold">ft</span>
-    </div>
-</div>
-
+                            <label className="text-lg font-semibold" htmlFor="dimensions">Dimensions:</label>
+                            <div className="flex items-center gap-2">
+                                <input 
+                                    type="number" 
+                                    name="length"
+                                    value={length}
+                                    onChange={(e) => setLength(e.target.value)}
+                                    placeholder="Length" 
+                                    className="w-1/3 p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                    required
+                                />
+                                <span className="text-lg font-semibold">x</span>
+                                <input 
+                                    type="number" 
+                                    name="width"
+                                    value={width}
+                                    onChange={(e) => setWidth(e.target.value)}
+                                    placeholder="Width" 
+                                    className="w-1/3 p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                    required
+                                />
+                                <span className="text-lg font-semibold">x</span>
+                                <input 
+                                    type="number" 
+                                    name="height"
+                                    value={height}
+                                    onChange={(e) => setHeight(e.target.value)}
+                                    placeholder="Height" 
+                                    className="w-1/3 p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                    required
+                                />
+                                <span className="text-lg font-semibold">ft</span>
+                            </div>
+                        </div>
                         
                         <div className="flex items-center gap-4">
                             <label className="text-lg font-semibold" htmlFor="soilType">Type of Soil:</label>
                             <input 
                                 type="text" 
+                                name="soilType"
+                                value={soilType}
+                                onChange={(e) => setSoilType(e.target.value)}
                                 placeholder="e.g. Clay, Loam, Sand" 
                                 id="soilType" 
                                 className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                required
                             />
                         </div>
-                        
-                        
                         
                         <div className="flex items-center gap-4">
                             <label className="text-lg font-semibold" htmlFor="amenities">Amenities:</label>
                             <input 
                                 type="text" 
+                                value={amenities}
+                                onChange={(e) => setAmenities(e.target.value)}
                                 placeholder="e.g. Shed, Electricity, Fencing" 
                                 id="amenities" 
                                 className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
@@ -219,21 +437,24 @@ export default function AddProperty() {
                             <label className="text-lg font-semibold" htmlFor="possibleCrops">Possible Crops:</label>
                             <input 
                                 type="text" 
+                                value={possibleCrops}
+                                onChange={(e) => setPossibleCrops(e.target.value)}
                                 placeholder="e.g. Carrot, Barley, Corn" 
                                 id="possibleCrops" 
                                 className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
                             />
                         </div>
-
                         
-<div className="flex flex-col gap-4">
-                            <label className="text-lg font-semibold" htmlFor="restrictions">Restrictions:</label>
-                            <textarea
-                                id="restrictions"
-                                placeholder="e.g. No pets, No smoking, No planting marijuana" 
-                                className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
-                                rows="3"
-                            />
+                        <div className="flex flex-col gap-4">
+                        <label className="text-lg font-semibold" htmlFor="restrictions">Restrictions:</label>
+                        <textarea
+                            id="restrictions"
+                            value={restrictions}
+                            onChange={(e) => setRestrictions(e.target.value)}
+                            placeholder="e.g. No pets, No smoking, No planting marijuana" 
+                            className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
+                            rows="3"
+                        />
                         </div>
 
                         <div className="flex items-center gap-4">
@@ -243,6 +464,8 @@ export default function AddProperty() {
                                     <input 
                                     type="number" 
                                     placeholder="CAD" 
+                                    value={price}
+                                    onChange={(e) => setPrice(e.target.value)}
                                     id="price" 
                                     className="flex-grow  p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
                                 />
@@ -254,6 +477,8 @@ export default function AddProperty() {
                         <LongButton
                             buttonName="Publish Listing"
                             className="w-full rounded shadow-lg bg-green-500 text-white font-bold"
+                            type="submit"
+                            onClick={handleSubmit}
                             pagePath="/Profile"
                         />
                     </form>
@@ -262,4 +487,6 @@ export default function AddProperty() {
             <NavBar ProfileColor="#00B761" SproutPath={Sprout} />
         </div>
     );
-}
+};
+
+export default AddProperty;

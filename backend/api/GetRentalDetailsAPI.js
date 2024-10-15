@@ -15,7 +15,7 @@ router.get('/', (req, res) => {
   // Query to fetch rental, property and location details
   const query = `SELECT 
     r.rental_id, r.start_date, r.end_date, r.status, r.rent_base_price, r.tax_amount, r.transaction_fee,
-    p.property_name, p.description, p.rent_base_price AS property_base_price, p.photo, p.growth_zone, 
+    p.property_name, p.description, p.rent_base_price AS property_base_price, p.growth_zone, 
     l.address_line1, l.city, l.province, l.postal_code,
     u.username AS renter_name
 FROM 
