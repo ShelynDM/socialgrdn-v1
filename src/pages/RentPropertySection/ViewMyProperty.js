@@ -30,11 +30,15 @@ export default function ViewMyProperty() {
     }, [id]);
 
     const handlePrevImage = () => {
-        setCurrentImageIndex((prevIndex) => (prevIndex === 0 ? property.images.length - 1 : prevIndex - 1));
+        setCurrentImageIndex((prevIndex) => 
+            prevIndex === 0 ? property.otherImages.length : prevIndex - 1
+        );
     };
 
     const handleNextImage = () => {
-        setCurrentImageIndex((prevIndex) => (prevIndex === property.images.length - 1 ? 0 : prevIndex + 1));
+        setCurrentImageIndex((prevIndex) => 
+            prevIndex === property.otherImages.length ? 0 : prevIndex + 1
+        );
     };
 
     const handleEditClick = () => {
@@ -44,6 +48,8 @@ export default function ViewMyProperty() {
     if (!property) {
         return <div>Loading...</div>;
     }
+
+    const allImages = [property.primaryImage, ...property.otherImages].filter(Boolean);
 
     return (
         <div className='bg-main-background relative'>
@@ -74,23 +80,24 @@ export default function ViewMyProperty() {
 
                         {/* Image Carousel */}
                         <div className="relative mb-4">
-                            {property.images && property.images.length > 0 ? (
-                                <>
-                                    <img
-                                        src={property.images[currentImageIndex].image_url}
-                                        alt={property.images[currentImageIndex].image_name}
-                                        className="w-full h-60 object-cover rounded-md"
-                                    />
-                                    <button onClick={handlePrevImage} className="absolute left-0 top-1/2 -translate-y-1/2 px-2">Prev</button>
-                                    <button onClick={handleNextImage} className="absolute right-0 top-1/2 -translate-y-1/2 px-2">Next</button>
-                                </>
-                            ) : (
-                                <img
-                                    src='https://via.placeholder.com/400x200'
-                                    alt="No Image Available"
-                                    className="w-full h-60 object-cover rounded-md"
-                                />
-                            )}
+                        {allImages.length > 0 ? (
+                                    <>
+                                        <img
+                                            src={allImages[currentImageIndex]}
+                                            alt={`Property ${currentImageIndex + 1}`}
+                                            className="w-full h-60 object-cover rounded-md"
+                                        />
+                                        <button onClick={handlePrevImage} className="absolute left-0 top-1/2 -translate-y-1/2 px-2 bg-black bg-opacity-50 text-white rounded">Prev</button>
+                                        <button onClick={handleNextImage} className="absolute right-0 top-1/2 -translate-y-1/2 px-2 bg-black bg-opacity-50 text-white rounded">Next</button>
+                                        <p className="text-center mt-2">{currentImageIndex + 1} / {allImages.length}</p>
+                                    </>
+                                ) : (
+                                        <img
+                                            src='https://via.placeholder.com/400x200'
+                                            alt="Placeholder"
+                                            className="w-full h-60 object-cover rounded-md"
+                                        />
+                                )}
                         </div>
 
                         <div className="mb-6">
