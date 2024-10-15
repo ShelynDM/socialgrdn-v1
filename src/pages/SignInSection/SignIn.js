@@ -20,8 +20,20 @@ export default function SignIn() {
       if (response.ok) {
         const data = await response.json();
         const userId = data.userID;
+        const role = data.role;
+
         setUserId(userId);
         console.log("User ID retrieved and set:", userId); // Console log for verification
+        console.log("User role retrieved and set:", role); // Console log for verification
+         
+         // Redirect to the appropriate page based on user role
+         if (role === '0') { // Compare with string '0'
+            console.log("Administrator detected. Redirecting to Moderator profile...");
+            navigate('/ModeratorViewProfile');
+         } else {
+            console.log("Regular user detected. Redirecting to Profile page...");
+            navigate('/Profile'); 
+         }
       } else {
         console.error('Error fetching user profile:', response.statusText);
       }
@@ -42,7 +54,6 @@ export default function SignIn() {
           // After successful login, fetch and store the userID
           await fetchUserId(email);
 
-          navigate('/Profile'); // Navigate to the search page after login
         } else {
           navigate('/VerifyEmail');
         }
@@ -88,7 +99,7 @@ export default function SignIn() {
               buttonName='Sign In' 
               type='submit'
               className='p-2 w-full rounded shadow-lg bg-green-600 font-bold text-white'
-              />
+            />
             {error && <p className="text-red-500">{error}</p>}
           </form>
           <div className='flex justify-end '>
