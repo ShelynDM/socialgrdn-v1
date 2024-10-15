@@ -14,7 +14,7 @@ import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../_utils/firebase";
 //import { PiFolder } from "react-icons/pi";
-import { useUser } from "../../UserContext"; // Import useUser to get the userID
+import { useUser } from "../../UserContext";
 
 export default function Profile() {
     const [firstname, setFirstName] = useState('');
@@ -24,7 +24,7 @@ export default function Profile() {
     const [phoneNumber, setPhoneNumber] = useState('');
     const [profession, setProfession] = useState('');
     const [createdAt, setCreatedAt] = useState('');
-    const { userId } = useUser(); // Get the userID from UserContext
+    const { userId } = useUser(); 
     const email = auth.currentUser.email;
 
     const navigate = useNavigate();
@@ -38,14 +38,17 @@ export default function Profile() {
                     throw new Error('Network response was not ok');
                 }
                 const userData = await response.json();
-
+    
+                // Log the data being received from the database
+                console.log('Data received from the database:', userData);
+    
                 setFirstName(userData.first_name);
                 setLastName(userData.last_name);
                 setUsername(userData.username);
                 setUserAddress(userData.address_line1);
                 setPhoneNumber(userData.phone_number);
                 setProfession(userData.profession);
-
+    
                 const date = new Date(userData.created_at);
                 const options = { year: 'numeric', month: 'long', day: 'numeric' };
                 setCreatedAt(date.toLocaleDateString('en-US', options));
@@ -53,9 +56,9 @@ export default function Profile() {
                 console.error('Error fetching user profile:', error);
             }
         };
-
+    
         if (userId) {
-            fetchUserProfile(); // Only fetch profile if userId exists
+            fetchUserProfile();
         }
     }, [userId]);
 

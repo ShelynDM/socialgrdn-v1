@@ -54,8 +54,7 @@ import ModeratorViewProfile from './pages/Moderator/ModeratorViewProfile';
 // Utility components
 import ProtectedRoute from './pages/ProtectedRoute';
 import { useUserAuth } from './_utils/auth-context';
-import { UserProvider } from './UserContext'; // Import the UserProvider
-
+import { UserProvider } from './UserContext';
 
 export default function App() {
   const { currentUser } = useUserAuth();

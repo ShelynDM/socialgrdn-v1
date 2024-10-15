@@ -4,14 +4,14 @@ import LongButton from '../../components/Buttons/longButton';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../../_utils/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useUser } from '../../UserContext'; // Import the useUser hook to access UserContext
+import { useUser } from '../../UserContext';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { setUserId } = useUser(); // Destructure the setUserId from UserContext
+  const { setUserId } = useUser(); 
 
  const fetchUserId = async (email) => {
     try {

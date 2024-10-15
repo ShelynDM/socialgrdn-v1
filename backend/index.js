@@ -1,23 +1,25 @@
-//Import the credentials from the _credentials.js file
+// index.js
+
+// Import the credentials from the _credentials.js file
 const credentials = require('./_credentials');
 const express = require('express');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
 const path = require('path');
 
+// Import route files
 const userRoutes = require('./api/RegisterAPI');
 const getIDRoutes = require('./api/GetuserIDAPI');
 const editProfileRoutes = require('./api/EditProfileAPI');
 const getProfileRoutes = require('./api/GetUserProfileAPI');
+const getUserPropertiesRoutes = require('./api/GetUserPropAPI'); // Import your new GetUserPropAPI
 const getSearchResultsRoutes = require('./api/GetSearchResultsAPI'); // Import your new GetSearchResultsAPI
 const getPropDetailsRoutes = require('./api/GetPropDetailsAPI'); // Import the GetPropDetailsAPI
 const getPropertyDetailsRoutes = require('./api/GetPropertyDetailsAPI'); // Import your new GetPropertyDetailsAPI (tiana)
 const getRentalDetailsRoutes = require('./api/GetRentalDetailsAPI'); // Import your new GetRentalDetailsAPI (tiana)
-const getEarningsAPIRoutes = require('./api/GetEarningsAPI'); // Import your new GetEarningsAPI
-const getUserPropertiesRoutes = require('./api/GetUserPropAPI'); // Import your new GetUserPropAPI
-
+const getEarningsAPIRoutes = require('./api/GetEarningsAPI'); // Import your new GetEarningsAPI(lilian)
+const getUserPropertiesRoutes = require('./api/GetUserPropAPI'); // Import your new GetUserPropAPI (lilian)
 
 const app = express();
 const port = 3000;
@@ -36,18 +38,16 @@ app.use('/api/profile', getIDRoutes);
 app.use('/api/editProfile', editProfileRoutes);
 app.use('/api/getProfile', getProfileRoutes);
 app.use('/api/getUserProperties', getUserPropertiesRoutes); // Add the new route for GetUserPropAPI
-app.use('/api/GetEarnings', getEarningsAPIRoutes); // Add the new route for GetEarningsAPI
 app.use('/api/getSearchResults', getSearchResultsRoutes); // Add the new route for GetSearchResultsAPI
 app.use('/api/getPropertyDetails', getPropDetailsRoutes); // Add the new route for GetPropDetailsAPI
 app.use('/api/getPropertyDetails2', getPropertyDetailsRoutes); // Add the new route for GetPropertyDetailsAPI (tiana)
 app.use('/api/GetRentalDetails', getRentalDetailsRoutes); // Add the new route for GetRentalDetailsAPI(tiana)
 
-
-
 // The "catchall" handler
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../build/index.html'));
 });
+
 // Server and database setup
 app.listen(port, (err) => {
   if (err) {

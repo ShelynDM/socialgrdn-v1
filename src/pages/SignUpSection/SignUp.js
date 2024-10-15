@@ -35,9 +35,12 @@ export default function SignUp() {
     const handleSignUp = async (event) => {
         event.preventDefault();
         const { email, password, firstname, lastname, username } = formData;
-        
+    
         if (email && password && email.includes('@') && email.includes('.') && password.length >= 6 && firstname && lastname && username) {
             try {
+                // Log the data that is about to be sent to the server
+                console.log('Data being sent to the database:', formData);
+    
                 const response = await fetch('/api/users/register', {
                     method: 'POST',
                     credentials: 'include',
@@ -46,7 +49,7 @@ export default function SignUp() {
                     },
                     body: JSON.stringify(formData),
                 });
-
+    
                 if (response.ok) {
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
