@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 
 
-export default function SearchWithSuggestions({ propertyResult, onSuggestionSelect, searchQuery}) {
+export default function SearchWithSuggestions({ propertyResult, onSuggestionSelect, searchQuery, onSearchQueryChange, onSearchTrigger }) {
     const [isDropDownVisible, setIsDropDownVisible] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
-    const [filteredResults, setFilteredResults] = useState([]);
+    const [filteredSuggestionResults, setFilteredSuggestionResults] = useState([]);
 
     const navigate = useNavigate();
 
@@ -59,38 +59,48 @@ export default function SearchWithSuggestions({ propertyResult, onSuggestionSele
     // Handle input change in the search bar
     const handleInputChange = (e) => {
         const query = e.target.value.toLowerCase();
-        //setSearchQuery(query);
-
+        onSearchQueryChange(query);
+        
         setIsDropDownVisible(query.length > 0);
 
         if (query.length > 0) {
             const filtered = suggestions.filter((field) =>
                 field.startsWith(query)  // Use startsWith for matching at the start of the string
             );
-            setFilteredResults(filtered.slice(0, 10)); // Limit results to top 10
+            setFilteredSuggestionResults(filtered.slice(0, 10)); // Limit results to top 10
         } else {
-            setFilteredResults([]);
+            setFilteredSuggestionResults([]);
+        }
+    };
+
+    // handle Enter key press
+    const handleKeyPress = (e) => {
+        if (e.key === "Enter") {
+            onSearchTrigger(searchQuery);
+            setIsDropDownVisible(false);
+            handleRedirect(searchQuery);
         }
     };
 
     // Handle selecting a suggestion
     const handleSuggestionSelect = (suggestion) => {
         onSuggestionSelect(suggestion);  // Pass the selected suggestion to the parent component
+        onSearchTrigger(suggestion)
         handleRedirect(suggestion);
+        onSearchQueryChange(suggestion);
         setIsDropDownVisible(false);
-        //setSearchQuery(suggestion);
     };
 
     return (
         <div className="w-full">
-            <div className="w-auto flex items-center input-wrapper rounded-md border border-gray-300 p-1 mx-2">
+            <div className="w-auto flex items-center input-wrapper rounded-md border border-gray-300 p-1 mx-2" >
                 <FaSearch className="search-icon mx-1"/>
-                <input placeholder="Search" className="w-full" value={searchQuery} onChange={handleInputChange}/>
+                <input placeholder="Search" className="w-full" value={searchQuery} onChange={handleInputChange} onKeyDown={handleKeyPress}/>
             </div>
             
-            {isDropDownVisible && filteredResults.length > 0 && (  
+            {isDropDownVisible && filteredSuggestionResults.length > 0 && (  
                 <ul className="dropdown w-full max-h-64 overflow-y-auto">
-                    {filteredResults.map((suggestion, index) => (
+                    {filteredSuggestionResults.map((suggestion, index) => (
                         <li
                             key={index}
                             className="mx-2 p-2 border-b border-x bg-white border-gray-200 hover:bg-gray-100 transition-all text-sm"

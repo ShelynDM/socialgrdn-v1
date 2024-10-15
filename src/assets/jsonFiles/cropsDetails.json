@@ -442,7 +442,7 @@
         "Yard-long bean",
         "Zucchini"
       ],
-      "spices:": [
+      "spices": [
         "Ajowan",
         "Allspice",
         "Anise",
@@ -456,6 +456,7 @@
         "Capsicum spp",
         "Caraway",
         "Cardamom",
+        "Chilli",
         "Chili pepper Capsicum annuum",
         "Chili pepper Capsicum baccatum",
         "Chili pepper Capsicum chinense",
@@ -480,6 +481,7 @@
         "Oregano",
         "Pandan",
         "Parsley",
+        "Pepper",
         "Saffron",
         "Sichuan pepper",
         "Star anise",
