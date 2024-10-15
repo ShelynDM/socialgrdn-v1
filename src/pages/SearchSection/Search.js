@@ -25,7 +25,8 @@ export default function Search() {
     const [locationFetched, setLocationFetched] = useState(false);
     const [cropData, setCropData] = useState({});
 
-
+    // This two functions must be called to get the property results and search parameters
+    // This two functions should be added to reuse the search components in different pages
     const propertyResult = usePropertyResult();
     const [searchParams] = useSearchParams();
 
@@ -85,21 +86,39 @@ export default function Search() {
         }
     }, []);
 
+    // Fetch user's location on page load
     useEffect(() => {
         if (!locationFetched) {
             getUserPointLocation();
         }
     }, [getUserPointLocation, locationFetched]);
 
+    // Filter results based on user's location or display random properties if location is not available
     useEffect(() => {
-        if (userLocation && propertyResult.length > 0) {
-            filterResults();
-
-            console.log("Point Location:", userPointLocation);
-            console.log("User Location Results:", userLocation);
-            console.log("Filtered Results:", filteredResults);
+        if (propertyResult.length > 0) {
+            if (userLocation) {
+                try {
+                    filterResults();
+                    console.log("Point Location:", userPointLocation);
+                    console.log("User Location Results:", userLocation);
+                    console.log("Filtered Results:", filteredResults);
+                } catch (error) {
+                    console.error("Error filtering results based on location:", error);
+                }
+            } else {
+                // Display 10 random properties if user location is not available
+                try {
+                    const randomResults = propertyResult
+                        .sort(() => Math.random() - 0.5) // Shuffle the array
+                        .slice(0, 10); // Select the first 10 random items
+                    setFilteredResults(randomResults);
+                    console.log("Displaying random properties as location is not available:", randomResults);
+                } catch (error) {
+                    console.error("Error displaying random properties:", error);
+                }
+            }
         }
-        //eslint-disable-next-line
+        // eslint-disable-next-line
     }, [userLocation, propertyResult, searchQuery]);
 
 
@@ -118,7 +137,6 @@ export default function Search() {
     // Close the popup
     const closePopup = () => {
         setIsPopupOpen(false);
-        //handlePopupSearchFilter(null);
     };
 
     // Get crop types from the database
@@ -140,12 +158,11 @@ export default function Search() {
 
     useEffect(() => {
         handleCropTypes();
-        // console.log("Crop Data:", cropData.fruits);
-        // console.log("Crop Data:", cropData.vegetables);
-        // console.log("Crop Data:", cropData.cereal);
-        // console.log("Crop Data:", cropData.spices);
+        // eslint-disable-next-line
     }, []);
 
+
+    // Handle the filters made by the modal/popup filter
     const handlePopupSearchFilter = (filters) => {
         const { priceRange, cropType, gardenSize, soilType } = filters;
         console.log("Filters:");
@@ -237,18 +254,25 @@ export default function Search() {
             const regionResultsToAdd = uniqueRegionResults.slice(0, Math.max(0, 10 - results.length));
             results.push(...regionResultsToAdd);
     
-            // Apply search query filter
-            if (searchQuery) {
-                results = results.filter(result =>
-                    [result.property_name, result.address_line1, result.city, result.province,
-                    result.growth_zone, result.crop, result.soil_type, result.first_name, result.last_name]
-                    .some(field => field?.toLowerCase().includes(searchQuery.toLowerCase()))
-                );
-            }
-    
             setFilteredResults(results.slice(0, 10));
         }
-    }, [userLocation, propertyResult, searchQuery]);
+    }, [userLocation, propertyResult]);
+
+    // Handle the filtered property results once the search query is triggered by "Enter" key or suggestion click
+    const handleSearchTrigger = (searchQuery) => {
+        const filtered = propertyResult.filter((result) =>
+            result.property_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            result.address_line1.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            result.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            result.province.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            result.growth_zone.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            result.crop.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            result.soil_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            result.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            result.last_name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredResults(filtered.slice(0, 10));
+    };
 
     // Handle suggestion select
     const handleSuggestionSelect = (selectedSuggestion) => {
@@ -277,11 +301,12 @@ export default function Search() {
                 <div className='mx-2 px-2 fixed top-12 flex w-full justify-between bg-main-background'>
                     <div className="flex-grow w-full">
                         <SearchWithSuggestions 
-                            value={searchQuery}
+                            //value={searchQuery}
                             searchQuery={searchQuery} 
                             propertyResult={propertyResult} 
                             onSuggestionSelect={(selectedSuggestion) => handleSuggestionSelect(selectedSuggestion)}
                             onSearchQueryChange={handleSearchQueryChange}
+                            onSearchTrigger={handleSearchTrigger}
                             />
                     </div>
                     <div>
