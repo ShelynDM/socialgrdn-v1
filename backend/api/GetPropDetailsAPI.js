@@ -52,6 +52,10 @@ router.get('/', (req, res) => {
     // Process crops as an array, handling possible null values
     property.crops = property.crops ? property.crops.split(',').map(item => item.trim()) : [];
 
+    // Process primary image
+    property.primaryImage = property.primary_image_url || null;
+    delete property.primary_image_url;
+
     // Process other images
     property.otherImages = property.other_image_urls ? property.other_image_urls.split(',') : [];
     delete property.other_image_urls;
