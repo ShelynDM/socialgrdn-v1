@@ -43,12 +43,19 @@ export default function ReservationDetails() {
                     <img src={image} alt="Listing" className="w-full h-auto" />
 
                     <div className="p-3">
-                        <div className="flex items-center">
-                            <FaLocationDot className="text-1" />
-                            <h2 className="text-lg">{name}</h2>
+                        <div className="flex items-center justify-between"> {/* Use justify-between to space out items */}
+                            <div className="flex items-center">
+                                <FaLocationDot className="text-1" />
+                                <h2 className="text-xl font-bold ml-2">{name}</h2> {/* Added margin for spacing */}
+                            </div>
+                            {/* Farming Zone */}
+                            <div className="flex items-center flex-row gap-1">
+                                <div className="w-4 h-4 border border-gray-400" style={{ backgroundColor: 'green' }}></div>
+                                <p>Zone 1a</p>
+                            </div>
                         </div>
                         <div>
-                            <p className="px-3">{address}</p>
+                            <p className="px-6">{address}</p>
                         </div>
                     </div>
 
@@ -119,23 +126,25 @@ export default function ReservationDetails() {
                 </section>
 
                 {/* Cancel Confirmation Modal */}
-                {showCancelModal && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-                        <div className="bg-white p-5 rounded-md shadow-lg">
-                            <h2 className="text-xl font-bold mb-4">Confirm Cancellation</h2>
-                            <p>Are you sure you want to cancel the reservation?</p>
-                            <p>Cancellation cannot be reversed.</p>
-                            <div className="mt-4 flex justify-center">
-                                <button className="bg-gray-300 px-4 py-2 mr-2 rounded" onClick={handleCloseCancelModal}>Not Now</button>
-                                <button className="bg-red-600 text-white px-4 py-2 rounded" onClick={handleConfirmCancellation}>Yes, Cancel</button>
+                {
+                    showCancelModal && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+                            <div className="bg-white p-5 rounded-md shadow-lg">
+                                <h2 className="text-xl font-bold mb-4">Confirm Cancellation</h2>
+                                <p>Are you sure you want to cancel the reservation?</p>
+                                <p>Cancellation cannot be reversed.</p>
+                                <div className="mt-4 flex justify-center">
+                                    <button className="bg-gray-300 px-4 py-2 mr-2 rounded" onClick={handleCloseCancelModal}>Not Now</button>
+                                    <button className="bg-red-600 text-white px-4 py-2 rounded" onClick={handleConfirmCancellation}>Yes, Cancel</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                )}
+                    )
+                }
 
 
-            </div>
+            </div >
             <NavBar SproutPath={GreenSprout} />
-        </div>
+        </div >
     );
 }

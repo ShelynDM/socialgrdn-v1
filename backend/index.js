@@ -18,6 +18,7 @@ const getSearchResultsRoutes = require('./api/GetSearchResultsAPI');
 const getPropDetailsRoutes = require('./api/GetPropDetailsAPI');
 const getRentalDetailsRoutes = require('./api/GetRentalDetailsAPI');
 const addPropertyListingRoutes = require('./api/addPropertyListingAPI');// Import your new addPropertyListingAPI
+const getReservationListRoutes = require('./api/GetReservationListAPI');
 
 const app = express();
 const port = 3000;
@@ -40,6 +41,7 @@ app.use('/api/getSearchResults', getSearchResultsRoutes);
 app.use('/api/getPropertyDetails', getPropDetailsRoutes);
 app.use('/api/GetRentalDetails', getRentalDetailsRoutes);
 app.use('/api/addPropertyListing', addPropertyListingRoutes);// Add the new route for addPropertyListingAPI
+app.use('/api/getReservationList', getReservationListRoutes);
 
 // The "catchall" handler
 app.get('*', (req, res) => {
