@@ -103,9 +103,9 @@ export default function TrialSearch() {
     
 
     //----------------------------------------------//
-    const handleSearchTrigger = (query) => {
-        console.log("Search triggered:", query);
-        navigate(`/Search?searchQuery=${encodeURIComponent(query)}`);
+    const handleSearchTrigger = (searchQuery) => {
+        console.log("Search triggered:", searchQuery);
+        navigate(`/Search?searchQuery=${encodeURIComponent(searchQuery)}`);
     };
 
     // Fetch search results and user location on component mount
