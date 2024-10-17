@@ -8,7 +8,10 @@ import { FaLocationDot } from "react-icons/fa6";
 import LongButton from "../../components/Buttons/longButton";
 import { TbReportAnalytics } from "react-icons/tb";
 import InAppLogo from "../../components/Logo/inAppLogo";
+
 import NavBar from "../../components/Navbar/navbar";
+import NavBarModerator from "../../components/Navbar/navbarmoderator";
+
 import Sprout from "../../assets/navbarAssets/sprout.png";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
@@ -166,7 +169,7 @@ export default function ModeratorViewProfile() {
                     </div>
                 </div>
             </div>
-            <NavBar ProfileColor={"#00B761"} SproutPath={Sprout} />
+            <NavBarModerator ProfileColor={"#00B761"} />
         </div>
     );
 }

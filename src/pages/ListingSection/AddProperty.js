@@ -479,7 +479,7 @@ const AddProperty = () => {
                             className="w-full rounded shadow-lg bg-green-500 text-white font-bold"
                             type="submit"
                             onClick={handleSubmit}
-                            pagePath="/Profile"
+                            pagePath="/ListingConfirmation"
                         />
                     </form>
                 </div>
