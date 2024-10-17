@@ -41,7 +41,7 @@ export default function RentProperty() {
     useEffect(() => {
         const fetchPropertyDetails = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/api/getPropertyDetails2?property_id=${propertyID}`);
+                const response = await fetch(`http://localhost:3000/api/getPropertyDetails?property_id=${propertyID}`);
                 if (!response.ok) {
                     console.log("Network response was not ok");
                 }

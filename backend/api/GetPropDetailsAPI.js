@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
 
   const query = `
   SELECT 
-      p.property_id, p.property_name, p.description,
+      p.property_id, p.property_name, p.description, p.growth_zone,
       CONCAT(p.dimensions_length, ' L x ', p.dimensions_width, ' W x ', p.dimensions_height, ' H') AS dimension, 
       p.soil_type, p.amenities, p.restrictions, p.rent_base_price,
       l.address_line1, l.city, l.province, l.postal_code,
@@ -51,6 +51,10 @@ router.get('/', (req, res) => {
 
     // Process crops as an array, handling possible null values
     property.crops = property.crops ? property.crops.split(',').map(item => item.trim()) : [];
+
+    // Process primary image
+    property.primaryImage = property.primary_image_url || null;
+    delete property.primary_image_url;
 
     // Process other images
     property.otherImages = property.other_image_urls ? property.other_image_urls.split(',') : [];
