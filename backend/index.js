@@ -21,6 +21,8 @@ const addPropertyListingRoutes = require('./api/addPropertyListingAPI');// Impor
 const getReservationListRoutes = require('./api/GetReservationListAPI');
 const getPayoutsRoutes = require('./api/GetPayoutAPI');
 const getDetailedPayoutsRoutes = require('./api/GetDetailedPayoutAPI');
+const getPropStatusRoutes = require('./api/GetPropStatusAPI');
+const updatePropStatusRoutes = require('./api/UpdatePropStatusAPI');
 
 const app = express();
 const port = 3000;
@@ -46,6 +48,9 @@ app.use('/api/addPropertyListing', addPropertyListingRoutes);// Add the new rout
 app.use('/api/getReservationList', getReservationListRoutes);
 app.use('/api/getPayouts', getPayoutsRoutes);
 app.use('/api/getDetailedPayouts', getDetailedPayoutsRoutes);
+app.use('/api/getPropStatus', getPropStatusRoutes);
+app.use('/api/updatePropStatus', updatePropStatusRoutes);
+
 
 // The "catchall" handler
 app.get('*', (req, res) => {
