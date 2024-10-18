@@ -22,12 +22,13 @@ export default function RentProperty() {
     //Stores Property Object Information
     const [property, setProperty] = useState('');
 
-    // Rental Information 
+    // Rental  
     const [startDate] = useState('2024-09-01');                   //passed as parameter from view property page
     const [endDate] = useState('2024-12-05');                     //passed as parameter from view property page
     const [durationMonths, setDurationMonths] = useState(null);   // need to finalize issues with duration rules and pricing
     const [durationDays, setDurationDays] = useState(null);       //need to finalize issues with duration rules and pricing
 
+    //Price Information
     const [rent_base_price, setRent_base_price] = useState(0.00);
     const [tax_amount, setTax_amount] = useState(0.00);
     const [transaction_fee, setTransaction_fee] = useState(0.00);
@@ -48,7 +49,6 @@ export default function RentProperty() {
                 console.error('Error fetching property details:', error);
             }
         };
-
 
         fetchPropertyDetails();
         //eslint - disable - next - line
@@ -93,8 +93,6 @@ export default function RentProperty() {
         //eslint-disable-next-line
     }, [property]);
 
-
-
     const handlePaymentPage = async () => {
         const form = document.getElementById('paymentForm');
 
@@ -114,21 +112,30 @@ export default function RentProperty() {
             tax_amount: taxAmount,
             transaction_fee: transactionFee
         };
-
         console.log(rental);
+        alert('Payment rental object: ' + JSON.stringify(rental));
 
         // Register rental details to the database and get the rentalID
         const rentalID = await handleRentalRegistration(rental);
 
-        //Going to payment page
-        const reservationDetails = "Reservation ID: " + rentalID;
-        form.action = `http://localhost:3001/api/create-checkout-session?amount=${totalPrice * 100}&reservationDetails=${reservationDetails}`;
-        form.submit();
+        if (rentalID === null) {
+            console.error('Failed to register rental details');
+
+        }
+        else {
+            //Going to payment page
+            const reservationDetails = "Reservation ID: " + rentalID;
+            form.action = `http://localhost:3001/api/create-checkout-session?amount=${totalPrice * 100}&reservationDetails=${reservationDetails}`;
+            form.submit();
+        }
+
+
     };
 
 
     // Register rental details to the database
     const handleRentalRegistration = async (rentalData) => {
+        console.log('Registering rental details:', rentalData);
         try {
             const response = await fetch('http://localhost:3000/api/registerRentalDetails', {
                 method: 'POST',
