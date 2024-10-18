@@ -1,23 +1,80 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react"; // Importing useEffect and useState from React
 import { useNavigate } from "react-router-dom";
+import { useParams } from 'react-router-dom';
 
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
 import BackButton from "../../components/Buttons/backButton";
 import { FaLocationDot } from "react-icons/fa6";
+import zoneColor from "../../components/ZoneColor/zoneColor";
+import { differenceInMonths, differenceInDays, parseISO } from 'date-fns';
 
 
 export default function ReservationDetails() {
     const [showCancelModal, setShowCancelModal] = useState(false);
     const navigate = useNavigate();
+    const rentalID = useParams().id;            //parameter
+    const [reservation, setReservation] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const [durationMonths, setDurationMonths] = useState(null);   // need to finalize issues with duration rules and pricing
+    const [durationDays, setDurationDays] = useState(null);       //need to finalize issues with duration rules and pricing
+    console.log(reservation);
 
-    const image = "https://images.pexels.com/photos/1084540/pexels-photo-1084540.jpeg";
-    const name = "Gibson's Greenhouse";
-    const start = "2021-06-01";
-    const end = "2021-09-30";
-    const address = "Next St. Calumet, MI 49913";
-    const duration = 7;
+
+    // Fetching reservations from API
+    useEffect(() => {
+        const fetchReservation = async () => {
+            try {
+                console.log("rentalID :" + rentalID);
+                const response = await fetch(`http://localhost:3000/api/getReservationDetails?rentalID=${rentalID}`);
+                if (!response.ok) {
+                    console.log("Network response was not ok");
+                    return;
+                }
+                const reservationData = await response.json();
+                //Convert timestamps to 'Month Day, Year' format
+                const formattedStartDate = new Date(reservationData.start_date).toLocaleDateString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                });
+                const formattedEndDate = new Date(reservationData.end_date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                });
+                setStartDate(formattedStartDate);
+                setEndDate(formattedEndDate);
+
+                //stores reservations in the Reservations list
+                setReservation(reservationData);
+                //computeDuration();
+            } catch (error) {
+                console.error('Error fetching reservations:', error);
+            }
+        };
+
+        fetchReservation();
+    }, [rentalID]);
+
+    const computeDuration = () => {
+        if (reservation.start_date && reservation.end_date) {
+            const start = parseISO(reservation.start_date);
+            const end = parseISO(reservation.end_date);
+
+            console.log(start);
+            console.log(end);
+            // Calculate the number of complete months between the dates
+            const months = differenceInMonths(end, start);
+
+            // Calculate the number of days remaining after accounting for complete months
+            const days = differenceInDays(end, new Date(start.getFullYear(), start.getMonth() + months, start.getDate()));
+
+            setDurationMonths(months);
+            setDurationDays(days);
+        }
+    };
 
     const handleCancelClick = () => {
         setShowCancelModal(true);
@@ -30,6 +87,10 @@ export default function ReservationDetails() {
     const handleConfirmCancellation = () => {
         navigate('/ReservationCancelled');
     };
+    useEffect(() => {
+        computeDuration();
+        //eslint-disable-next-line
+    }, [reservation]);
 
 
     return (
@@ -40,22 +101,22 @@ export default function ReservationDetails() {
                 <BackButton />
 
                 <section className="mb-3 mt-5">
-                    <img src={image} alt="Listing" className="w-full h-auto" />
+                    <img src={reservation.image_url} alt="Listing" className="w-full h-auto" />
 
                     <div className="p-3">
-                        <div className="flex items-center justify-between"> {/* Use justify-between to space out items */}
+                        <div className="flex items-center justify-between">
                             <div className="flex items-center">
                                 <FaLocationDot className="text-1" />
-                                <h2 className="text-xl font-bold ml-2">{name}</h2> {/* Added margin for spacing */}
+                                <h2 className="text-xl font-bold ml-2">{reservation.property_name}</h2>
                             </div>
                             {/* Farming Zone */}
                             <div className="flex items-center flex-row gap-1">
-                                <div className="w-4 h-4 border border-gray-400" style={{ backgroundColor: 'green' }}></div>
-                                <p>Zone 1a</p>
+                                <div className="w-4 h-4 border border-gray-400" style={{ backgroundColor: zoneColor(reservation.growth_zone) }}></div>
+                                <p>Zone {reservation.growth_zone}</p>
                             </div>
                         </div>
                         <div>
-                            <p className="px-6">{address}</p>
+                            <p className="px-6">{reservation.address_line1 + ', ' + reservation.city + ', ' + reservation.province}</p>
                         </div>
                     </div>
 
@@ -67,8 +128,9 @@ export default function ReservationDetails() {
                                 <p>Duration</p>
                             </div>
                             <div className="w-2/3">
-                                <p>{start} - {end}</p>
-                                <p>{duration} months</p>
+
+                                <p>{startDate} - {endDate}</p>
+                                <p className="text-sm">{durationMonths} Months {durationDays} Days</p>
                             </div>
                         </div>
                     </div>
@@ -77,7 +139,7 @@ export default function ReservationDetails() {
                         <h2 className="font-bold">Payment details</h2>
                         <div className="p-3 flex text-sm border-b-2 border-slate-600">
                             <div className="w-2/3">
-                                <p>{name} x {duration} month/s</p>
+                                <p>{reservation.property_name} x {durationMonths} month/s</p>
                                 <p>SocialGrdn fee (3%)</p>
                                 <p>Taxes</p>
                             </div>

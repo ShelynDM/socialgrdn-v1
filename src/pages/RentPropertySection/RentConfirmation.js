@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useParams } from 'react-router-dom';
 
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
@@ -14,15 +15,13 @@ import zoneFormat from "../../components/ZoneColor/zoneColor";
 
 export default function RentConfirmation() {
     const navigate = useNavigate();
-    const [paymentStatus] = useState(1);  //passed as parameter from view property page
-    const [rental_id] = useState(1);      //passed as parameter from view property page
+    const rental_id = useParams().id;            //parameter
+    const paymentStatus = 1; // 1 = Payment Successful, 0 = Payment Failed
     // Rental Information 
     const [propertyZone, setPropertyZone] = useState('');
     const [zoneColor, setZoneColor] = useState('');
     const [propertyAddress, setPropertyAddress] = useState('');
     const [propertyName, setPropertyName] = useState('');
-    //property name, address
-    //const { renter_ID } = useUser(); // Get the userID from UserContext
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
 
@@ -66,7 +65,7 @@ export default function RentConfirmation() {
     };
 
     const handleBackToReservations = () => {
-        navigate('/Reservations');
+        navigate('/ReservationList');
     };
 
     useEffect(() => {
@@ -85,15 +84,6 @@ export default function RentConfirmation() {
                     <InAppLogo />
                 </div>
 
-                {/* Top Bar Section (Back Button, Search, Filter) */}
-                {/* <div className="flex items-center justify-between fixed top-0 left-0 right-0 mt-10 px-4 bg-main-background">
-                    <button>
-                        <IoArrowBackSharp size={25} />
-                    </button>
-                    <div className="flex-grow w-full">
-                        <SearchBar className="w-full" />
-                    </div>
-                </div> */}
                 <div className="w-96 h-5/6 rounded-lg border-2 py-1 border-gray-200 bg-main-background">
                     {/* Checks if payment was successful */}
                     {paymentStatus === 0 ?

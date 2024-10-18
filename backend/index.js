@@ -19,6 +19,12 @@ const getPropDetailsRoutes = require('./api/GetPropDetailsAPI');
 const getRentalDetailsRoutes = require('./api/GetRentalDetailsAPI');
 const addPropertyListingRoutes = require('./api/addPropertyListingAPI');// Import your new addPropertyListingAPI
 const getReservationListRoutes = require('./api/GetReservationListAPI');
+const getReservationDetailsRoutes = require('./api/GetReservationDetailsAPI');
+const registerRentalDetailsRoutes = require('./api/RegisterRentalDetailsAPI');
+
+const stripeCheckoutSession = require('./api/create-checkout-session');  //payment route
+
+
 
 const app = express();
 const port = 3000;
@@ -42,6 +48,12 @@ app.use('/api/getPropertyDetails', getPropDetailsRoutes);
 app.use('/api/GetRentalDetails', getRentalDetailsRoutes);
 app.use('/api/addPropertyListing', addPropertyListingRoutes);// Add the new route for addPropertyListingAPI
 app.use('/api/getReservationList', getReservationListRoutes);
+app.use('/api/create-checkout-session', stripeCheckoutSession); //payment route
+app.use('/api/getReservationDetails', getReservationDetailsRoutes);
+app.use('/api/registerRentalDetails', registerRentalDetailsRoutes);
+
+// Create a route for the Stripe checkout session
+
 
 // The "catchall" handler
 app.get('*', (req, res) => {

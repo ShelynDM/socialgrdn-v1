@@ -6,7 +6,7 @@ import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
 import SearchBar from "../../components/SearchComponents/search";
 import { useUser } from "../../UserContext";
-import Reservation from "./Reservation";
+import Reservation from "../../components/reservationcomponent/reservation";
 
 
 // This is the Listing page of the application where users can view other users' listings
@@ -16,9 +16,12 @@ export default function ReservationList() {
     const navigate = useNavigate();
     const { userId } = useUser();
 
+
+    //this function passes the reservation id to the ReservationDetails page
     const handleViewReservation = (id) => {
-        navigate('/ReservationDetails');
+        navigate(`/ReservationDetails/${id}`);
     };
+
 
     // State to hold all reservations
     const [reservations, setReservations] = useState([]);
@@ -45,8 +48,8 @@ export default function ReservationList() {
 
     return (
         <div className='bg-main-background relative'>
-            <div className="flex flex-col items-center justify-center gap-2 min-h-screen mx-4 pb-20 bg-main-background">
-                <div className='p-2 fixed top-0 left-0 w-full bg-main-background'>
+            <div className="flex flex-col items-center justify-center gap-2 min-h-screen mx-2 pb-20 bg-main-background">
+                <div className='p-2 fixed top-0  w-full bg-main-background'>
                     <InAppLogo />
                 </div>
                 {/* Search Bar Section */}

@@ -54,7 +54,14 @@ import ModeratorViewProfile from './pages/Moderator/ModeratorViewProfile';
 // Utility components
 import ProtectedRoute from './pages/ProtectedRoute';
 import { useUserAuth } from './_utils/auth-context';
-import { UserProvider } from './UserContext';
+import { UserProvider } from './UserContext'; // Import the UserProvider
+
+//Payment Page
+import { loadStripe } from '@stripe/stripe-js';
+const stripePromise = loadStripe('pk_test_51Q2bKFLm0aJYZy9zjEVCE8j46DB65CeMLdzRbsgQHjZE7yhmpnehuGyaS9PRhaEywzngrxc94rich04HvQQQixU2007gqxkrhn'); // Initialize Stripe with your publishable key
+
+
+
 
 export default function App() {
   const { currentUser } = useUserAuth();
@@ -106,7 +113,7 @@ export default function App() {
 
               {/* Reservation Section */}
               <Route path="/ReservationCancelled" element={<ProtectedRoute><ReservationCancelled /></ProtectedRoute>} />
-              <Route path="/ReservationDetails" element={<ProtectedRoute><ReservationDetails /></ProtectedRoute>} />
+              <Route path="/ReservationDetails/:id" element={<ProtectedRoute><ReservationDetails /></ProtectedRoute>} />
               <Route path="/ReservationList" element={<ProtectedRoute><ReservationList /></ProtectedRoute>} />
 
               {/* Moderator Section */}

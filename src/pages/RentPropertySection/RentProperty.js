@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { differenceInMonths, differenceInDays, parseISO } from 'date-fns';
+import { useParams } from 'react-router-dom';
+
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
@@ -7,25 +10,19 @@ import SearchBar from "../../components/SearchComponents/search";
 import ExampleImage from "../../assets/exampleAssets/imgExample.jpg";
 import AgreeAndPay from "../../components/Buttons/longButton";
 import { LuMapPin } from "react-icons/lu";
-import { differenceInMonths, differenceInDays, parseISO } from 'date-fns';
-//import { useUser } from "../../UserContext"; // Import useUser to get the userID
-import zoneFormat from "../../components/ZoneColor/zoneColor";
+import zoneColor from "../../components/ZoneColor/zoneColor";
+
+import { useUser } from "../../UserContext";
 
 export default function RentProperty() {
+    //const propertyID = useParams().id;            //parameter
+    const [propertyID] = useState(1);               //FOR Deletion
+    const { userId } = useUser();
 
-
-    //Property Information
-    const [propertyID] = useState(1);                            //FOR UPDATE
-    const [propertyZone, setPropertyZone] = useState('');
-    const [zoneColor, setZoneColor] = useState('');
-    const [propertyName, setPropertyName] = useState('');
-    const [propertyAddress, setPropertyAddress] = useState('');
-    const [propertyPrice, setPropertyPrice] = useState(0.00);
-    //const[propertyImage, setPropertyImage] = useState('')       //FOR UPDATE
-
+    //Stores Property Object Information
+    const [property, setProperty] = useState('');
 
     // Rental Information 
-    //const { renter_ID } = useUser(); // Get the userID from UserContext
     const [startDate] = useState('2024-09-01');                   //passed as parameter from view property page
     const [endDate] = useState('2024-12-05');                     //passed as parameter from view property page
     const [durationMonths, setDurationMonths] = useState(null);   // need to finalize issues with duration rules and pricing
@@ -46,10 +43,7 @@ export default function RentProperty() {
                     console.log("Network response was not ok");
                 }
                 const propertyData = await response.json();
-                setPropertyAddress(propertyData.address_line1 + ', ' + propertyData.city + ', ' + propertyData.province);
-                setPropertyZone(propertyData.growth_zone);
-                setPropertyName(propertyData.property_name);
-                setPropertyPrice(propertyData.rent_base_price);
+                setProperty(propertyData);
             } catch (error) {
                 console.error('Error fetching property details:', error);
             }
@@ -60,7 +54,7 @@ export default function RentProperty() {
         //eslint - disable - next - line
     }, [propertyID]);
 
-    // Get the current location of the user
+    // Calculate the duration of the rental
     const computeDuration = () => {
         if (startDate && endDate) {
             const start = parseISO(startDate);
@@ -81,35 +75,81 @@ export default function RentProperty() {
     const computePrice = () => {
         console.log('Property Price is set');
         // Use propertyPrice directly for calculations
-        const basePrice = parseFloat(propertyPrice) * durationMonths;
+        const basePrice = parseFloat(property.rent_base_price) * durationMonths;
         const taxAmount = basePrice * 0.13;          // 13% tax
         const transactionFee = basePrice * 0.03;     // 3% transaction fee
         const totalPrice = basePrice + taxAmount + transactionFee;
 
-        // Update the state after calculations
+        // Format the prices to 2 decimal places
         setRent_base_price(basePrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
         setTax_amount(taxAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
         setTransaction_fee(transactionFee.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
         setTotal_price(totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     };
 
-    //setZoneColor
-    const assignZoneColor = (zone) => {
-        setZoneColor(zoneFormat(zone));
-    };
-
-
-    // Fetch search results and user location on component mount
-
     useEffect(() => {
         computeDuration();
         computePrice();
-        assignZoneColor(propertyZone);
         //eslint-disable-next-line
-    }, [propertyPrice]);
+    }, [property]);
 
-    const handlePaymentPage = () => {
-        //pending code to navigate to payment page
+
+
+    const handlePaymentPage = async () => {
+        const form = document.getElementById('paymentForm');
+
+        const basePrice = 100.00;
+        const taxAmount = basePrice * 0.13;          // 13% tax
+        const transactionFee = basePrice * 0.03;     // 3% transaction fee
+        const totalPrice = basePrice + taxAmount + transactionFee;
+
+        //Preparing rental object for DB registration
+        const rental = {
+            property_id: propertyID,
+            renter_ID: userId,
+            start_date: startDate,
+            end_date: endDate,
+            status: 0,                         // pending state, unpaid
+            rent_base_price: basePrice,
+            tax_amount: taxAmount,
+            transaction_fee: transactionFee
+        };
+
+        console.log(rental);
+
+        // Register rental details to the database and get the rentalID
+        const rentalID = await handleRentalRegistration(rental);
+
+        //Going to payment page
+        const reservationDetails = "Reservation ID: " + rentalID;
+        form.action = `http://localhost:3001/api/create-checkout-session?amount=${totalPrice * 100}&reservationDetails=${reservationDetails}`;
+        form.submit();
+    };
+
+
+    // Register rental details to the database
+    const handleRentalRegistration = async (rentalData) => {
+        try {
+            const response = await fetch('http://localhost:3000/api/registerRentalDetails', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(rentalData),  // Convert data to JSON format
+            });
+
+            if (response.ok) {
+                const result = await response.json();  // Parse the response as JSON
+                console.log('Rental registration successful:', result);
+                return result.rentalID;  // Return the rentalID from the server response
+            } else {
+                console.error('Failed to register rental:', response.statusText);
+                return null;
+            }
+        } catch (error) {
+            console.error('Error occurred during rental registration:', error);
+            return null;
+        }
     };
 
     return (
@@ -137,7 +177,7 @@ export default function RentProperty() {
                         {/* Listing Title */}
                         <div className="flex flex-row justify-between mb-2">
                             <div>
-                                <h1 className="font-bold text-lg ">{propertyName}</h1>
+                                <h1 className="font-bold text-lg ">{property.property_name}</h1>
                             </div>
                         </div>
                         {/* Listing Description */}
@@ -146,12 +186,12 @@ export default function RentProperty() {
                             {/* Listing Address */}
                             <div className="flex">
                                 <LuMapPin />
-                                <p className="text-xs">{propertyAddress}</p>
+                                <p className="text-xs">{property.address_line1 + ', ' + property.city + ', ' + property.province}</p>
                             </div>
                             {/* Farming Zone */}
                             <div className="flex flex-row gap-1">
-                                <div className="w-4 h-4 border-1 border-gray-400" style={{ backgroundColor: zoneColor }}></div>
-                                <p className="text-xs text-gray-500">Zone {propertyZone}</p>
+                                <div className="w-4 h-4 border-1 border-gray-400" style={{ backgroundColor: zoneColor(property.growth_zone) }}></div>
+                                <p className="text-xs text-gray-500">Zone {property.growth_zone}</p>
                             </div>
                         </div>
                     </div>
@@ -181,7 +221,7 @@ export default function RentProperty() {
                         <div className="flex flex-col">
                             <div className="mx-4 flex justify-between">
                                 <div className="flex">
-                                    <p className="text-sm">{propertyName}</p>
+                                    <p className="text-sm">{property.property_name}</p>
                                     <p className="text-sm mx-1"> x </p>
                                     <p className="text-sm">{durationMonths} months</p>
                                 </div>
@@ -214,12 +254,15 @@ export default function RentProperty() {
                 <div className="mx-4 my-2 text-center text-xs">
                     <p>By continuing with this booking, I agree to SocialGrdn's Terms of use and Privacy Policy</p>
                 </div>
-                <AgreeAndPay
-                    buttonName='Agree and Pay'
-                    type='submit'
-                    className='p-2 w-full rounded-lg bg-emerald-200'
-                    onClick={handlePaymentPage}
-                />
+                {/* //redirecting to payment page */}
+                <form id="paymentForm" method="POST">
+                    <AgreeAndPay
+                        buttonName='Agree and Pay'
+                        type='submit'
+                        className='p-2 w-full rounded-lg bg-emerald-200'
+                        onClick={handlePaymentPage}
+                    />
+                </form>
             </div>
             <NavBar SproutPath={GreenSprout} />
 
