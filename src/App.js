@@ -57,8 +57,8 @@ import { useUserAuth } from './_utils/auth-context';
 import { UserProvider } from './UserContext'; // Import the UserProvider
 
 //Payment Page
-import { loadStripe } from '@stripe/stripe-js';
-const stripePromise = loadStripe('pk_test_51Q2bKFLm0aJYZy9zjEVCE8j46DB65CeMLdzRbsgQHjZE7yhmpnehuGyaS9PRhaEywzngrxc94rich04HvQQQixU2007gqxkrhn'); // Initialize Stripe with your publishable key
+//import { loadStripe } from '@stripe/stripe-js';
+//const stripePromise = loadStripe('pk_test_51Q2bKFLm0aJYZy9zjEVCE8j46DB65CeMLdzRbsgQHjZE7yhmpnehuGyaS9PRhaEywzngrxc94rich04HvQQQixU2007gqxkrhn'); // Initialize Stripe with your publishable key
 
 
 

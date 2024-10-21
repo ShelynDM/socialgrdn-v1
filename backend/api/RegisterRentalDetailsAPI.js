@@ -20,11 +20,19 @@ router.post('/', (req, res) => {
   db.query(query, values, (err, results) => {
     if (err) {
       console.error('Error registering rental information to db.', err);
-      res.status(500).send('Error registering rental information to db.');
-      Console.log('Error registering rental information to db.');
+      //res.status(500).send('Error registering rental information to db.');
+      return res.status(500).json({ error: 'Database error' });
     } else {
-      res.status(200).send('Rental information registered successfully');
-      Console.log('Rental information registered successfully');
+      //res.status(200).send('Rental information registered successfully');
+      //return res.status(200).json({ exists: false });
+
+      // The last inserted ID can be accessed with results.insertId
+      const rent_id = results.insertId;
+      console.log('Rental  from API:', rent_id);
+      // Send back a response with the last inserted ID
+      return res.status(200).json({
+        rent_id: rent_id
+      });
     }
   });
 });

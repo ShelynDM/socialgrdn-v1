@@ -1,21 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useParams } from 'react-router-dom';
+import { useNavigate, useLocation } from "react-router-dom";
+//import { useParams } from 'react-router-dom';
 
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
-//import { IoArrowBackSharp } from "react-icons/io5";
-//import SearchBar from "../../components/SearchComponents/search";
 import { LuMapPin } from "react-icons/lu";
-import ExampleImage from "../../assets/exampleAssets/imgExample.jpg";   //to be deleted
 import LongButton from "../../components/Buttons/longButton";
 import zoneFormat from "../../components/ZoneColor/zoneColor";
+
+import ExampleImage from "../../assets/exampleAssets/imgExample.jpg";   //to be deleted
 
 
 export default function RentConfirmation() {
     const navigate = useNavigate();
-    const rental_id = useParams().id;            //parameter
+
+    // Extract the rental_id from the query string
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const rental_id = queryParams.get('rental_id');
+    console.log(rental_id); // This should log "114"
+
     const paymentStatus = 1; // 1 = Payment Successful, 0 = Payment Failed
     // Rental Information 
     const [propertyZone, setPropertyZone] = useState('');
