@@ -286,9 +286,9 @@ export default function Search() {
     };
 
     // Reset results on page refresh/load
-    useEffect(() => {
-        resetFilters();
-    }, []);
+    // useEffect(() => {
+    //     resetFilters();
+    // }, []);
 
 
     return (

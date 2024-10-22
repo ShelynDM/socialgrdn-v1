@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'; 
-import { useParams, useNavigate } from 'react-router-dom'; 
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import InAppLogo from "../../components/Logo/inAppLogo";
 import BackButton from "../../components/Buttons/backButton";
 import NavBar from "../../components/Navbar/navbar";
@@ -9,8 +9,8 @@ import { FaLocationDot } from "react-icons/fa6";
 export default function ViewMyProperty() {
     const [property, setProperty] = useState(null);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const { id } = useParams(); 
-    const navigate = useNavigate(); 
+    const { id } = useParams();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProperty = async () => {
@@ -30,11 +30,15 @@ export default function ViewMyProperty() {
     }, [id]);
 
     const handlePrevImage = () => {
-        setCurrentImageIndex((prevIndex) => (prevIndex === 0 ? property.images.length - 1 : prevIndex - 1));
+        setCurrentImageIndex((prevIndex) =>
+            prevIndex === 0 ? allImages.length - 1 : prevIndex - 1
+        );
     };
 
     const handleNextImage = () => {
-        setCurrentImageIndex((prevIndex) => (prevIndex === property.images.length - 1 ? 0 : prevIndex + 1));
+        setCurrentImageIndex((prevIndex) =>
+            prevIndex === allImages.length - 1 ? 0 : prevIndex + 1
+        );
     };
 
     const handleEditClick = () => {
@@ -44,6 +48,8 @@ export default function ViewMyProperty() {
     if (!property) {
         return <div>Loading...</div>;
     }
+
+    const allImages = [property.primaryImage, ...property.otherImages].filter(Boolean);
 
     return (
         <div className='bg-main-background relative'>
@@ -74,20 +80,25 @@ export default function ViewMyProperty() {
 
                         {/* Image Carousel */}
                         <div className="relative mb-4">
-                            {property.images && property.images.length > 0 ? (
+                            {allImages.length > 0 ? (
                                 <>
                                     <img
-                                        src={property.images[currentImageIndex].image_url}
-                                        alt={property.images[currentImageIndex].image_name}
+                                        src={allImages[currentImageIndex]}
+                                        alt={`Property ${currentImageIndex + 1}`}
                                         className="w-full h-60 object-cover rounded-md"
                                     />
-                                    <button onClick={handlePrevImage} className="absolute left-0 top-1/2 -translate-y-1/2 px-2">Prev</button>
-                                    <button onClick={handleNextImage} className="absolute right-0 top-1/2 -translate-y-1/2 px-2">Next</button>
+                                    {allImages.length > 1 && (
+                                        <>
+                                            <button onClick={handlePrevImage} className="absolute left-0 top-1/2 -translate-y-1/2 px-2 bg-black bg-opacity-50 text-white rounded">Prev</button>
+                                            <button onClick={handleNextImage} className="absolute right-0 top-1/2 -translate-y-1/2 px-2 bg-black bg-opacity-50 text-white rounded">Next</button>
+                                        </>
+                                    )}
+                                    <p className="text-center mt-2">{currentImageIndex + 1} / {allImages.length}</p>
                                 </>
                             ) : (
                                 <img
                                     src='https://via.placeholder.com/400x200'
-                                    alt="No Image Available"
+                                    alt="Placeholder"
                                     className="w-full h-60 object-cover rounded-md"
                                 />
                             )}

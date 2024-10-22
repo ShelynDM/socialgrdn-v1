@@ -9,24 +9,34 @@ router.get('/', (req, res) => {
   }
 
   const query = `
-    SELECT p.property_id, p.property_name, p.photo, p.description,
-           CONCAT(p.dimensions_length, ' L x ', p.dimensions_width, ' W x ', p.dimensions_height, ' H') AS dimension, 
-           p.soil_type, p.amenities, p.restrictions, p.rent_base_price,
-           l.address_line1, l.city, l.province, l.postal_code,
-           GROUP_CONCAT(c.crop_name) AS crops,
-           JSON_ARRAYAGG(JSON_OBJECT('image_id', pi.image_id, 'image_name', pi.image_name, 'image_url', pi.image_url)) AS images
-    FROM PropertyListing p
-    JOIN PropertyLocation l ON p.location_id = l.location_id
-    LEFT JOIN PropertyCrops c ON p.property_id = c.property_id
-    LEFT JOIN PropertyImages pi ON p.property_id = pi.property_id
-    WHERE p.property_id = ?
-    GROUP BY p.property_id
+  SELECT 
+      p.property_id, p.property_name, p.description, p.growth_zone,
+      CONCAT(p.dimensions_length, ' L x ', p.dimensions_width, ' W x ', p.dimensions_height, ' H') AS dimension, 
+      p.soil_type, p.amenities, p.restrictions, p.rent_base_price,
+      l.address_line1, l.city, l.province, l.postal_code,
+      GROUP_CONCAT(DISTINCT c.crop_name) AS crops,
+      ppi.image_url AS primary_image_url,
+      GROUP_CONCAT(DISTINCT poi.image_url) AS other_image_urls
+  FROM 
+      PropertyListing p
+  JOIN 
+      PropertyLocation l ON p.location_id = l.location_id
+  LEFT JOIN 
+      PropertyCrops c ON p.property_id = c.property_id
+  LEFT JOIN
+      PropertyPrimaryImages ppi ON p.property_id = ppi.property_id
+  LEFT JOIN
+      PropertyOtherImages poi ON p.property_id = poi.property_id
+  WHERE 
+      p.property_id = ?
+  GROUP BY 
+      p.property_id
   `;
 
   db.query(query, [property_id], (err, results) => {
     if (err) {
       console.error('Database error:', err);
-      return res.status(500).send(err);
+      return res.status(500).send('An error occurred while fetching property details');
     }
 
     if (results.length === 0) {
@@ -34,13 +44,23 @@ router.get('/', (req, res) => {
     }
 
     const property = results[0];
-    property.amenities = property.amenities.split(',').map(item => item.trim());
-    property.restrictions = property.restrictions.split(',').map(item => item.trim());
+
+    // Process amenities and restrictions as arrays
+    property.amenities = property.amenities ? property.amenities.split(',').map(item => item.trim()) : [];
+    property.restrictions = property.restrictions ? property.restrictions.split(',').map(item => item.trim()) : [];
+
+    // Process crops as an array, handling possible null values
     property.crops = property.crops ? property.crops.split(',').map(item => item.trim()) : [];
 
-    // Parse the images array
-    property.images = JSON.parse(property.images);
+    // Process primary image
+    property.primaryImage = property.primary_image_url || null;
+    delete property.primary_image_url;
 
+    // Process other images
+    property.otherImages = property.other_image_urls ? property.other_image_urls.split(',') : [];
+    delete property.other_image_urls;
+
+    // Return the property data as JSON
     return res.status(200).json(property);
   });
 });

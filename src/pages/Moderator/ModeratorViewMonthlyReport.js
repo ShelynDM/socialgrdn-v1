@@ -1,8 +1,9 @@
 
 import InAppLogo from "../../components/Logo/inAppLogo";
-import NavBar from "../../components/Navbar/navbar";
+
 import SearchBar from "../../components/SearchComponents/search";
-import Sprout from "../../assets/navbarAssets/sprout.png";
+
+import NavBarModerator from "../../components/Navbar/navbarmoderator";
 
 
 export default function ModeratorViewMonthlyReport() {
@@ -61,8 +62,8 @@ export default function ModeratorViewMonthlyReport() {
                 </div>
             </div>
 
+            <NavBarModerator ReportColor={"#00B761"} />
 
-            <NavBar ProfileColor={"#00B761"} SproutPath={Sprout} />
         </div>
     );
 }

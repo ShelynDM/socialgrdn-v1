@@ -3,9 +3,9 @@
 
 import { SlArrowRight } from "react-icons/sl";
 import InAppLogo from "../../components/Logo/inAppLogo";
-import NavBar from "../../components/Navbar/navbar";
-import Sprout from "../../assets/navbarAssets/sprout.png";
+
 import SearchBar from "../../components/SearchComponents/search";
+import NavBarModerator from "../../components/Navbar/navbarmoderator";
 
 export default function ModeratorViewReport() {
     // Dummy data for renter payouts
@@ -56,7 +56,7 @@ export default function ModeratorViewReport() {
             </div>
 
 
-            <NavBar SearchColor={"#00B761"} SproutPath={Sprout} />
+            <NavBarModerator ReportColor={"#00B761"} />
         </div>
     );
 }
