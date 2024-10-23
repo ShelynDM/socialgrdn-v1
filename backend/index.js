@@ -19,6 +19,7 @@ const getPropDetailsRoutes = require('./api/GetPropDetailsAPI');
 const getRentalDetailsRoutes = require('./api/GetRentalDetailsAPI');
 const addPropertyListingRoutes = require('./api/addPropertyListingAPI');// Import your new addPropertyListingAPI
 const getReservationListRoutes = require('./api/GetReservationListAPI');
+const updatePropertyListingRoutes = require('./api/UpdatePropertyListingAPI');
 const getPayoutsRoutes = require('./api/GetPayoutAPI');
 const getDetailedPayoutsRoutes = require('./api/GetDetailedPayoutAPI');
 const getPropStatusRoutes = require('./api/GetPropStatusAPI');
@@ -33,7 +34,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors({ origin: 'http://localhost:3001' }));
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../build')));
+app.use(express.static(path.join(__dirname, '../build')
+));
 
 // Use route files
 app.use('/api/users', userRoutes);
@@ -46,6 +48,7 @@ app.use('/api/getPropertyDetails', getPropDetailsRoutes);
 app.use('/api/GetRentalDetails', getRentalDetailsRoutes);
 app.use('/api/addPropertyListing', addPropertyListingRoutes);// Add the new route for addPropertyListingAPI
 app.use('/api/getReservationList', getReservationListRoutes);
+app.use('/api/updatePropertyListing', updatePropertyListingRoutes); // Add the new route for updating a property listing
 app.use('/api/getPayouts', getPayoutsRoutes);
 app.use('/api/getDetailedPayouts', getDetailedPayoutsRoutes);
 app.use('/api/getPropStatus', getPropStatusRoutes);

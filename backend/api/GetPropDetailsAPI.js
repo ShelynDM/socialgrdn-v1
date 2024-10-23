@@ -13,10 +13,12 @@ router.get('/', (req, res) => {
       p.property_id, p.property_name, p.description, p.growth_zone,
       CONCAT(p.dimensions_length, ' L x ', p.dimensions_width, ' W x ', p.dimensions_height, ' H') AS dimension, 
       p.soil_type, p.amenities, p.restrictions, p.rent_base_price,
-      l.address_line1, l.city, l.province, l.postal_code,
+      l.address_line1, l.city, l.province, l.postal_code, l.country,
+      l.latitude, l.longitude,
       GROUP_CONCAT(DISTINCT c.crop_name) AS crops,
       ppi.image_url AS primary_image_url,
-      GROUP_CONCAT(DISTINCT poi.image_url) AS other_image_urls
+      GROUP_CONCAT(DISTINCT poi.image_url) AS other_image_urls,
+      u.first_name, u.last_name
   FROM 
       PropertyListing p
   JOIN 
@@ -27,6 +29,8 @@ router.get('/', (req, res) => {
       PropertyPrimaryImages ppi ON p.property_id = ppi.property_id
   LEFT JOIN
       PropertyOtherImages poi ON p.property_id = poi.property_id
+  LEFT JOIN
+      UserProfile u ON p.userid = u.userid
   WHERE 
       p.property_id = ?
   GROUP BY 
@@ -59,6 +63,20 @@ router.get('/', (req, res) => {
     // Process other images
     property.otherImages = property.other_image_urls ? property.other_image_urls.split(',') : [];
     delete property.other_image_urls;
+
+    // Convert latitude and longitude to numbers if they exist, otherwise null
+    property.latitude = property.latitude !== null ? parseFloat(property.latitude) : null;
+    property.longitude = property.longitude !== null ? parseFloat(property.longitude) : null;
+
+    // Create a user object with the name information
+    property.owner = {
+      firstName: property.first_name || null,
+      lastName: property.last_name || null
+    };
+    
+    // Remove the raw first_name and last_name fields
+    delete property.first_name;
+    delete property.last_name;
 
     // Return the property data as JSON
     return res.status(200).json(property);

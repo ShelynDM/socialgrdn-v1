@@ -88,7 +88,7 @@ export default function App() {
               <Route path="/Listing" element={<ProtectedRoute><Listing /></ProtectedRoute>} />
               <Route path="/RentProperty" element={<ProtectedRoute><RentProperty /></ProtectedRoute>} />
               <Route path="/RentConfirmation" element={<ProtectedRoute><RentConfirmation /></ProtectedRoute>} />
-              <Route path="/ViewProperty" element={<ProtectedRoute><ViewProperty /></ProtectedRoute>} />
+              <Route path="/ViewProperty/:id" element={<ProtectedRoute><ViewProperty /></ProtectedRoute>} />
 
               {/* This route now dynamically receives the property_id as a URL param */}
               <Route path="/ViewMyProperty/:id" element={<ProtectedRoute><ViewMyProperty /></ProtectedRoute>} />
@@ -99,7 +99,7 @@ export default function App() {
               <Route path="/ListingConfirmation" element={<ProtectedRoute><ListingConfirmation /></ProtectedRoute>} />
               <Route path="/ViewMyListings" element={<ProtectedRoute><ViewMyListings /></ProtectedRoute>} />
               <Route path="/AddProperty" element={<ProtectedRoute><AddProperty /></ProtectedRoute>} />
-              <Route path="/EditProperty" element={<ProtectedRoute><EditProperty /></ProtectedRoute>} />
+              <Route path="/EditProperty/:id" element={<ProtectedRoute><EditProperty /></ProtectedRoute>} />
 
               {/* Pay Property Section */}
               <Route path="/PayProperty" element={<ProtectedRoute><PayProperty /></ProtectedRoute>} />
