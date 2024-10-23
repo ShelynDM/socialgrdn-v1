@@ -1,16 +1,16 @@
 /**
- * GetReservationDetailsAPI.js
- * Get reservation details through reservation id
- * by joining reservations, propertylisting and propertylocation tables
+ * GetRentalListAPI.js
+ * Get rental details through user id and filtered by status (1)
+ * by joining rental, propertylisting, userprofile, propertyprimaryimages and propertylocation tables
  */
 const express = require('express');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  const { rentalID } = req.query;
+  const { userID } = req.query;
 
-  if (!rentalID) {
-    return res.status(400).send('rentalID is required');
+  if (!userID) {
+    return res.status(400).send('userID is required');
   }
 
   const query = `
@@ -32,20 +32,20 @@ JOIN
 LEFT JOIN
     PropertyPrimaryImages p ON pl.property_id = p.property_id
 WHERE
-    r.rental_ID = ?
+    r.renter_ID = ? AND r.status = 1
 `;
 
-  db.query(query, [rentalID], (err, results) => {
+  db.query(query, [userID], (err, results) => {
     if (err) {
       console.error('Database error:', err);
-      return res.status(500).send('An error occurred while fetching reservation');
+      return res.status(500).send('An error occurred while fetching reservations');
     }
 
     if (results.length === 0) {
-      return res.status(404).send('Reservation not found');
+      return res.status(404).send('No reservations found for the user');
     }
 
-    return res.status(200).json(results[0]);
+    return res.status(200).json(results);
   });
 });
 

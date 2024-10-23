@@ -11,10 +11,10 @@ export default function reservation({ name, landowner, start, end, address, imag
         day: 'numeric',
     });
     return (
-        <section className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 rounded-lg border-2 py-1 border-gray-200 bg-main-background mb-6">
-
+        // <section className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 rounded-lg border-2 py-1 border-gray-200 bg-main-background mb-6">
+        <section className="w-full  rounded-lg border-2 py-1 border-gray-200 bg-main-background mb-6">
+            {/* Image */}
             <img src={image} alt="Listing" className="w-full h-auto" />
-
             <div className="p-3">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center">
@@ -28,7 +28,7 @@ export default function reservation({ name, landowner, start, end, address, imag
                 <p>Listed by: {landowner}</p>
             </div>
 
-            <div class="flex items-center border-y border-black p-3">
+            <div className="flex items-center border-y border-black p-3">
 
                 <div className="w-2/4 border-r border-black m-1">
                     <p>{formattedStartDate} - </p>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-//import { useParams } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom"; //useLocation is used to extract rental_id from the query string
 
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
@@ -19,14 +19,15 @@ export default function RentConfirmation() {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const rental_id = queryParams.get('rental_id');
-    console.log(rental_id); // This should log "114"
+
+    //Stores Rental Object Information
+    const [rental, setRental] = useState('');
 
     const paymentStatus = 1; // 1 = Payment Successful, 0 = Payment Failed
     // Rental Information 
-    const [propertyZone, setPropertyZone] = useState('');
-    const [zoneColor, setZoneColor] = useState('');
+
     const [propertyAddress, setPropertyAddress] = useState('');
-    const [propertyName, setPropertyName] = useState('');
+
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
 
@@ -34,12 +35,12 @@ export default function RentConfirmation() {
     useEffect(() => {
         const fetchRentalDetails = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/api/GetRentalDetails?rental_id=${rental_id}`);
+                const response = await fetch(`http://localhost:3000/api/GetRentalDetails?rentalID=${rental_id}`);
                 if (!response.ok) {
                     console.log("Network response was not ok");
                 }
                 const rentalData = await response.json();
-
+                setRental(rentalData);
                 // Convert timestamps to 'Month Day, Year' format
                 const formattedStartDate = new Date(rentalData.start_date).toLocaleDateString('en-US', {
                     month: 'long',
@@ -52,35 +53,57 @@ export default function RentConfirmation() {
                 });
 
                 setPropertyAddress(rentalData.address_line1 + ', ' + rentalData.city + ', ' + rentalData.province);
-                setPropertyZone(rentalData.growth_zone);
-                setPropertyName(rentalData.property_name);
                 setStartDate(formattedStartDate);
                 setEndDate(formattedEndDate);
             } catch (error) {
                 console.error('Error fetching property details:', error);
             }
         };
+
         fetchRentalDetails();
+
         //eslint - disable - next - line
     }, [rental_id]);
 
-    //setZoneColor
-    const assignZoneColor = (zone) => {
-        setZoneColor(zoneFormat(zone));
-    };
+    //Updating Rent Details to DB
+    useEffect(() => {
+        if (!rental) {
+            return;
+        }
+        const updatedRental = rental;
+        updatedRental.status = 1;
+        updatedRental.start_date = new Date(rental.start_date).toLocaleDateString('en-CA');
+        updatedRental.end_date = new Date(rental.end_date).toLocaleDateString('en-CA');
+
+        const patchRental = async () => {
+            try {
+                const response = await fetch(`http://localhost:3000/api/editRentalDetails`,
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(updatedRental),
+                    }
+                );
+                if (!response.ok) {
+                    throw new Error('Failed to update rental data.');
+                }
+            } catch (error) {
+                console.error('Error updating rental details:', error);
+            }
+        };
+
+        patchRental();
+        //eslint - disable - next - line
+    }, [rental, rental_id]);
+
 
     const handleBackToReservations = () => {
         navigate('/ReservationList');
     };
 
-    useEffect(() => {
-        assignZoneColor(propertyZone);
-        //eslint-disable-next-line
-    }, [propertyZone]);
-
-
     return (
-
         <div className='bg-main-background'>
             {/* Main Content */}
             <div className="flex flex-col items-center min-h-screen mx-4 pb-20  pt-20 bg-main-background">
@@ -112,7 +135,7 @@ export default function RentConfirmation() {
                                     {/* Listing Title */}
                                     <div className="flex flex-row justify-between mb-2">
                                         <div>
-                                            <h1 className="font-bold text-lg ">{propertyName}</h1>
+                                            <h1 className="font-bold text-lg ">{rental.property_name}</h1>
                                         </div>
                                     </div>
                                     {/* Listing Description */}
@@ -125,8 +148,8 @@ export default function RentConfirmation() {
                                         </div>
                                         {/* Farming Zone */}
                                         <div className="flex flex-row gap-1">
-                                            <div className="w-4 h-4 border-1 border-gray-400" style={{ backgroundColor: zoneColor }}></div>
-                                            <p className="text-xs text-gray-500">Zone {propertyZone}</p>
+                                            <div className="w-4 h-4 border-1 border-gray-400" style={{ backgroundColor: zoneFormat(rental.growth_zone) }}></div>
+                                            <p className="text-xs text-gray-500">Zone {rental.growth_zone}</p>
                                         </div>
                                     </div>
                                 </div>

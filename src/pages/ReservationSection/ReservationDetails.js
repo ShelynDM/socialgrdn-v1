@@ -20,15 +20,13 @@ export default function ReservationDetails() {
     const [endDate, setEndDate] = useState('');
     const [durationMonths, setDurationMonths] = useState(null);   // need to finalize issues with duration rules and pricing
     const [durationDays, setDurationDays] = useState(null);       //need to finalize issues with duration rules and pricing
-    console.log(reservation);
-
 
     // Fetching reservations from API
     useEffect(() => {
         const fetchReservation = async () => {
             try {
                 console.log("rentalID :" + rentalID);
-                const response = await fetch(`http://localhost:3000/api/getReservationDetails?rentalID=${rentalID}`);
+                const response = await fetch(`http://localhost:3000/api/GetRentalDetails?rentalID=${rentalID}`);
                 if (!response.ok) {
                     console.log("Network response was not ok");
                     return;
@@ -100,7 +98,7 @@ export default function ReservationDetails() {
             <div className="flex flex-col items-center justify-center gap-2 min-h-screen pb-20 pt-10">
                 <BackButton />
 
-                <section className="mb-3 mt-5">
+                <section className="mb-3 mt-5 rounded-lg border-2 py-1 border-gray-200 bg-main-background">
                     <img src={reservation.image_url} alt="Listing" className="w-full h-auto" />
 
                     <div className="p-3">
@@ -122,6 +120,9 @@ export default function ReservationDetails() {
 
                     <div className="p-3 text-sm">
                         <h2 className="font-bold">Reservation details</h2>
+                        <div className="flex text-sm">
+                            <p>{reservation.description}</p>
+                        </div>
                         <div className="p-3 flex">
                             <div className="w-1/3">
                                 <p>Date</p>
@@ -137,46 +138,69 @@ export default function ReservationDetails() {
 
                     <div className="p-3 text-sm">
                         <h2 className="font-bold">Payment details</h2>
-                        <div className="p-3 flex text-sm border-b-2 border-slate-600">
-                            <div className="w-2/3">
-                                <p>{reservation.property_name} x {durationMonths} month/s</p>
-                                <p>SocialGrdn fee (3%)</p>
-                                <p>Taxes</p>
-                            </div>
-                            <div className="w-1/3">
-                                <p>CAD </p>
-                                <p>CAD </p>
-                                <p>CAD </p>
-                            </div>
+                        <div className="flex text-sm">
+                            <table className=" w-full">
+                                <tr>
+                                    <td className="w-2/3"><p>{reservation.property_name} x {durationMonths} month/s</p></td>
+                                    <td className="w-1/3"><p>CAD {reservation.rent_base_price}</p></td>
+                                </tr>
+                                <tr>
+                                    <td className="w-2/3"><p>SocialGrdn fee (3%)</p></td>
+                                    <td className="w-1/3"><p>CAD {reservation.transaction_fee}</p></td>
+                                </tr>
+                                <tr>
+                                    <td className="w-1/3"><p>Taxes</p></td>
+                                    <td className="w-1/3"><p>CAD {reservation.tax_amount}</p></td>
+                                </tr>
+                            </table>
                         </div>
-                        <div className="p-3 flex text-sm">
-                            <div className="w-2/3">
-                                <p>Total</p>
-                            </div>
-                            <div className="w-1/3">
-                                <p>CAD </p>
-                            </div>
+                        <div className="p-3 flex border-b-2 border-slate-600">
+                        </div>
+                        <div className="p-3 flex text-sm font-bold">
+                            <table className=" w-full">
+                                <tr>
+                                    <td className="w-2/3"><p>Total</p></td>
+                                    <td className="w-1/3"><p>CAD {(parseFloat(reservation.rent_base_price) +
+                                        parseFloat(reservation.transaction_fee) +
+                                        parseFloat(reservation.tax_amount)).toLocaleString(undefined, {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        })}
+                                    </p></td>
+                                </tr>
+                            </table>
                         </div>
                     </div>
 
                     <div className="p-3 text-sm">
                         <h2 className="font-bold">Property Details</h2>
-                        <div className="p-3 flex text-sm border-b-2 border-slate-600">
-                            <div className="w-2/3">
-                                <p>Dimensions</p>
-                                <p>Soil type</p>
-                                <p>Amenities</p>
-                                <p>Restrictions</p>
-                                <p>Possible Crops</p>
-                            </div>
-                            <div className="w-1/3">
-                                <p> </p>
-                                <p> </p>
-                                <p> </p>
-                                <p> </p>
-                                <p> </p>
-                            </div>
+                        <div className="flex text-sm">
+                            <table className=" w-full">
+                                <tr>
+                                    <td className="w-2/3"><p>Dimensions</p></td>
+                                    <td className="w-1/3"><p>
+                                        {reservation.dimensions_height} x {reservation.dimensions_length} x {reservation.dimensions_width}
+                                    </p></td>
+                                </tr>
+                                <tr>
+                                    <td className="w-2/3"><p>Soil type</p></td>
+                                    <td className="w-1/3"><p>{reservation.soil_type}</p></td>
+                                </tr>
+                                <tr>
+                                    <td className="w-1/3"><p>Amenities</p></td>
+                                    <td className="w-1/3"><p>{reservation.amenities}</p></td>
+                                </tr>
+                                <tr>
+                                    <td className="w-1/3"><p>Restrictions</p></td>
+                                    <td className="w-1/3"><p>{reservation.restrictions}</p></td>
+                                </tr>
+                                <tr>
+                                    <td className="w-1/3"><p>Possible Crops</p></td>
+                                    <td className="w-1/3"><p>{reservation.crop_name}</p></td>
+                                </tr>
+                            </table>
                         </div>
+
                     </div>
                     <div className="p-3 text-sm">
                         <h2 className="font-bold">Cancellation Policy</h2>

@@ -30,7 +30,7 @@ export default function ReservationList() {
     useEffect(() => {
         const fetchReservations = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/api/getReservationList?userID=${userId}`);
+                const response = await fetch(`http://localhost:3000/api/getRentalList?userID=${userId}`);
                 if (!response.ok) {
                     console.log("Network response was not ok");
                     return;
@@ -68,7 +68,7 @@ export default function ReservationList() {
 
                 </div>
                 {/* Displays the reservations */}
-                <div>
+                <div >
                     <ul>
                         {reservations.map((reservation) => (
                             <li key={reservation.rental_id} onClick={() => handleViewReservation(reservation.rental_id)}>

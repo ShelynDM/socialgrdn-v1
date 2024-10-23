@@ -18,9 +18,9 @@ const getSearchResultsRoutes = require('./api/GetSearchResultsAPI');
 const getPropDetailsRoutes = require('./api/GetPropDetailsAPI');
 const getRentalDetailsRoutes = require('./api/GetRentalDetailsAPI');
 const addPropertyListingRoutes = require('./api/addPropertyListingAPI');// Import your new addPropertyListingAPI
-const getReservationListRoutes = require('./api/GetReservationListAPI');
-const getReservationDetailsRoutes = require('./api/GetReservationDetailsAPI');
+const getRentalListRoutes = require('./api/GetRentalListAPI');
 const registerRentalDetailsRoutes = require('./api/RegisterRentalDetailsAPI');
+const editRentalDetailsRoutes = require('./api/EditRentalAPI');
 
 const stripeCheckoutSession = require('./api/create-checkout-session');  //payment route
 
@@ -46,13 +46,13 @@ app.use('/api/getUserProperties', getUserPropertiesRoutes);
 app.use('/api/getSearchResults', getSearchResultsRoutes);
 app.use('/api/getPropertyDetails', getPropDetailsRoutes);
 app.use('/api/GetRentalDetails', getRentalDetailsRoutes);
-app.use('/api/addPropertyListing', addPropertyListingRoutes);// Add the new route for addPropertyListingAPI
-app.use('/api/getReservationList', getReservationListRoutes);
+app.use('/api/addPropertyListing', addPropertyListingRoutes);
+app.use('/api/getRentalList', getRentalListRoutes);
 app.use('/api/create-checkout-session', stripeCheckoutSession); //payment route
-app.use('/api/getReservationDetails', getReservationDetailsRoutes);
 app.use('/api/registerRentalDetails', registerRentalDetailsRoutes);
+app.use('/api/editRentalDetails', editRentalDetailsRoutes);
 
-// Create a route for the Stripe checkout session
+
 
 
 // The "catchall" handler
