@@ -2,7 +2,8 @@ import React from "react";
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import SearchBar from "../../components/SearchComponents/search";
-import Sprout from "../../assets/navbarAssets/sprout.png";
+
+import NavBarModerator from "../../components/Navbar/navbarmoderator";
 
 const users = [
     { image: 'https://via.placeholder.com/150', username: "lili", name:"Lilian Huh", memberSince: "July 2024", activeProperties: "10 active properties" , location: "Calgary,AB", renterOrOwner:"Renter & Owner"},
@@ -50,7 +51,8 @@ export default function ModeratorViewAllUsers() {
                         </div>
                     ))}
                 </div>
-                <NavBar SearchColor={"#00B761"} SproutPath={Sprout} />
+
+                <NavBarModerator UsersColor={"#00B761"} />
             </div>
         </div>
     );

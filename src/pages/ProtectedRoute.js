@@ -17,6 +17,7 @@ const ProtectedRoute = ({ children }) => {
                 setIsVerified(user.emailVerified);
             } else {
                 console.log('No user logged in');
+                return <Navigate to="/Login" />;
             }
             setLoading(false);
         });
@@ -34,6 +35,7 @@ const ProtectedRoute = ({ children }) => {
         console.log('Email not verified');
         return <Navigate to="/VerifyEmail" />;
     }
+
 
 
     return children;

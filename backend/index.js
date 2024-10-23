@@ -25,6 +25,10 @@ const editRentalDetailsRoutes = require('./api/EditRentalAPI');
 const stripeCheckoutSession = require('./api/create-checkout-session');  //payment route
 
 
+const getPayoutsRoutes = require('./api/GetPayoutAPI');
+const getDetailedPayoutsRoutes = require('./api/GetDetailedPayoutAPI');
+const getPropStatusRoutes = require('./api/GetPropStatusAPI');
+const updatePropStatusRoutes = require('./api/UpdatePropStatusAPI');
 
 const app = express();
 const port = 3000;
@@ -53,6 +57,11 @@ app.use('/api/registerRentalDetails', registerRentalDetailsRoutes);
 app.use('/api/editRentalDetails', editRentalDetailsRoutes);
 
 
+app.use('/api/addPropertyListing', addPropertyListingRoutes);// Add the new route for addPropertyListingAPI
+app.use('/api/getPayouts', getPayoutsRoutes);
+app.use('/api/getDetailedPayouts', getDetailedPayoutsRoutes);
+app.use('/api/getPropStatus', getPropStatusRoutes);
+app.use('/api/updatePropStatus', updatePropStatusRoutes);
 
 
 // The "catchall" handler
