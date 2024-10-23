@@ -5,103 +5,111 @@ import Sprout from "../../assets/navbarAssets/sprout.png";
 import SearchResult from "../../components/SearchComponents/searchResult";
 import SearchFilter from "../../components/SearchComponents/popupSearchFilter";
 import FilterButton from "../../components/SearchComponents/filterButton";
-import axios from "axios";
+//import axios from "axios";
 import {ref, onValue} from "firebase/database";
 import {realtimeDb} from "../../_utils/firebase";
-
-
 
 // Import the following components to reuse search components
 import SearchWithSuggestions from "../../components/SearchComponents/searchWithSuggestions";
 import usePropertyResult from "../../components/SearchComponents/propertyResult";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 export default function Search() {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [userLocation, setUserLocation] = useState();
-    const [userPointLocation, setUserPointLocation] = useState(null);
     const [filteredResults, setFilteredResults] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [locationFetched, setLocationFetched] = useState(false);
     const [cropData, setCropData] = useState({});
 
-    // This two functions must be called to get the property results and search parameters
-    // This two functions should be added to reuse the search components in different pages
+    // Get property results from the database
     const propertyResult = usePropertyResult();
     const [searchParams] = useSearchParams();
+    //const navigate = useNavigate(); // Initialize navigate
 
-    // Get search query from the URL
+    // Get search query from the URL and remove it
     useEffect(() => {
         const query = searchParams.get("searchQuery");
         if (query) {
-          setSearchQuery(query); // Update the state with the query from the URL
+            setSearchQuery(query); // Update state with query from URL
+            // Remove query from URL without reloading the page
+            //navigate("/Search", { replace: true });
         }
-      }, [searchParams]);
+    }, [searchParams]);
 
     
     // Function to reset filters
     const resetFilters = () => {
         setSearchQuery(""); // Clear search query
-        //filterResults(); // Reset filtered results to default
     };
 
-    // Add reset on Navbar search icon click
-    const handleNavbarSearchClick = () => {
-        resetFilters(); // Reset search query and filtered results
+    const deg2rad = (deg) => {
+        return deg * (Math.PI / 180);
+    };
+
+    // Haversine formula to calculate the distance between two points (latitude and longitude)
+    const haversineDistance = (userLocation, propertyResult) => {
+        const R = 6371; // Radius of the earth in km
+        const dLat = deg2rad(propertyResult.latitude - userLocation.latitude);  
+        const dLon = deg2rad(propertyResult.longitude - userLocation.longitude);
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(deg2rad(userLocation.latitude)) * Math.cos(deg2rad(propertyResult.latitude)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distance = R * c; // Distance in km
+        return distance;
     };
 
 
-    // Get user's location based on the user's IP address
-    const getUserPointLocation = useCallback(async () => {
+    // Get the nearest properties to the user's location
+    const getNearestResults = (userLocation, propertyResult) => {
+        if (!Array.isArray(propertyResult)) return [];
+        return propertyResult
+            .map((result) => ({
+                ...result,
+                distance: haversineDistance(userLocation, result),
+            }))
+            .filter((result) => result.distance <= 20)
+            .sort((a, b) => a.distance - b.distance)
+            .slice(0, 10);
+    };
+
+    
+    // Get the current location of the user
+    const getUserLocation = useCallback(() => {
         if (navigator.geolocation) {
-            try {
-                const position = await new Promise((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(resolve, reject);
-                });
-                const { latitude, longitude } = position.coords;
-                setUserPointLocation({ latitude, longitude });
-                await fetchLocation(latitude, longitude);
-                setLocationFetched(true);
-            } catch (error) {
-                console.error("Error getting location", error);
-            }
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const location = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                    };
+                    setUserLocation(location);
+                    setLocationFetched(true);
+                },
+                (error) => console.error("Error getting location", error)
+            );
         } else {
             console.error("Geolocation is not supported by this browser.");
-        }
-        //eslint-disable-next-line
-    }, []);
-
-    // Fetch location based on latitude and longitude
-    const fetchLocation = useCallback(async (lat, lon) => {
-        
-        try {
-            const key = process.env.REACT_APP_GOOGLE_MAPS_API_KEY; // Replace with your actual API key
-            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&language=en&key=${key}`);
-
-            setUserLocation(response.data.results[0]);
-
-            console.log("Response data:", response.data.results[0]);
-        } catch (error) {
-            console.error("Error fetching location:", error);
         }
     }, []);
 
     // Fetch user's location on page load
     useEffect(() => {
         if (!locationFetched) {
-            getUserPointLocation();
+            getUserLocation();
         }
-    }, [getUserPointLocation, locationFetched]);
+    }, [getUserLocation, locationFetched]);
 
     // Filter results based on user's location or display random properties if location is not available
     useEffect(() => {
         if (propertyResult.length > 0) {
             if (userLocation) {
-                try {
-                    filterResults();
-                    console.log("Point Location:", userPointLocation);
-                    console.log("User Location Results:", userLocation);
-                    console.log("Filtered Results:", filteredResults);
+            try {
+                    const nearestResults = getNearestResults(userLocation, propertyResult);
+                    setFilteredResults(nearestResults);
+                    console.log("Nearest Results:", nearestResults);
                 } catch (error) {
                     console.error("Error filtering results based on location:", error);
                 }
@@ -219,44 +227,6 @@ export default function Search() {
 
     }
 
-    // Filter search results based on user's location
-    const filterResults = useCallback(() => {
-        const getSamePostalResults = (userLocation, propertyResult) => {
-            return propertyResult.filter((result) => result.postal_code.trim().slice(0,3) === userLocation.address_components[6].short_name.trim().slice(0,3));
-        };
-        console.log("ulr:", userLocation.address_components[6].short_name);
-        
-        
-        const getSameCityResults = (userLocation, propertyResult) => {
-            return propertyResult.filter((result) => result.city === userLocation.address_components[3].long_name);
-        };
-        
-        const getSameRegionResults = (userLocation, propertyResult) => {
-            return propertyResult.filter((result) => result.province === userLocation.address_components[4].long_name);
-        };
-
-        if (userLocation && propertyResult.length > 0) {
-            let results = [];
-            
-            // Add same postcode results (up to 10)
-            const postalResults = getSamePostalResults(userLocation, propertyResult).slice(0, 10);
-            results.push(...postalResults);
-    
-            // Add same city results (up to 10 - results.length)
-            const cityResults = getSameCityResults(userLocation, propertyResult);
-            const uniqueCityResults = cityResults.filter(result => !results.includes(result));
-            const cityResultsToAdd = uniqueCityResults.slice(0, Math.max(0, 10 - results.length));
-            results.push(...cityResultsToAdd);
-    
-            // Add same region results (up to 10 - results.length)
-            const regionResults = getSameRegionResults(userLocation, propertyResult);
-            const uniqueRegionResults = regionResults.filter(result => !results.includes(result));
-            const regionResultsToAdd = uniqueRegionResults.slice(0, Math.max(0, 10 - results.length));
-            results.push(...regionResultsToAdd);
-    
-            setFilteredResults(results.slice(0, 10));
-        }
-    }, [userLocation, propertyResult]);
 
     // Handle the filtered property results once the search query is triggered by "Enter" key or suggestion click
     const handleSearchTrigger = (searchQuery) => {
@@ -285,11 +255,6 @@ export default function Search() {
         setSearchQuery(query);
     };
 
-    // Reset results on page refresh/load
-    // useEffect(() => {
-    //     resetFilters();
-    // }, []);
-
 
     return (
         <div className='bg-main-background'>
@@ -304,15 +269,13 @@ export default function Search() {
                             //value={searchQuery}
                             searchQuery={searchQuery} 
                             propertyResult={propertyResult} 
-                            onSuggestionSelect={(selectedSuggestion) => handleSuggestionSelect(selectedSuggestion)}
+                            onSuggestionSelect={handleSuggestionSelect}
                             onSearchQueryChange={handleSearchQueryChange}
                             onSearchTrigger={handleSearchTrigger}
                             />
                     </div>
                     <div>
-                        {searchQuery ? <FilterButton onclick={filterClicked} /> :
-                        null
-                        }
+                        <FilterButton onclick={filterClicked}/>
                     </div>
                 </div>
                 <div className="w-auto">
@@ -348,7 +311,7 @@ export default function Search() {
                     )}
                 </div>
                 {/* Navigation Bar */}
-                <NavBar SearchColor={"#00B761"} SproutPath={Sprout} onSearchClick={handleNavbarSearchClick}/>
+                <NavBar SearchColor={"#00B761"} SproutPath={Sprout}/>
             </div>
         </div>
     );
