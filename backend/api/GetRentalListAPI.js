@@ -1,7 +1,7 @@
 /**
- * GetReservationListAPI.js
- * Get reservation detais through user id
- * by joining reservations, propertylisting and propertylocation tables
+ * GetRentalListAPI.js
+ * Get rental details through user id and filtered by status (1)
+ * by joining rental, propertylisting, userprofile, propertyprimaryimages and propertylocation tables
  */
 const express = require('express');
 const router = express.Router();
@@ -32,7 +32,7 @@ JOIN
 LEFT JOIN
     PropertyPrimaryImages p ON pl.property_id = p.property_id
 WHERE
-    r.renter_ID = ?
+    r.renter_ID = ? AND r.status = 1
 `;
 
   db.query(query, [userID], (err, results) => {

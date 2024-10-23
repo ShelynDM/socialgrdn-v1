@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { differenceInMonths, differenceInDays, parseISO } from 'date-fns';
+//import { useParams } from 'react-router-dom';
+
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
@@ -7,31 +10,27 @@ import SearchBar from "../../components/SearchComponents/search";
 import ExampleImage from "../../assets/exampleAssets/imgExample.jpg";
 import AgreeAndPay from "../../components/Buttons/longButton";
 import { LuMapPin } from "react-icons/lu";
-import { differenceInMonths, differenceInDays, parseISO } from 'date-fns';
-//import { useUser } from "../../UserContext"; // Import useUser to get the userID
-import zoneFormat from "../../components/ZoneColor/zoneColor";
+import zoneColor from "../../components/ZoneColor/zoneColor";
+
+import { useUser } from "../../UserContext";
 
 export default function RentProperty() {
+    //const propertyID = useParams().id;            //parameter
+    const [propertyID] = useState(1);               //FOR Deletion
+    const { userId } = useUser();
 
+    //Stores Property Object Information
+    const [property, setProperty] = useState('');
 
-    //Property Information
-    const [propertyID] = useState(1);                            //FOR UPDATE
-    const [propertyZone, setPropertyZone] = useState('');
-    const [zoneColor, setZoneColor] = useState('');
-    const [propertyName, setPropertyName] = useState('');
-    const [propertyAddress, setPropertyAddress] = useState('');
-    const [propertyPrice, setPropertyPrice] = useState(0.00);
-    //const[propertyImage, setPropertyImage] = useState('')       //FOR UPDATE
-
-
-    // Rental Information 
-    //const { renter_ID } = useUser(); // Get the userID from UserContext
+    // Rental  
+    const [rentalID, setRentalID] = useState('null');
     const [startDate] = useState('2024-09-01');                   //passed as parameter from view property page
     const [endDate] = useState('2024-12-05');                     //passed as parameter from view property page
     const [durationMonths, setDurationMonths] = useState(null);   // need to finalize issues with duration rules and pricing
     const [durationDays, setDurationDays] = useState(null);       //need to finalize issues with duration rules and pricing
 
-    const [rent_base_price, setRent_base_price] = useState(0.00);
+    //Price Information
+    const [base_price, setBase_price] = useState(0.00);
     const [tax_amount, setTax_amount] = useState(0.00);
     const [transaction_fee, setTransaction_fee] = useState(0.00);
     const [total_price, setTotal_price] = useState(0.00);
@@ -46,21 +45,17 @@ export default function RentProperty() {
                     console.log("Network response was not ok");
                 }
                 const propertyData = await response.json();
-                setPropertyAddress(propertyData.address_line1 + ', ' + propertyData.city + ', ' + propertyData.province);
-                setPropertyZone(propertyData.growth_zone);
-                setPropertyName(propertyData.property_name);
-                setPropertyPrice(propertyData.rent_base_price);
+                setProperty(propertyData);
             } catch (error) {
                 console.error('Error fetching property details:', error);
             }
         };
 
-
         fetchPropertyDetails();
         //eslint - disable - next - line
     }, [propertyID]);
 
-    // Get the current location of the user
+    // Calculate the duration of the rental
     const computeDuration = () => {
         if (startDate && endDate) {
             const start = parseISO(startDate);
@@ -75,41 +70,145 @@ export default function RentProperty() {
             setDurationMonths(months);
             setDurationDays(days);
         }
+
     };
 
     // Get the current location of the user
     const computePrice = () => {
-        console.log('Property Price is set');
-        // Use propertyPrice directly for calculations
-        const basePrice = parseFloat(propertyPrice) * durationMonths;
-        const taxAmount = basePrice * 0.13;          // 13% tax
-        const transactionFee = basePrice * 0.03;     // 3% transaction fee
-        const totalPrice = basePrice + taxAmount + transactionFee;
 
-        // Update the state after calculations
-        setRent_base_price(basePrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-        setTax_amount(taxAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-        setTransaction_fee(transactionFee.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-        setTotal_price(totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+        // Ensure property and duration are valid before proceeding
+        if (property && durationMonths !== null) {
+
+            // Calculate base price
+            const computedBasePrice = property.rent_base_price * durationMonths;
+
+            // Calculate tax and fees based on the computed base price
+            const computedTaxAmount = computedBasePrice * 0.13;  // 13% tax
+            const computedTransactionFee = computedBasePrice * 0.03;  // 3% transaction fee
+
+            // Calculate total price
+            const computedTotalPrice = computedBasePrice + computedTaxAmount + computedTransactionFee;
+
+            // Update state with computed values
+            setBase_price(computedBasePrice);
+            setTax_amount(computedTaxAmount);
+            setTransaction_fee(computedTransactionFee);
+            setTotal_price(computedTotalPrice);
+        }
     };
-
-    //setZoneColor
-    const assignZoneColor = (zone) => {
-        setZoneColor(zoneFormat(zone));
-    };
-
-
-    // Fetch search results and user location on component mount
 
     useEffect(() => {
         computeDuration();
         computePrice();
-        assignZoneColor(propertyZone);
         //eslint-disable-next-line
-    }, [propertyPrice]);
+    }, [property]);
 
-    const handlePaymentPage = () => {
-        //pending code to navigate to payment page
+    const handlePaymentPage = async () => {
+        try {
+            // Register rental details to the database and get the rentalID
+            const generatedRentalID = await handleRentalRegistration();  // Wait for rental registration
+
+            if (rentalID === null) {
+                console.error('Failed to register rental details');
+                return;
+            }
+            // Proceed to Stripe payment
+            await handleStripePayment(generatedRentalID);
+
+        } catch (error) {
+            console.error('Error in handling payment page:', error);
+        }
+    };
+
+    //Stripe API Call
+    const handleStripePayment = async (rentalID) => {
+
+        if (!rentalID) {
+            console.error('Rental ID is null. Cannot proceed with payment');
+            return;
+        }
+        //Preparing paymentData object for DB registration
+        const paymentData = {
+            amount: total_price,
+            rental_id: rentalID,
+        };
+
+        console.log('API start paymentData:', paymentData);
+
+        //API call to register rental details
+        try {
+            const response = await fetch('http://localhost:3001/api/create-checkout-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(paymentData),
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            // Handle the response
+            const result = await response.json();
+            console.log('Payment session created successfully:', result);
+
+            // Redirect to Stripe Checkout page
+            window.location.href = result.url;
+
+        } catch (error) {
+            console.error('Error occurred while creating payment session:', error);
+            //alert('Failed to create payment session. Please try again.');
+        }
+
+    };
+
+
+    // Register rental details to the database
+    const handleRentalRegistration = async () => {
+
+        //Preparing rental object for DB registration
+        const rentalData = {
+            property_id: propertyID,
+            renter_ID: userId,
+            start_date: startDate,
+            end_date: endDate,
+            status: 0,                         // pending state, unpaid
+            rent_base_price: base_price,
+            tax_amount: tax_amount,
+            transaction_fee: transaction_fee
+        };
+        console.log('API start rentalData:', rentalData);
+
+        //API call to register rental details
+        try {
+            console.log('API start');
+
+            const response = await fetch('http://localhost:3000/api/registerRentalDetails', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(rentalData),  // Convert data to JSON format
+            });
+
+            console.log('Rental registration response:', response);
+            //alert('Payment API response ' + response);
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            // Parse the JSON response
+            const result = await response.json();
+            console.log('Rental registration successful, result:', result);
+
+            // Update the rentalID state with the last inserted ID
+            setRentalID(result.rent_id);
+            return result.rent_id;
+
+        } catch (error) {
+            console.error('Error occurred during rental registration:', error);
+            return null;
+        }
     };
 
     return (
@@ -137,7 +236,7 @@ export default function RentProperty() {
                         {/* Listing Title */}
                         <div className="flex flex-row justify-between mb-2">
                             <div>
-                                <h1 className="font-bold text-lg ">{propertyName}</h1>
+                                <h1 className="font-bold text-lg ">{property.property_name}</h1>
                             </div>
                         </div>
                         {/* Listing Description */}
@@ -146,12 +245,12 @@ export default function RentProperty() {
                             {/* Listing Address */}
                             <div className="flex">
                                 <LuMapPin />
-                                <p className="text-xs">{propertyAddress}</p>
+                                <p className="text-xs">{property.address_line1 + ', ' + property.city + ', ' + property.province}</p>
                             </div>
                             {/* Farming Zone */}
                             <div className="flex flex-row gap-1">
-                                <div className="w-4 h-4 border-1 border-gray-400" style={{ backgroundColor: zoneColor }}></div>
-                                <p className="text-xs text-gray-500">Zone {propertyZone}</p>
+                                <div className="w-4 h-4 border-1 border-gray-400" style={{ backgroundColor: zoneColor(property.growth_zone) }}></div>
+                                <p className="text-xs text-gray-500">Zone {property.growth_zone}</p>
                             </div>
                         </div>
                     </div>
@@ -181,28 +280,24 @@ export default function RentProperty() {
                         <div className="flex flex-col">
                             <div className="mx-4 flex justify-between">
                                 <div className="flex">
-                                    <p className="text-sm">{propertyName}</p>
+                                    <p className="text-sm">{property.property_name}</p>
                                     <p className="text-sm mx-1"> x </p>
                                     <p className="text-sm">{durationMonths} months</p>
                                 </div>
-                                {/* <p className="text-sm">rent_base_price</p> */}
-                                <p className="text-sm">{rent_base_price}</p>
+                                <p className="text-sm">{base_price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                             </div>
                             <div className="mx-4 flex justify-between">
                                 <p className="text-sm">SocialGrdn Fee (3%)</p>
-                                {/* <p className="text-sm">transaction_fee</p> */}
-                                <p className="text-sm">{transaction_fee}</p>
+                                <p className="text-sm">{transaction_fee.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                             </div>
                             <div className="mx-4 flex justify-between">
                                 <p className="text-sm">Tax</p>
-                                {/* <p className="text-sm">tax_amount</p> */}
-                                <p className="text-sm">{tax_amount}</p>
+                                <p className="text-sm">{tax_amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                             </div>
                         </div>
                         <div className="mx-4 flex justify-between border-t border-t-black">
                             <h2 className="font-semibold">Total</h2>
-                            {/* <h2 className="font-semibold">total_price</h2> */}
-                            <h2 className="font-semibold">{total_price}</h2>
+                            <h2 className="font-semibold">{total_price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>
                         </div>
 
                         <div className="my-2">
