@@ -1,3 +1,10 @@
+/**
+ * navbarmoderator.js
+ * Description: Navigation bar for moderator view
+ * Author: Lilian Huh
+ * Date: 2024-10-23
+ */
+
 import React from 'react';
 import { IoSearchSharp } from "react-icons/io5";
 import { FaRegUser } from "react-icons/fa6";

@@ -1,11 +1,12 @@
+
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
-import BackButton from "../../components/Buttons/backButton";
 import { useEffect, useState } from "react";
 import { useUser } from "../../UserContext";
 import { SlArrowRight } from "react-icons/sl";
 
+import BackMoreButton from "../../components/Buttons/backMoreButton";
 export default function Payouts() {
     const [renterPayouts, setRenterPayouts] = useState([]);
     const { userId } = useUser();
@@ -62,10 +63,8 @@ export default function Payouts() {
                 </div>
             </header>
 
-            <div className="fixed top-12 flex w-full items-center justify-between bg-main-background">
-                <div className="flex-grow w-full">
-                    <BackButton />
-                </div>
+            <div className="mt-8"> {/* Reduced margin-top for BackMoreButton */}
+                <BackMoreButton />
             </div>
 
             <div className="flex flex-col gap-2 min-h-screen pb-20 pt-10">

@@ -1,3 +1,10 @@
+/**
+ * ModeratorViewProfile.js
+ * Description: Profile page for moderator view
+ * Author: Lilian Huh
+ * Date: 2024-10-23
+ */
+
 "use client";
 import React, { useState, useEffect } from "react";
 import { FaUser, FaUserCircle, FaPhone, FaLock, FaRegEnvelope, FaUsers, FaUserTie } from "react-icons/fa";
@@ -8,11 +15,7 @@ import { FaLocationDot } from "react-icons/fa6";
 import LongButton from "../../components/Buttons/longButton";
 import { TbReportAnalytics } from "react-icons/tb";
 import InAppLogo from "../../components/Logo/inAppLogo";
-
-import NavBar from "../../components/Navbar/navbar";
 import NavBarModerator from "../../components/Navbar/navbarmoderator";
-
-import Sprout from "../../assets/navbarAssets/sprout.png";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../_utils/firebase";

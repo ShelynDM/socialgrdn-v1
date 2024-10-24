@@ -1,12 +1,21 @@
+/**
+ * DeletionConfirmation.js
+ * Description: Page to confirm the deletion of a listing and navigate back to the user's listings page.
+ * Author: Lilian Huh
+ * Date: 2024-10-23
+ */
+
 import React from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for programmatic navigation
-
+import NavBar from "../../components/Navbar/navbar";
+import Sprout from "../../assets/navbarAssets/sprout.png";
 import InAppLogo from "../../components/Logo/inAppLogo";
 import DeletionModal from "../../components/ListingComponents/deletionModal";
 
+
 export default function DeletionConfirmation() {
     const [isModalVisible, setIsModalVisible] = React.useState(false);
-    const navigate = useNavigate(); // Initialize navigate
+    const navigate = useNavigate(); 
 
     const openModal = () => {
         setIsModalVisible(true);
@@ -39,6 +48,7 @@ export default function DeletionConfirmation() {
                 {/* Conditionally render the DeletionModal */}
                 {isModalVisible && <DeletionModal onClose={closeModal} />}
             </div>
+            <NavBar ProfileColor="#00B761" SproutPath={Sprout} />
         </div>
     );
 }

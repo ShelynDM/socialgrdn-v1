@@ -24,8 +24,8 @@ const editRentalDetailsRoutes = require('./api/EditRentalAPI');
 
 const stripeCheckoutSession = require('./api/create-checkout-session');  //payment route
 
-
 const getPayoutsRoutes = require('./api/GetPayoutAPI');
+const getEarningsRoutes = require('./api/GetEarningsAPI');
 const getDetailedPayoutsRoutes = require('./api/GetDetailedPayoutAPI');
 const getPropStatusRoutes = require('./api/GetPropStatusAPI');
 const updatePropStatusRoutes = require('./api/UpdatePropStatusAPI');
@@ -58,9 +58,9 @@ app.use('/api/create-checkout-session', stripeCheckoutSession); //payment route
 app.use('/api/registerRentalDetails', registerRentalDetailsRoutes);
 app.use('/api/editRentalDetails', editRentalDetailsRoutes);
 
-
 app.use('/api/addPropertyListing', addPropertyListingRoutes);// Add the new route for addPropertyListingAPI
 app.use('/api/getPayouts', getPayoutsRoutes);
+app.use('/api/getEarnings', getEarningsRoutes);
 app.use('/api/getDetailedPayouts', getDetailedPayoutsRoutes);
 app.use('/api/getPropStatus', getPropStatusRoutes);
 app.use('/api/updatePropStatus', updatePropStatusRoutes);
