@@ -1,9 +1,10 @@
 import React from "react";
 import InAppLogo from "../../components/Logo/inAppLogo";
-import NavBar from "../../components/Navbar/navbar";
 import SearchBar from "../../components/SearchComponents/search";
 
 import NavBarModerator from "../../components/Navbar/navbarmoderator";
+import { FaRegUser, FaRegUserCircle, FaPhone, FaUserTie, FaUserCircle } from "react-icons/fa";
+
 
 const users = [
     { image: 'https://via.placeholder.com/150', username: "lili", name:"Lilian Huh", memberSince: "July 2024", activeProperties: "10 active properties" , location: "Calgary,AB", renterOrOwner:"Renter & Owner"},
@@ -27,7 +28,8 @@ export default function ModeratorViewAllUsers() {
                     <h1 className="text-2xl font-semibold">Users</h1>
                     {users.map((user) => (
                         <div key={user.username} className="flex bg-white rounded-lg shadow-md p-4 relative">
-                            <img src={user.image} alt={user.username} className="w-32 h-40 object-cover rounded-lg mr-4" />
+                            {/* <img src={user.image} alt={user.username} className="w-32 h-40 object-cover rounded-lg mr-4" /> */}
+                            <div><FaUserCircle className="w-24 h-28 mr-4"></FaUserCircle></div>
                             <div className="flex flex-col justify-between w-full">
                                 <div className="relative ">
                                     <h1 className="absolute top-0 right-0 text-sm font-semibold text-gray-700 bg-white px-2 py-1 rounded-lg">

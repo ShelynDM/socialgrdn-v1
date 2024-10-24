@@ -18,12 +18,20 @@ const getSearchResultsRoutes = require('./api/GetSearchResultsAPI');
 const getPropDetailsRoutes = require('./api/GetPropDetailsAPI');
 const getRentalDetailsRoutes = require('./api/GetRentalDetailsAPI');
 const addPropertyListingRoutes = require('./api/addPropertyListingAPI');// Import your new addPropertyListingAPI
-const getReservationListRoutes = require('./api/GetReservationListAPI');
+const getRentalListRoutes = require('./api/GetRentalListAPI');
+const registerRentalDetailsRoutes = require('./api/RegisterRentalDetailsAPI');
+const editRentalDetailsRoutes = require('./api/EditRentalAPI');
+
+const stripeCheckoutSession = require('./api/create-checkout-session');  //payment route
+
+
 const updatePropertyListingRoutes = require('./api/UpdatePropertyListingAPI');
 const getPayoutsRoutes = require('./api/GetPayoutAPI');
 const getDetailedPayoutsRoutes = require('./api/GetDetailedPayoutAPI');
 const getPropStatusRoutes = require('./api/GetPropStatusAPI');
 const updatePropStatusRoutes = require('./api/UpdatePropStatusAPI');
+
+const getUserRoleRoutes = require('./api/GetUserRoleAPI');
 
 const app = express();
 const port = 3000;
@@ -46,13 +54,21 @@ app.use('/api/getUserProperties', getUserPropertiesRoutes);
 app.use('/api/getSearchResults', getSearchResultsRoutes);
 app.use('/api/getPropertyDetails', getPropDetailsRoutes);
 app.use('/api/GetRentalDetails', getRentalDetailsRoutes);
+app.use('/api/addPropertyListing', addPropertyListingRoutes);
+app.use('/api/getRentalList', getRentalListRoutes);
+app.use('/api/create-checkout-session', stripeCheckoutSession); //payment route
+app.use('/api/registerRentalDetails', registerRentalDetailsRoutes);
+app.use('/api/editRentalDetails', editRentalDetailsRoutes);
+
+
 app.use('/api/addPropertyListing', addPropertyListingRoutes);// Add the new route for addPropertyListingAPI
-app.use('/api/getReservationList', getReservationListRoutes);
 app.use('/api/updatePropertyListing', updatePropertyListingRoutes); // Add the new route for updating a property listing
 app.use('/api/getPayouts', getPayoutsRoutes);
 app.use('/api/getDetailedPayouts', getDetailedPayoutsRoutes);
 app.use('/api/getPropStatus', getPropStatusRoutes);
 app.use('/api/updatePropStatus', updatePropStatusRoutes);
+
+app.use('/api/getUserRole', getUserRoleRoutes);
 
 
 // The "catchall" handler

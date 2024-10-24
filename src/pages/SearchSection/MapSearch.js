@@ -9,7 +9,7 @@ import usePropertyResult from "../../components/SearchComponents/propertyResult"
 import { useNavigate } from "react-router-dom";
 
 
-export default function TrialSearch() {
+export default function MapSearch() {
     const [searchResults, setSearchResults] = useState([]);
     const [userLocation, setUserLocation] = useState(null); // Should be null initially
     const [nearestResults, setNearestResults] = useState([]);

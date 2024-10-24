@@ -10,11 +10,11 @@ export default function NavBarModerator({ SearchColor, ReportColor, UsersColor, 
     return (
         <nav className='fixed bottom-0 w-full border border-t-2 py-4 px-6 pb-5 bg-main-background'>
             <ul className='flex flex-row justify-between'>
-                <li>
+                {/* <li>
                     <Link to="/Search">
                         <IoSearchSharp className="w-8 h-8 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14" style={{ color: SearchColor }} />
                     </Link>
-                </li>
+                </li> */}
                 <li>
                     <Link to="/ModeratorViewReport">
                         <TbReportSearch className="w-8 h-8 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14" style={{ color: ReportColor }} />
@@ -26,7 +26,7 @@ export default function NavBarModerator({ SearchColor, ReportColor, UsersColor, 
                     </Link>
                 </li>
                 <li>
-                    <Link to="/Profile">
+                    <Link to="/ModeratorViewProfile">
                         <FaRegUser className="w-8 h-8 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14" style={{ color: ProfileColor }} />
                     </Link>
                 </li>

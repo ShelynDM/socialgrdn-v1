@@ -10,44 +10,37 @@ export default function SearchWithSuggestions({ propertyResult, onSuggestionSele
 
     const navigate = useNavigate();
 
-    // Handle redirect to search page when a suggestion is selected
-    const handleRedirect = (searchQuery) => {
-        // Redirect to search page with the selected suggestion
-        console.log("Page is redirecting to search page with the selected suggestion");
-        //navigate(`/Search?search=${searchQuery}`);
-
-        if (searchQuery) {
-            navigate(`/Search?searchQuery=${searchQuery}`);
-        }else{
-            navigate(`/Search`);
+    // Handle redirect to search page and trigger search logic
+    const handleRedirectAndSearch = (query) => {
+        if (query) {
+            onSearchQueryChange(query); // Update the search query in parent state
+            onSearchTrigger(query); // Trigger the search logic to filter results
+            navigate(`/Search?searchQuery=${query}`); // Update the URL with query
         }
+        setIsDropDownVisible(false); // Close the dropdown
     };
 
-    // Get unique suggestions from the property result
+    // Get unique suggestions from property results
     const getUniqueSuggestions = useCallback(() => {
         let wordsSet = new Set();
         propertyResult.forEach((result) => {
-            const propertyName = result.property_name.toLowerCase().split(/\s+/);
-            const propertyAddress = result.address_line1.toLowerCase().split(/\s+/);
-            const propertyCity = result.city.toLowerCase().split(/\s+/);
-            const propertyProvince = result.province.toLowerCase().split(/\s+/);
-            const propertyGrowthZone = result.growth_zone.toLowerCase().split(/\s+/);
-            const propertyCrop = result.crop.toLowerCase().split(/\s+/);
-            const propertySoilType = result.soil_type.toLowerCase().split(/\s+/);
-            const propertyFirstName = result.first_name.toLowerCase().split(/\s+/);
-            const propertyLastName = result.last_name.toLowerCase().split(/\s+/);
-            const propertyPostalCode = result.postal_code.toLowerCase().split(/\s+/);
-
-            propertyName.forEach((word) => wordsSet.add(word.toLowerCase()));
-            propertyAddress.forEach((word) => wordsSet.add(word.toLowerCase()));
-            propertyCity.forEach((word) => wordsSet.add(word.toLowerCase()));
-            propertyProvince.forEach((word) => wordsSet.add(word.toLowerCase()));
-            propertyGrowthZone.forEach((word) => wordsSet.add(word.toLowerCase()));
-            propertyCrop.forEach((word) => wordsSet.add(word.toLowerCase()));
-            propertySoilType.forEach((word) => wordsSet.add(word.toLowerCase()));
-            propertyFirstName.forEach((word) => wordsSet.add(word.toLowerCase()));
-            propertyLastName.forEach((word) => wordsSet.add(word.toLowerCase()));
-            propertyPostalCode.forEach((word) => wordsSet.add(word.toLowerCase()));
+            const fields = [
+                result.property_name,
+                result.address_line1,
+                result.city,
+                result.province,
+                result.growth_zone,
+                result.crop,
+                result.soil_type,
+                result.first_name,
+                result.last_name,
+                result.postal_code,
+            ];
+            fields.forEach((field) => {
+                if (field) {
+                    field.toLowerCase().split(/\s+/).forEach((word) => wordsSet.add(word));
+                }
+            });
         });
         return Array.from(wordsSet);
     }, [propertyResult]);
@@ -59,9 +52,9 @@ export default function SearchWithSuggestions({ propertyResult, onSuggestionSele
     // Handle input change in the search bar
     const handleInputChange = (e) => {
         const query = e.target.value.toLowerCase();
-        onSearchQueryChange(query);
+        onSearchQueryChange(query); // Update the search query in parent state
         
-        setIsDropDownVisible(query.length > 0);
+        setIsDropDownVisible(query.length > 0); // Show dropdown if query is not empty
 
         if (query.length > 0) {
             const filtered = suggestions.filter((field) =>
@@ -76,19 +69,22 @@ export default function SearchWithSuggestions({ propertyResult, onSuggestionSele
     // handle Enter key press
     const handleKeyPress = (e) => {
         if (e.key === "Enter") {
-            onSearchTrigger(searchQuery);
+            //onSearchTrigger(searchQuery);
             setIsDropDownVisible(false);
-            handleRedirect(searchQuery);
+            handleRedirectAndSearch(searchQuery);
         }
     };
 
     // Handle selecting a suggestion
     const handleSuggestionSelect = (suggestion) => {
-        onSuggestionSelect(suggestion);  // Pass the selected suggestion to the parent component
-        onSearchTrigger(suggestion)
-        handleRedirect(suggestion);
-        onSearchQueryChange(suggestion);
+        // onSuggestionSelect(suggestion);  // Pass the selected suggestion to the parent component
+        // onSearchTrigger(suggestion)
+        // handleRedirect(suggestion);
+        // onSearchQueryChange(suggestion);
+        // setIsDropDownVisible(false);
+        //onSearchTrigger(suggestion);
         setIsDropDownVisible(false);
+        handleRedirectAndSearch(suggestion);
     };
 
     return (

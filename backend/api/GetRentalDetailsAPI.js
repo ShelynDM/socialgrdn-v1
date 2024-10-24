@@ -1,48 +1,56 @@
 /**
  * GetRentalDetailsAPI.js
- * Get rental detais (including address) through rental_id
- * by joining rental, propertylisting and  propertylocation table
+ * Get rental details through rentalID
+ * by joining rental, propertylisting, userprofile and propertylocation tables
+ * 
+ * Used by pages\ReservationSection\ReservationDetails.js
  */
 const express = require('express');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  const { rental_id } = req.query;
-  // Ensure rental_id is provided
-  if (!rental_id) {
-    return res.status(400).send('rental_id is required');
+  const { rentalID } = req.query;
+
+  if (!rentalID) {
+    return res.status(400).send('rentalID is required');
   }
-  // Query to fetch rental, property and location details
-  const query = `SELECT 
-    r.rental_id, r.start_date, r.end_date, r.status, r.rent_base_price, r.tax_amount, r.transaction_fee,
-    p.property_name, p.description, p.rent_base_price AS property_base_price, p.growth_zone, 
-    l.address_line1, l.city, l.province, l.postal_code,
-    u.username AS renter_name
-FROM 
+
+  const query = `
+    SELECT
+    r.rental_id, r.start_date, r.end_date, r.status, r.rent_base_price, r.tax_amount, r.transaction_fee, r.renter_ID,
+    pl.property_id, pl.property_name, pl.growth_zone, pl.dimensions_length, pl.dimensions_width, pl.dimensions_height, pl.description,
+    pl.soil_type, pl.amenities, pl.restrictions,
+    CONCAT(up.first_name, ' ', up.last_name) AS property_owner,
+    loc.address_line1, loc.city, loc.province, 
+    p.image_url,
+    pc.crop_name
+FROM
     rental r
-JOIN 
-    propertylisting p ON r.property_id = p.property_id
-JOIN 
-    propertylocation l ON p.location_id = l.location_id
-JOIN 
-    userprofile u ON r.renter_ID = u.userID
-WHERE 
-    r.rental_id = ?;
+JOIN
+    propertylisting pl ON r.property_id = pl.property_id
+JOIN
+    userprofile up ON pl.userID = up.userID
+JOIN
+    propertylocation loc ON pl.location_id = loc.location_id
+LEFT JOIN
+    PropertyPrimaryImages p ON pl.property_id = p.property_id
+LEFT JOIN
+    PropertyCrops pc ON pl.property_id = pc.property_id
+WHERE
+    r.rental_ID = ?
 `;
 
-  // Execute the query
-  db.query(query, [rental_id], (err, results) => {
+  db.query(query, [rentalID], (err, results) => {
     if (err) {
       console.error('Database error:', err);
-      return res.status(500).send(err);
+      return res.status(500).send('An error occurred while fetching reservation');
     }
 
-    // Check if results are found
     if (results.length === 0) {
-      return res.status(404).send('Rental information not found');
-    } else {
-      return res.status(200).json(results[0]); // Send the first result back as JSON
+      return res.status(404).send('Reservation not found');
     }
+
+    return res.status(200).json(results[0]);
   });
 });
 
