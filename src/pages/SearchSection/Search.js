@@ -1,3 +1,11 @@
+/**
+ * Search.js
+ * Description: Page for displaying the list of property and search results
+ * Frontend Author: Shelyn Del Mundo
+ * Backend Author: Shelyn Del Mundo
+ * Date: 2024-10-23
+ */
+
 import React, { useEffect, useState, useCallback } from "react";
 import NavBar from "../../components/Navbar/navbar";
 import InAppLogo from "../../components/Logo/inAppLogo";
@@ -25,23 +33,22 @@ export default function Search() {
     // Get property results from the database
     const propertyResult = usePropertyResult();
     const [searchParams] = useSearchParams();
-    //const navigate = useNavigate(); // Initialize navigate
+    const navigate = useNavigate();
 
     // Get search query from the URL and remove it
     useEffect(() => {
         const query = searchParams.get("searchQuery");
         if (query) {
             setSearchQuery(query); // Update state with query from URL
-            // Remove query from URL without reloading the page
-            //navigate("/Search", { replace: true });
+
         }
     }, [searchParams]);
 
     
     // Function to reset filters
-    const resetFilters = () => {
-        setSearchQuery(""); // Clear search query
-    };
+    // const resetFilters = () => {
+    //     setSearchQuery(""); // Clear search query
+    // };
 
     const deg2rad = (deg) => {
         return deg * (Math.PI / 180);
@@ -255,6 +262,13 @@ export default function Search() {
         setSearchQuery(query);
     };
 
+    // Handle property click to view property details
+    const handlePropertyClick = (propertyId) => {
+        console.log("Property ID:", propertyId);
+        // Navigate to the property details page
+        navigate(`/ViewProperty/${propertyId}`);
+    }
+
 
     return (
         <div className='bg-main-background'>
@@ -304,6 +318,8 @@ export default function Search() {
                                 dimensionWidth={result.dimensions_width}
                                 dimensionHeight={result.dimensions_height}
                                 soilType={result.soil_type}
+
+                                onClick={() => handlePropertyClick(result.property_id)}
                             />
                         ))
                     ) : (
