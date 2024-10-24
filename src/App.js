@@ -76,8 +76,8 @@ export default function App() {
             <>
               {/* Search Section */}
               <Route path="/" element={<Navigate to="/Search" />} />
-              <Route path="/Search" element={<ProtectedRoute allowedRoles={[1,2]}><Search /></ProtectedRoute>} />
-              <Route path="/MapSearch" element={<ProtectedRoute allowedRoles={[1,2]}><MapSearch /></ProtectedRoute>} />
+              <Route path="/Search" element={<ProtectedRoute allowedRoles={[0,1,2]}><Search /></ProtectedRoute>} />
+              <Route path="/MapSearch" element={<ProtectedRoute allowedRoles={[0,1,2]}><MapSearch /></ProtectedRoute>} />
 
               {/* Sign Up Section */}
               <Route path="/LandingPage" element={<LandingPage />} />
@@ -89,35 +89,35 @@ export default function App() {
               <Route path="/ForgotPassword" element={<ForgotPassword />} />
 
               {/* Profile Section */}
-              <Route path="/Profile" element={<ProtectedRoute allowedRoles={[1,2]}><Profile /></ProtectedRoute>} />
-              <Route path="/EditProfile" element={<ProtectedRoute allowedRoles={[1,2]}><EditProfile /></ProtectedRoute>} />
-              <Route path="/ViewProfile" element={<ProtectedRoute allowedRoles={[1,2]}><ViewProfile /></ProtectedRoute>} />
+              <Route path="/Profile" element={<ProtectedRoute allowedRoles={[0,1,2]}><Profile /></ProtectedRoute>} />
+              <Route path="/EditProfile" element={<ProtectedRoute allowedRoles={[0,1,2]}><EditProfile /></ProtectedRoute>} />
+              <Route path="/ViewProfile" element={<ProtectedRoute allowedRoles={[0,1,2]}><ViewProfile /></ProtectedRoute>} />
 
               {/* Rent Property Section */}
-              <Route path="/Listing" element={<ProtectedRoute allowedRoles={[1,2]}><Listing /></ProtectedRoute>} />
-              <Route path="/RentProperty" element={<ProtectedRoute allowedRoles={[1,2]}><RentProperty /></ProtectedRoute>} />
-              <Route path="/RentFailed" element={<ProtectedRoute allowedRoles={[1,2]}><RentFailed /></ProtectedRoute>} />
-              <Route path="/RentConfirmation" element={<ProtectedRoute allowedRoles={[1,2]}><RentConfirmation /></ProtectedRoute>} />
-              <Route path="/ViewProperty" element={<ProtectedRoute allowedRoles={[1,2]}><ViewProperty /></ProtectedRoute>} />
-              <Route path="/AddProperty" element={<ProtectedRoute allowedRoles={[1,2]}><AddProperty /></ProtectedRoute>} />
-              <Route path="/EditProperty" element={<ProtectedRoute allowedRoles={[1,2]}><EditProperty /></ProtectedRoute>} />
+              <Route path="/Listing" element={<ProtectedRoute allowedRoles={[0,1,2]}><Listing /></ProtectedRoute>} />
+              <Route path="/RentProperty" element={<ProtectedRoute allowedRoles={[0,1,2]}><RentProperty /></ProtectedRoute>} />
+              <Route path="/RentFailed" element={<ProtectedRoute allowedRoles={[0,1,2]}><RentFailed /></ProtectedRoute>} />
+              <Route path="/RentConfirmation" element={<ProtectedRoute allowedRoles={[0,1,2]}><RentConfirmation /></ProtectedRoute>} />
+              <Route path="/ViewProperty" element={<ProtectedRoute allowedRoles={[0,1,2]}><ViewProperty /></ProtectedRoute>} />
+              <Route path="/AddProperty" element={<ProtectedRoute allowedRoles={[0,1,2]}><AddProperty /></ProtectedRoute>} />
+              <Route path="/EditProperty" element={<ProtectedRoute allowedRoles={[0,1,2]}><EditProperty /></ProtectedRoute>} />
 
               {/* This route now dynamically receives the property_id as a URL param */}
-              <Route path="/ViewMyProperty/:id" element={<ProtectedRoute allowedRoles={[1,2]}><ViewMyProperty /></ProtectedRoute>} />
+              <Route path="/ViewMyProperty/:id" element={<ProtectedRoute allowedRoles={[0,1,2]}><ViewMyProperty /></ProtectedRoute>} />
 
               {/* Listing Section */}
-              <Route path="/PropertyLists" element={<ProtectedRoute allowedRoles={[1,2]}><PropertyLists /></ProtectedRoute>} />
-              <Route path="/DeletionConfirmation" element={<ProtectedRoute allowedRoles={[1,2]}><DeletionConfirmation /></ProtectedRoute>} />
-              <Route path="/ListingConfirmation" element={<ProtectedRoute allowedRoles={[1,2]}><ListingConfirmation /></ProtectedRoute>} />
-              <Route path="/ViewMyListings" element={<ProtectedRoute allowedRoles={[1,2]}><ViewMyListings /></ProtectedRoute>} />
+              <Route path="/PropertyLists" element={<ProtectedRoute allowedRoles={[0,1,2]}><PropertyLists /></ProtectedRoute>} />
+              <Route path="/DeletionConfirmation" element={<ProtectedRoute allowedRoles={[0,1,2]}><DeletionConfirmation /></ProtectedRoute>} />
+              <Route path="/ListingConfirmation" element={<ProtectedRoute allowedRoles={[0,1,2]}><ListingConfirmation /></ProtectedRoute>} />
+              <Route path="/ViewMyListings" element={<ProtectedRoute allowedRoles={[0,1,2]}><ViewMyListings /></ProtectedRoute>} />
 
               {/* Pay Property Section */}
-              <Route path="/PayProperty" element={<ProtectedRoute allowedRoles={[1,2]}><PayProperty /></ProtectedRoute>} />
+              <Route path="/PayProperty" element={<ProtectedRoute allowedRoles={[0,1,2]}><PayProperty /></ProtectedRoute>} />
 
               {/* Reservation Section */}
-              <Route path="/ReservationCancelled" element={<ProtectedRoute allowedRoles={[1,2]}><ReservationCancelled /></ProtectedRoute>} />
-              <Route path="/ReservationDetails/:id" element={<ProtectedRoute allowedRoles={[1,2]}><ReservationDetails /></ProtectedRoute>} />
-              <Route path="/ReservationList" element={<ProtectedRoute allowedRoles={[1,2]}><ReservationList /></ProtectedRoute>} />
+              <Route path="/ReservationCancelled" element={<ProtectedRoute allowedRoles={[0,1,2]}><ReservationCancelled /></ProtectedRoute>} />
+              <Route path="/ReservationDetails/:id" element={<ProtectedRoute allowedRoles={[0,1,2]}><ReservationDetails /></ProtectedRoute>} />
+              <Route path="/ReservationList" element={<ProtectedRoute allowedRoles={[0,1,2]}><ReservationList /></ProtectedRoute>} />
 
               {/* Moderator Section */}
               <Route path="/ModeratorViewMonthlyReport" element={<ProtectedRoute allowedRoles={[0]}><ModeratorViewMonthlyReport /></ProtectedRoute>} />
@@ -128,8 +128,8 @@ export default function App() {
 
 
               {/* Landowner Gross Earnings Section */}
-              <Route path="/GrossEarnings" element={<ProtectedRoute allowedRoles={[1,2]}><GrossEarnings /></ProtectedRoute>} />
-              <Route path="/Payouts" element={<ProtectedRoute allowedRoles={[1,2]}><Payouts /></ProtectedRoute>} />
+              <Route path="/GrossEarnings" element={<ProtectedRoute allowedRoles={[0,1,2]}><GrossEarnings /></ProtectedRoute>} />
+              <Route path="/Payouts" element={<ProtectedRoute allowedRoles={[0,1,2]}><Payouts /></ProtectedRoute>} />
 
               {/* Restricted Route */}
               <Route path="/RestrictedRoute" element={<RestrictedRoute />} />
