@@ -30,6 +30,8 @@ const getDetailedPayoutsRoutes = require('./api/GetDetailedPayoutAPI');
 const getPropStatusRoutes = require('./api/GetPropStatusAPI');
 const updatePropStatusRoutes = require('./api/UpdatePropStatusAPI');
 
+const getUserRoleRoutes = require('./api/GetUserRoleAPI');
+
 const app = express();
 const port = 3000;
 
@@ -62,6 +64,8 @@ app.use('/api/getPayouts', getPayoutsRoutes);
 app.use('/api/getDetailedPayouts', getDetailedPayoutsRoutes);
 app.use('/api/getPropStatus', getPropStatusRoutes);
 app.use('/api/updatePropStatus', updatePropStatusRoutes);
+
+app.use('/api/getUserRole', getUserRoleRoutes);
 
 
 // The "catchall" handler
