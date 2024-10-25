@@ -14,6 +14,10 @@ npm install firebase
 
 npm install mysql
 
+npm install sweetalert2 sweetalert2-react-content
+
+npm install date-fns
+
 then
 
 npm install

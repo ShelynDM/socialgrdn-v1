@@ -1,27 +1,32 @@
+/**
+ * DeletionConfirmation.js
+ * Description: Page to confirm the deletion of a listing and navigate back to the user's listings page.
+ * Author: Lilian Huh
+ * Date: 2024-10-23
+ */
+
 import React from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for programmatic navigation
+import NavBar from "../../components/Navbar/navbar";
+import Sprout from "../../assets/navbarAssets/sprout.png";
 import InAppLogo from "../../components/Logo/inAppLogo";
-// import NavBar from "../../components/navbar";
-// import GreenSprout from "../../assets/sproutGreen.png";
-// import { IoArrowBackSharp } from "react-icons/io5";
-// import SearchBar from "../../components/search";
 import DeletionModal from "../../components/ListingComponents/deletionModal";
-
-
-
 
 
 export default function DeletionConfirmation() {
     const [isModalVisible, setIsModalVisible] = React.useState(false);
+    const navigate = useNavigate(); 
 
     const openModal = () => {
         setIsModalVisible(true);
         console.log("Deletion Modal Opened");
     };
-
     const closeModal = () => {
         setIsModalVisible(false);
     };
-
+    const handleBackToMyListings = () => {
+        navigate('/ViewMyListings');
+    };
 
     return (
         <div className='bg-main-background'>
@@ -32,29 +37,18 @@ export default function DeletionConfirmation() {
                     <InAppLogo/>
                 </div>
 
-                {/* Top Bar Section (Back Button, Search) */}
-                {/* <div className="flex items-center justify-between fixed top-0 left-0 right-0 mt-10 px-4 bg-main-background">
-                    <button>
-                        <IoArrowBackSharp size={25} />
-                    </button>
-                    <div className="flex-grow w-full">
-                        <SearchBar className="w-full" />
-                    </div>
-                </div> */}
-
                 {/* Deletion Confirmation Section */}
                 <div className="flex flex-col items-center justify-center w-full mt-24">
                     <p className="font-bold text-2xl">Your Listing has been deleted.</p>
-                    <button className="w-1/2 mt-4 p-2 text-green-600 font-bold ">Back to my Listings</button>
+                    <button onClick={handleBackToMyListings} className="w-1/2 mt-4 p-2 text-green-600 font-bold ">Back to my Listings</button>
                 </div>
 
                 <button className="w-1/2 mt-4 p-2 text-red-600 font-bold " onClick={openModal}>Delete Listing</button>
 
                 {/* Conditionally render the DeletionModal */}
-                {isModalVisible && <DeletionModal onClose={closeModal}/>}
+                {isModalVisible && <DeletionModal onClose={closeModal} />}
             </div>
-            {/* <NavBar SproutPath={GreenSprout} /> */}
-
+            <NavBar ProfileColor="#00B761" SproutPath={Sprout} />
         </div>
     );
 }

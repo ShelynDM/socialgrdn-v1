@@ -1,3 +1,10 @@
+/**
+ * Listing.js
+ * Description: This page displays the listings on the listing page
+ * Frontend Author: Shelyn Del Mundo
+ * Date: 2024-10-23
+ */
+
 import React from "react";
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import Sprout from "../../assets/navbarAssets/sprout.png";
@@ -6,75 +6,192 @@ import { FaUserCircle } from "react-icons/fa";
 import LongButton from "../../components/Buttons/longButton";
 import BackButton from "../../components/Buttons/backButton";
 import InputWithClearButton from "../../components/InputComponents/inputWithClearButton";
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../UserContext'; // Import the useUser to get userID
+
+// SweetAlert2 imports
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 export default function EditProfile() {
+    const [firstname, setFirstName] = useState('');
+    const [lastname, setLastName] = useState('');
+    const [username, setUsername] = useState('');
+    const [userAddress, setUserAddress] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [profession, setProfession] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
+
+    const { userId } = useUser(); // Get the UserID from UserContext
+    const navigate = useNavigate(); // Initialize useNavigate for redirection
+
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            try {
+                // Log the userId to check if it's being retrieved correctly
+                console.log("UserID being used for API:", userId);
+
+                if (!userId) {
+                    console.error("No UserID found");
+                    return;
+                }
+
+                // Fetch user data from the API using the userID
+                const response = await fetch(`http://localhost:3000/api/getProfile?userID=${userId}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const userData = await response.json();
+
+                // Populate form fields with fetched user data
+                setFirstName(userData.first_name || '');
+                setLastName(userData.last_name || '');
+                setUsername(userData.username || '');
+                setUserAddress(userData.address_line1 || '');
+                setPhoneNumber(userData.phone_number || '');
+                setProfession(userData.profession || '');
+                setIsLoading(false);
+            } catch (error) {
+                console.error('Error fetching user profile:', error);
+                setIsLoading(false);
+            }
+        };
+
+        fetchUserProfile();
+    }, [userId]);
+
+    const handleSaveChanges = async () => {
+        // Construct the user profile object
+        const userProfile = {
+            first_name: firstname,
+            last_name: lastname,
+            username,
+            address_line1: userAddress,
+            phone_number: phoneNumber,
+            profession
+        };
+
+        // Ensure the userId is available before making the request
+        if (!userId) {
+            console.error("No UserID found");
+            return;
+        }
+
+        try {
+            // Make the PATCH request, passing the userId as a query parameter
+            const response = await fetch(`/api/editProfile?userID=${userId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userProfile),
+            });
+
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                console.error(`Failed to update profile. Status: ${response.status}, Message: ${errorMessage}`);
+                throw new Error('Failed to update profile');
+            }
+
+            console.log('Profile updated successfully');
+
+            // Show success modal and redirect to profile page
+            MySwal.fire({
+                title: 'Update Successful',
+                text: 'Your profile has been updated.',
+                icon: 'success',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#00B761'
+            }).then(() => {
+                // Redirect to profile page after confirmation
+                navigate('/profile');
+            });
+
+        } catch (error) {
+            console.error('Error updating profile:', error);
+        }
+    };
+
+    // Loading state to show while user data is being fetched
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
     return (
-        <div className="bg-main-background relative">
-            <InAppLogo />
-            <BackButton />
-            <div className="flex flex-col items-center justify-center gap-2 min-h-screen pb-20">
+        <div className='bg-main-background'>
+            <div className="flex flex-col items-center justify-center gap-2 min-h-screen mx-4 pb-20 bg-main-background">
+                <div className='p-2 fixed top-0 left-0 w-auto sm:w-2/4 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-main-background'>
+                    <InAppLogo />
+                </div>
+                <div className='fixed top-12 flex w-full items-center justify-between bg-main-background'>
+                    <div className="flex-grow w-full">
+                        <BackButton/>
+                    </div>
+                </div>
                 <FaUserCircle className="text-green-500 text-9xl w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 mb-2" />
                 <div className="px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3">
                     <form className="flex flex-col flex-grow w-full gap-4 mb-8">
-                        <InputWithClearButton
-                            type="email"
-                            placeholder="Email"
-                            id="email"
-                        />
-                        <InputWithClearButton
-                            type="password"
-                            placeholder="Password"
-                            id="password"
-                        />
-                        <InputWithClearButton
-                            type="password"
-                            placeholder="Re-enter Password"
-                            id="reenterPassword"
-                        />
+                        {/* First Name field */}
                         <InputWithClearButton
                             type="text"
-                            placeholder="First Name"
                             id="firstName"
+                            value={firstname}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            placeholder="Enter First Name"
                         />
+
+                        {/* Last Name field */}
                         <InputWithClearButton
                             type="text"
-                            placeholder="Last Name"
                             id="lastName"
+                            value={lastname}
+                            onChange={(e) => setLastName(e.target.value)}
+                            placeholder="Enter Last Name"
                         />
+
+                        {/* Username field */}
                         <InputWithClearButton
                             type="text"
-                            placeholder="Profession"
-                            id="profession"
+                            id="username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            placeholder="Enter Username"
                         />
+
+                        {/* Profession field */}
+                        <InputWithClearButton
+                            type="text"
+                            id="profession"
+                            value={profession}
+                            onChange={(e) => setProfession(e.target.value)}
+                            placeholder="Enter Profession"
+                        />
+
+                        {/* Phone Number field */}
                         <InputWithClearButton
                             type="tel"
-                            placeholder="Phone Number"
                             id="phoneNumber"
+                            value={phoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                            placeholder="Enter Phone Number"
                         />
+
+                        {/* Address field */}
                         <InputWithClearButton
                             type="text"
-                            placeholder="Address"
                             id="address"
+                            value={userAddress}
+                            onChange={(e) => setUserAddress(e.target.value)}
+                            placeholder="Enter Address"
                         />
-                        <InputWithClearButton
-                            type="text"
-                            placeholder="City"
-                            id="city"
-                        />
-                        <InputWithClearButton
-                            type="text"
-                            placeholder="Province"
-                            id="province"
-                        />
-                        <InputWithClearButton
-                            type="text"
-                            placeholder="Postal Code"
-                            id="postalCode"
-                        />
+
+                        {/* Save Changes Button */}
                         <LongButton
                             buttonName="Save Changes"
                             className="w-full rounded shadow-lg bg-green-500 text-black font-semibold"
-                            pagePath="/Profile"
+                            onClick={handleSaveChanges}
                         />
                     </form>
                 </div>

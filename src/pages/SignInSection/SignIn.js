@@ -4,30 +4,68 @@ import LongButton from '../../components/Buttons/longButton';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../../_utils/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useUser } from '../../UserContext';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { setUserId } = useUser(); 
+  const [isBlocked, setIsBlocked] = useState(false);
 
-  // This function will handle the sign in process using Firebase Auth
+  // Function to fetch userID from GetProfile API
+  const fetchUserId = async (email) => {
+    try {
+      const response = await fetch(`/api/profile?email=${email}`);
+      if (response.ok) {
+        const data = await response.json();
+        const userId = data.userID;
+        const role = data.role;
+        const status = data.status;
+
+        setUserId(userId);
+        console.log("User ID retrieved and set:", userId); // Console log for verification
+        console.log("User role retrieved and set:", role); // Console log for verification
+        
+        // Check if user is blocked or not (status = 1 is active, status = 0 is blocked)
+        if (status === '1') {
+          // Redirect to the appropriate page based on user role
+          if (role === '0') { // Compare with string '0'
+              console.log("Administrator detected. Redirecting to Moderator profile...");
+              navigate('/ModeratorViewProfile');
+          } else {
+              console.log("Regular user detected. Redirecting to Profile page...");
+              navigate('/Profile'); 
+          }
+        }
+        else {
+          console.log("User is blocked.");
+          setIsBlocked(true);
+          setPassword('');
+        }
+      } else {
+        console.error('Error fetching user profile:', response.statusText);
+      }
+    } catch (err) {
+      console.error('Failed to fetch user profile:', err);
+    }
+  };
+
   const handleSignIn = async (event) => {
     event.preventDefault();
 
-    // Check if email and password are not empty
     if (email && password) {
       try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        
-        // Check if the user's email is verified using the emailVerified property of the user object 
+
         if (user.emailVerified) {
-          navigate('/Search');
+          await fetchUserId(email);
+
         } else {
           navigate('/VerifyEmail');
         }
-
       } catch (error) {
         setError('Invalid Credentials. Please try again or Sign Up.');
         console.log(error);
@@ -37,7 +75,6 @@ export default function SignIn() {
     }
   };
 
-  // This function will handle the password reset process
   const handleReset = () => {
     navigate('/ForgotPassword');
   };
@@ -71,13 +108,14 @@ export default function SignIn() {
               buttonName='Sign In' 
               type='submit'
               className='p-2 w-full rounded shadow-lg bg-green-600 font-bold text-white'
-              />
+            />
             {error && <p className="text-red-500">{error}</p>}
           </form>
           <div className='flex justify-end '>
             <button className="text-red-500 text-base font-bold" onClick={handleReset}>Forgot Password?</button>
           </div>
         </div>
+        {isBlocked && <p className="mx-4 text-red-500">Your account is currently blocked. Please contact the administrator.</p>}
         <div className='my-3'>
           <p>Don't have an account?</p>
         </div>
