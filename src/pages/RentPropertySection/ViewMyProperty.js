@@ -61,11 +61,6 @@ export default function ViewMyProperty() {
         navigate(`/EditProperty/${id}`);
     };
 
-    // Add new handler for Test View button
-    const handleTestViewClick = () => {
-        navigate(`/ViewProperty/${id}`);
-    };
-
     const ImageCarousel = ({ images }) => {
         if (images.length === 0) {
             return (
@@ -121,12 +116,6 @@ export default function ViewMyProperty() {
                         className="text-green-600 hover:text-green-700 font-bold py-2 px-4 rounded transition-colors"
                     >
                         Edit
-                    </button>
-                    <button 
-                        onClick={handleTestViewClick}
-                        className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-colors"
-                    >
-                        Test View
                     </button>
                 </div>
             </div>

@@ -47,12 +47,41 @@ const ViewProperty = () => {
   }, [id]);
 
   // Handle date range selection
-  const handleDateRangeSelect = ({ startDate, endDate, daysBetween }) => {
+  const handleDateRangeSelect = ({ startDate, endDate, monthsDiff }) => {
     setRentDuration({
       startDate,
       endDate,
-      daysBetween
+      monthsDiff
     });
+  };
+
+  const handleRentProperty = () => {
+    if (rentDuration) {
+      const navigationData = {
+        propertyId: id,
+        from: rentDuration.startDate.formatted,
+        to: rentDuration.endDate.formatted,
+        months: rentDuration.monthsDiff + 1
+      };
+
+      // Log the full rentDuration object
+      console.log('Current rentDuration state:', rentDuration);
+      
+      // Log the data being sent to navigation
+      console.log('Navigation data being sent:', navigationData);
+      
+      // Log individual values for verification
+      console.log('Property ID:', id);
+      console.log('Start Date:', rentDuration.startDate.formatted);
+      console.log('End Date:', rentDuration.endDate.formatted);
+      console.log('Months Duration:', rentDuration.monthsDiff + 1);
+
+      navigate('/RentProperty', {
+        state: navigationData
+      });
+    } else {
+      console.log('rentDuration is null - button should be disabled');
+    }
   };
 
   const ImageCarousel = ({ images = [] }) => {
@@ -64,6 +93,7 @@ const ViewProperty = () => {
       );
     }
 
+    
     return (
       <div className="relative mb-4">
         <img
@@ -181,55 +211,47 @@ const ViewProperty = () => {
                   </p>
                 </div>
                 <div className="col-span-2">
-                  <p className="text-sm font-semibold">Rent Duration</p>
-                  {rentDuration ? (
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-700">
-                        From: {rentDuration.startDate.formatted}
-                      </p>
-                      <p className="text-sm text-gray-700">
-                        To: {rentDuration.endDate.formatted}
-                      </p>
-                      <p className="text-sm text-green-600 font-medium mt-1">
-                        Duration: {rentDuration.daysBetween} days
-                      </p>
-                    </div>
-                  ) : (
-                    <p className="text-sm text-gray-700">No duration selected</p>
-                  )}
+                    <p className="text-sm font-semibold">Rent Details</p>
+                    {rentDuration ? (
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-700">
+                          From: {rentDuration.startDate.formatted}
+                        </p>
+                        <p className="text-sm text-gray-700">
+                          To: {rentDuration.endDate.formatted}
+                        </p>
+                        <p className="text-sm text-green-600 font-medium mt-1">
+                          Duration: {rentDuration.monthsDiff + 1} Months
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-700">No duration selected</p>
+                    )}
                 </div>
+
               </section>
 
               <section>
-                    <h2 className="font-semibold text-gray-900 mb-2">Price</h2>
-                    <p className="text-3xl font-bold text-green-600">
-                      CAD ${property.rent_base_price}/month
-                    </p>
-                    <div className="mt-4">
-                      <LongButton
-                        buttonName={rentDuration ? "Rent Property" : "Rent Property"}
-                        className={`w-full ${
-                          rentDuration 
-                            ? "bg-green-600 text-white hover:bg-green-700" 
-                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                        } transition-colors`}
-                        onClick={rentDuration ? () => {
-                          navigate('/rent-property', {
-                            state: {
-                              propertyId: id,
-                              durationDays: rentDuration.daysBetween,
-                              startDate: rentDuration.startDate.formatted,
-                              endDate: rentDuration.endDate.formatted
-                            }
-                          });
-                        } : undefined}
-                      />
-                    </div>
-                    {!rentDuration && (
-                      <p className="text-sm text-gray-500 mt-2 text-center">
-                        Please select a rent duration using the calendar above to proceed
-                      </p>
-                    )}
+                <h2 className="font-semibold text-gray-900 mb-2">Price</h2>
+                <p className="text-3xl font-bold text-green-600">
+                  CAD ${property.rent_base_price}/month
+                </p>
+                <div className="mt-4">
+                  <LongButton
+                    buttonName="Rent Property"
+                    className={`w-full ${
+                      rentDuration 
+                        ? "bg-green-600 text-white hover:bg-green-700" 
+                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    } transition-colors`}
+                    onClick={rentDuration ? handleRentProperty : undefined}
+                  />
+                </div>
+                {!rentDuration && (
+                  <p className="text-sm text-gray-500 mt-2 text-center">
+                    Please select a rent duration using the calendar above to proceed
+                  </p>
+                )}
               </section>
             </div>
           </div>

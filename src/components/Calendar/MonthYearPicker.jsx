@@ -73,15 +73,27 @@ const MonthRangePicker = ({ onSelect, triggerText = "Select Date Range" }) => {
       alert("Minimum rental duration is 3 months. Please select a longer duration.");
       return;
     }
-    const daysBetween = calculateDaysBetween(startDate, endDate);
+    const monthsDiff = calculateMonthsBetween(startDate, endDate);
     onSelect({
       startDate,
       endDate,
-      daysBetween
+      monthsDiff
     });
     setIsOpen(false);
     setSelectingStart(true);
   };
+
+  // Return button stays as "Select Rent Duration" unless dates are selected
+  if (!isOpen) {
+    return (
+      <button
+        onClick={() => setIsOpen(true)}
+        className="text-green-600 hover:text-green-700 font-medium py-2 px-4 rounded-lg transition"
+      >
+        {triggerText}
+      </button>
+    );
+  }
 
   const isDateInRange = (monthIndex) => {
     if (!startDate || !endDate) return false;
