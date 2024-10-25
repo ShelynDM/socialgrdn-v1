@@ -1,3 +1,11 @@
+/**
+ * LongButton.js
+ * Description: Component that displays a button with a long width
+ * Frontend Author: Shelyn Del Mundo
+ * Backend Author: Shelyn Del Mundo
+ * Date: 2024-10-23
+ */
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 

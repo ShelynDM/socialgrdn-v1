@@ -1,3 +1,11 @@
+/**
+ * DeletionConfirmation.js
+ * Description: This page displays a confirmation message when a listing is deleted
+ * Author: Shelyn Del Mundo
+ *          Lilian Huh
+ * Date: 2024-10-23
+ */
+
 import React from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for programmatic navigation
 
