@@ -1,56 +1,64 @@
+/**
+ * Payout.js
+ * Description: This page displays the payouts on the owner's account
+ * Backend Author: Shelyn Del Mundo
+ * Date: 2024-10-23
+ */
+
+import { useEffect, useState, useCallback } from "react";
+import { useUser } from "../../UserContext";
+import { SlArrowRight } from "react-icons/sl";
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
-import BackButton from "../../components/Buttons/backButton";
-import { useEffect, useState } from "react";
-import { useUser } from "../../UserContext";
-import { SlArrowRight } from "react-icons/sl";
 
+import BackMoreButton from "../../components/Buttons/backMoreButton";
 export default function Payouts() {
     const [renterPayouts, setRenterPayouts] = useState([]);
     const { userId } = useUser();
-    const [selectedPayout, setSelectedPayout] = useState(null); // Track the selected payout
+    const [selectedPayout, setSelectedPayout] = useState(null);
     const [detailedPayouts, setDetailedPayouts] = useState([]);
 
-    const fetchPayouts = async () => {
+    // Memoize the fetchPayouts function
+    const fetchPayouts = useCallback(async () => {
         try {
             const response = await fetch(`/api/getPayouts?userID=${userId}`);
-            if (!response.ok) throw new Error('Failed to fetch payouts');
+            if (!response.ok) throw new Error("Failed to fetch payouts");
             const data = await response.json();
             setRenterPayouts(data);
         } catch (error) {
-            console.error('Error fetching payouts:', error);
+            console.error("Error fetching payouts:", error);
         }
-    };
+    }, [userId]);
 
-    const fetchDetailedPayouts = async () => {
+    // Memoize the fetchDetailedPayouts function
+    const fetchDetailedPayouts = useCallback(async () => {
         try {
             const response = await fetch(`/api/getDetailedPayouts?userID=${userId}`);
-            if (!response.ok) throw new Error('Failed to fetch detailed payouts');
+            if (!response.ok) throw new Error("Failed to fetch detailed payouts");
             const data = await response.json();
             setDetailedPayouts(data);
         } catch (error) {
-            console.error('Error fetching detailed payouts:', error);
+            console.error("Error fetching detailed payouts:", error);
         }
-    };
+    }, [userId]);
 
     const openDetails = (month, year) => {
         const payout = detailedPayouts.find(
             (p) => p.month === month && p.year === year
         );
-        setSelectedPayout(payout); // Set the selected payout to display details
+        setSelectedPayout(payout);
     };
 
-    const closeDetails = () => {
-        setSelectedPayout(null); // Close the popup
-    };
+    const closeDetails = () => setSelectedPayout(null);
 
+    // Fetch payouts only when userId changes
     useEffect(() => {
         if (userId) {
             fetchPayouts();
             fetchDetailedPayouts();
         }
-    }, [userId]);
+    }, [userId, fetchPayouts, fetchDetailedPayouts]);
 
     let lastYear = null;
 
@@ -62,10 +70,8 @@ export default function Payouts() {
                 </div>
             </header>
 
-            <div className="fixed top-12 flex w-full items-center justify-between bg-main-background">
-                <div className="flex-grow w-full">
-                    <BackButton />
-                </div>
+            <div className="mt-8"> {/* Reduced margin-top for BackMoreButton */}
+                <BackMoreButton />
             </div>
 
             <div className="flex flex-col gap-2 min-h-screen pb-20 pt-10">
@@ -111,7 +117,6 @@ export default function Payouts() {
                 </table>
             </div>
 
-            {/* Popup for Details */}
             {selectedPayout && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
                     <div className="w-96 bg-white p-6 rounded-lg shadow-lg">
@@ -121,14 +126,14 @@ export default function Payouts() {
 
                         <div className="mb-4">
                             {selectedPayout.details.map((detail, index) => (
-                                <div
-                                    key={index}
-                                    className="flex justify-between py-2"
-                                >
+                                <div key={index} className="flex justify-between py-2">
                                     <span>
                                         {new Date(
                                             `${selectedPayout.year}-${selectedPayout.month}-${detail.day}`
-                                        ).toLocaleString('default', { month: 'short', day: 'numeric' })}
+                                        ).toLocaleString("default", {
+                                            month: "short",
+                                            day: "numeric",
+                                        })}
                                     </span>
                                     <span>${detail.amount}</span>
                                 </div>

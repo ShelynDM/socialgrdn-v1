@@ -1,3 +1,10 @@
+/**
+ * ListingConfirmation.js
+ * Description: Page displays a confirmation message for a property listing and fetches the listing status from the API.
+ * Author: Lilian Huh
+ * Date: 2024-10-23
+ */
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../UserContext";
@@ -13,10 +20,12 @@ export default function ListingConfirmation() {
     const [message, setMessage] = useState(null);
     const [property_name, setPropertyName] = useState(null);
 
+    // Function to navigate to the ViewMyListings page
     const handleViewMyListings = () => {
         navigate('/ViewMyListings');
     };
 
+    // Fetch the property status once the component mounts
     useEffect(() => {
         const fetchStatus = async () => {
             const hardCodedPropertyID = 6;

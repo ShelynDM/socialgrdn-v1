@@ -1,3 +1,10 @@
+/**
+ * ListingView.js
+ * Description: Component that displays the listings on View Listings page
+ * Frontend Author: Shelyn Del Mundo
+ * Date: 2024-10-23
+ */
+
 import React from "react";
 import ExampleImage from "../../assets/exampleAssets/imgExample.jpg";
 

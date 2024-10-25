@@ -1,3 +1,11 @@
+/**
+ * Navbar.js
+ * Description: Component that displays the navigation bar at the bottom of the screen for normal users
+ * Frontend Author: Shelyn Del Mundo
+ *                  Kristiana Bautista
+ * Date: 2024-10-23
+ */
+
 import React from 'react';
 import { IoSearchSharp } from "react-icons/io5";
 import { FaEarthAmericas } from "react-icons/fa6";

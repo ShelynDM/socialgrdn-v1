@@ -1,3 +1,11 @@
+/**
+ * SearchWithSuggestions.js
+ * Description: Component that displays a search bar with suggestions based on the user's input
+ * Frontend Author: Shelyn Del Mundo
+ * Backend Author: Shelyn Del Mundo
+ * Date: 2024-10-23
+ */
+
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
@@ -91,7 +99,7 @@ export default function SearchWithSuggestions({ propertyResult, onSuggestionSele
         <div className="w-full">
             <div className="w-auto flex items-center input-wrapper rounded-md border border-gray-300 p-1 mx-2" >
                 <FaSearch className="search-icon mx-1"/>
-                <input placeholder="Search" className="w-full" value={searchQuery} onChange={handleInputChange} onKeyDown={handleKeyPress}/>
+                <input type="text" placeholder="Search" className="w-full" value={searchQuery} onChange={handleInputChange} onKeyDown={handleKeyPress}/>
             </div>
             
             {isDropDownVisible && filteredSuggestionResults.length > 0 && (  
