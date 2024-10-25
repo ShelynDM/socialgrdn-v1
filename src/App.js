@@ -1,3 +1,15 @@
+/**
+ * App.js
+ * Description: Component that displays a search bar with a search icon.
+ * Author: Donald Jans Uy
+ *        Doniyor Rakhmanov
+ *        Lilia Huh
+ *        Shelyn Del Mundo
+ *        Tiana Bautista
+ * 
+ * Date: 2024-10-23
+ */
+
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 // SignUp Section
@@ -89,9 +101,9 @@ export default function App() {
               <Route path="/ForgotPassword" element={<ForgotPassword />} />
 
               {/* Profile Section */}
-              <Route path="/Profile" element={<ProtectedRoute allowedRoles={[0,1,2]}><Profile /></ProtectedRoute>} />
-              <Route path="/EditProfile" element={<ProtectedRoute allowedRoles={[0,1,2]}><EditProfile /></ProtectedRoute>} />
-              <Route path="/ViewProfile" element={<ProtectedRoute allowedRoles={[0,1,2]}><ViewProfile /></ProtectedRoute>} />
+              <Route path="/Profile" element={<ProtectedRoute allowedRoles={[1,2]}><Profile /></ProtectedRoute>} />
+              <Route path="/EditProfile" element={<ProtectedRoute allowedRoles={[1,2]}><EditProfile /></ProtectedRoute>} />
+              <Route path="/ViewProfile" element={<ProtectedRoute allowedRoles={[1,2]}><ViewProfile /></ProtectedRoute>} />
 
               {/* Rent Property Section */}
               <Route path="/Listing" element={<ProtectedRoute allowedRoles={[0,1,2]}><Listing /></ProtectedRoute>} />
@@ -121,7 +133,7 @@ export default function App() {
 
               {/* Moderator Section */}
               <Route path="/ModeratorViewMonthlyReport" element={<ProtectedRoute allowedRoles={[0]}><ModeratorViewMonthlyReport /></ProtectedRoute>} />
-              <Route path="/ModeratorViewAllUsers" element={<ProtectedRoute allowedRoles={[0]}><ModeratorViewAllUsers /></ProtectedRoute>} />
+              <Route path="/ModeratorViewAllUsers/:query?" element={<ProtectedRoute allowedRoles={[0]}><ModeratorViewAllUsers /></ProtectedRoute>} />
               <Route path="/ModeratorViewReport" element={<ProtectedRoute allowedRoles={[0]}><ModeratorViewReport /></ProtectedRoute>} />
               <Route path="/ModeratorViewProfile" element={<ProtectedRoute allowedRoles={[0]}><ModeratorViewProfile /></ProtectedRoute>} />
 

@@ -1,4 +1,13 @@
-// index.js
+/**
+ * index.js
+ * Description: This is the file that handles the server setup and database connection
+ * Backend Author:  Donald Jans Uy
+ *                  Doniyor Rakhmanov
+ *                  Lilian Huh
+ *                  Shelyn Del Mundo
+ *                  Tiana Bautista
+ * Date: 2024-10-23
+ */
 
 // Import the credentials from the _credentials.js file
 const credentials = require('./_credentials');
@@ -29,8 +38,9 @@ const getEarningsRoutes = require('./api/GetEarningsAPI');
 const getDetailedPayoutsRoutes = require('./api/GetDetailedPayoutAPI');
 const getPropStatusRoutes = require('./api/GetPropStatusAPI');
 const updatePropStatusRoutes = require('./api/UpdatePropStatusAPI');
-
 const getUserRoleRoutes = require('./api/GetUserRoleAPI');
+const getAllUsersRoutes = require('./api/GetAllUsersAPI');
+const HandleUserStatusAPI = require('./api/HandleUserStatusAPI');
 
 const app = express();
 const port = 3000;
@@ -66,6 +76,8 @@ app.use('/api/getPropStatus', getPropStatusRoutes);
 app.use('/api/updatePropStatus', updatePropStatusRoutes);
 
 app.use('/api/getUserRole', getUserRoleRoutes);
+app.use('/api/getAllUsers', getAllUsersRoutes);
+app.use('/api/handleUserStatus', HandleUserStatusAPI);
 
 
 // The "catchall" handler

@@ -1,3 +1,11 @@
+/**
+ * MapSearch.js
+ * Description: This page displays the map and search results
+ * Frontend Author: Shelyn Del Mundo
+ * Backend Author: Doniyor Rakhmanov
+ * Date: 2024-10-23
+ */
+
 import React, {useState, useEffect} from "react";
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";

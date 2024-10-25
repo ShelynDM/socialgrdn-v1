@@ -1,3 +1,10 @@
+/**
+ * GetPayoutAPI.js
+ * Description: This is the API for fetching the payouts of a user
+ * Backend Author: Shelyn Del Mundo
+ * Date: 2024-10-23
+ */
+
 const express = require('express');
 const router = express.Router();
 

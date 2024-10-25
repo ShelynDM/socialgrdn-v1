@@ -1,3 +1,11 @@
+/**
+ * RestrictedRoute.js
+ * Description: This page is displayed when a user tries to access a restricted page
+ * Frontend Author: Shelyn Del Mundo
+ * Backend Author: Shelyn Del Mundo
+ * Date: 2024-10-23
+ */
+
 import React from "react";
 import InAppLogo from "../components/Logo/inAppLogo";
 import { useNavigate } from "react-router-dom";

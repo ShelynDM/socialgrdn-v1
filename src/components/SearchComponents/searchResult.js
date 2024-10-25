@@ -1,3 +1,11 @@
+/**
+ * SearchResult.js
+ * Description: Component that displays the search results of the user's search query and recommended properties
+ * Frontend Author: Shelyn Del Mundo
+ * Backend Author: Shelyn Del Mundo
+ * Date: 2024-10-23
+ */
+
 import React, {useState} from "react";
 import PlantIcon from "../../assets/listingAssets/Plant-icon.png";
 import FarmAreaIcon from "../../assets/listingAssets/FarmArea-icon.png";

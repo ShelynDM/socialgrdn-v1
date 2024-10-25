@@ -12,6 +12,7 @@ export default function SignIn() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { setUserId } = useUser(); 
+  const [isBlocked, setIsBlocked] = useState(false);
 
   // Function to fetch userID from GetProfile API
   const fetchUserId = async (email) => {
@@ -21,19 +22,28 @@ export default function SignIn() {
         const data = await response.json();
         const userId = data.userID;
         const role = data.role;
+        const status = data.status;
 
         setUserId(userId);
         console.log("User ID retrieved and set:", userId); // Console log for verification
         console.log("User role retrieved and set:", role); // Console log for verification
-         
-         // Redirect to the appropriate page based on user role
-         if (role === '0') { // Compare with string '0'
-            console.log("Administrator detected. Redirecting to Moderator profile...");
-            navigate('/ModeratorViewProfile');
-         } else {
-            console.log("Regular user detected. Redirecting to Profile page...");
-            navigate('/Profile'); 
-         }
+        
+        // Check if user is blocked or not (status = 1 is active, status = 0 is blocked)
+        if (status === '1') {
+          // Redirect to the appropriate page based on user role
+          if (role === '0') { // Compare with string '0'
+              console.log("Administrator detected. Redirecting to Moderator profile...");
+              navigate('/ModeratorViewProfile');
+          } else {
+              console.log("Regular user detected. Redirecting to Profile page...");
+              navigate('/Profile'); 
+          }
+        }
+        else {
+          console.log("User is blocked.");
+          setIsBlocked(true);
+          setPassword('');
+        }
       } else {
         console.error('Error fetching user profile:', response.statusText);
       }
@@ -51,7 +61,6 @@ export default function SignIn() {
         const user = userCredential.user;
 
         if (user.emailVerified) {
-          // After successful login, fetch and store the userID
           await fetchUserId(email);
 
         } else {
@@ -106,6 +115,7 @@ export default function SignIn() {
             <button className="text-red-500 text-base font-bold" onClick={handleReset}>Forgot Password?</button>
           </div>
         </div>
+        {isBlocked && <p className="mx-4 text-red-500">Your account is currently blocked. Please contact the administrator.</p>}
         <div className='my-3'>
           <p>Don't have an account?</p>
         </div>

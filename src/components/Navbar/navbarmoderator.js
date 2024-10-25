@@ -6,14 +6,14 @@
  */
 
 import React from 'react';
-import { IoSearchSharp } from "react-icons/io5";
+//import { IoSearchSharp } from "react-icons/io5";
 import { FaRegUser } from "react-icons/fa6";
 import { Link } from 'react-router-dom';
 import { TbReportSearch } from "react-icons/tb";
 import { PiUsersThree } from "react-icons/pi";
 
 // This is the navigation bar that will be displayed at the bottom of the screen
-export default function NavBarModerator({ SearchColor, ReportColor, UsersColor, ProfileColor }) {
+export default function NavBarModerator({ReportColor, UsersColor, ProfileColor}) {
     return (
         <nav className='fixed bottom-0 w-full border border-t-2 py-4 px-6 pb-5 bg-main-background'>
             <ul className='flex flex-row justify-between'>

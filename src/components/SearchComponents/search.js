@@ -1,11 +1,19 @@
+/**
+ * SearchBar.js
+ * Description: Component that displays a search bar with a search icon.
+ * Frontend Author: Shelyn Del Mundo
+ * Backend Author: Shelyn Del Mundo
+ * Date: 2024-10-23
+ */
+
 import React from "react";
 import { FaSearch } from "react-icons/fa";
 
-export default function SearchBar({ value, onChange, onClick }) {
+export default function SearchBar({ value, onChange, onClick, onKeyDown }) {
     return (
-    <div className="w-auto flex items-center input-wrapper rounded-md border border-gray-300 p-1 mx-2">
+    <div className="w-full flex items-center input-wrapper rounded-md border border-gray-300 p-1 mx-2 ">
         <FaSearch className="search-icon mx-1"/>
-        <input placeholder="Search" className="w-full" value={value} onChange={onChange} onClick={onClick}/>
+        <input placeholder="Search" className="w-full outline-none focus:border-none" type="text" value={value} onChange={onChange} onClick={onClick} onKeyDown={onKeyDown}/>
     </div>
   );
 }
