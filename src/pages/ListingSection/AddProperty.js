@@ -7,6 +7,7 @@ import Sprout from "../../assets/navbarAssets/sprout.png";
 import { storage } from '../../_utils/firebase';
 import LongButton from '../../components/Buttons/longButton';
 import { useUser } from '../../UserContext';
+import AddressAutocomplete from '../../components/AutoComplete/AddressAutoComplete';
 
 const AddProperty = () => {
     const { userId } = useUser(); // Get userId from UserContext
@@ -28,7 +29,8 @@ const AddProperty = () => {
     const [height, setHeight] = useState('');
     const [soilType, setSoilType] = useState('');
     const [amenities, setAmenities] = useState('');
-    const [possibleCrops, setPossibleCrops] = useState('');
+    const [cropInput, setCropInput] = useState('');
+    const [possibleCrops, setPossibleCrops] = useState([]);
     const [restrictions, setRestrictions] = useState('');
     const [price, setPrice] = useState('');
 
@@ -54,6 +56,15 @@ const AddProperty = () => {
         setOtherImages(selectedFiles);
     };
 
+    const handleAddressSelect = (addressData) => {
+        setAddressLine1(addressData.addressLine1);
+        setCity(addressData.city);
+        setProvince(addressData.province);
+        setPostalCode(addressData.postalCode);
+        setCountry(addressData.country);
+        setLatitude(addressData.latitude.toString());
+        setLongitude(addressData.longitude.toString());
+    };
 
     const handleZoneChange = (event) => {
         const selectedValue = event.target.value;
@@ -142,7 +153,7 @@ const AddProperty = () => {
                 height: parseFloat(height),
                 soilType,
                 amenities,
-                possibleCrops: possibleCrops.split(',').map(crop => crop.trim()), // Convert string to array
+                possibleCrops: possibleCrops,
                 restrictions,
                 price: parseFloat(price),
                 primaryImageUrl,
@@ -241,70 +252,65 @@ const AddProperty = () => {
                         {/* Property Location */}
                         <div className="flex flex-col gap-4">
                             <label htmlFor="address" className="text-lg font-semibold">Property Location:</label>
-                            <input 
-                                type="text" 
-                                name="addressLine1"
-                                value={addressLine1}
-                                onChange={(e) => setAddressLine1(e.target.value)}
-                                placeholder="Address Line 1" 
-                                className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-                                required
+
+                            <AddressAutocomplete 
+                                onAddressSelect={handleAddressSelect}
+                                resultLimit={20}
+                                countryCodes={['ca']}  // Canada only
                             />
-                            <input 
-                                type="text" 
-                                name="city"
-                                value={city}
-                                onChange={(e) => setCity(e.target.value)}
-                                placeholder="City" 
-                                className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-                                required
+
+                            <input
+                            type="text"
+                            value={addressLine1}
+                            readOnly
+                            placeholder="Address Line 1"
+                            className="p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
                             />
-                            <input 
-                                type="text" 
-                                name="province"
-                                value={province}
-                                onChange={(e) => setProvince(e.target.value)}
-                                placeholder="Province" 
-                                className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-                                required
+
+                            <input
+                            type="text"
+                            value={city}
+                            readOnly
+                            placeholder="City"
+                            className="p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
                             />
-                            <input 
-                                type="text" 
-                                name="postalCode"
-                                value={postalCode}
-                                onChange={(e) => setPostalCode(e.target.value)}
-                                placeholder="Postal Code" 
-                                className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-                                required
+
+                            <input
+                            type="text"
+                            value={province}
+                            readOnly
+                            placeholder="Province"
+                            className="p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
                             />
-                            <input 
-                                type="text" 
-                                name="country"
-                                value={country}
-                                onChange={(e) => setCountry(e.target.value)}
-                                placeholder="Country" 
-                                className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-                                required
+
+                            <input
+                            type="text"
+                            value={postalCode}
+                            readOnly
+                            placeholder="Postal Code"
+                            className="p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
                             />
-                            <input 
-                                type="number" 
-                                name="latitude"
-                                placeholder="Latitude" 
-                                className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-                                value={latitude}
-                                onChange={(e) => setLatitude(e.target.value)}
-                                required
-                                step="any"
+
+                            <input
+                            type="text"
+                            value={country}
+                            readOnly
+                            placeholder="Country"
+                            className="p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
                             />
-                            <input 
-                                type="number" 
-                                name="longitude"
-                                placeholder="Longitude" 
-                                className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-                                value={longitude}
-                                onChange={(e) => setLongitude(e.target.value)}
-                                required
-                                step="any"
+
+                            <input
+                            type="hidden"
+                            value={latitude}
+                            required
+                            step="any"
+                            />
+
+                            <input
+                            type="hidden"
+                            value={longitude}
+                            required
+                            step="any"
                             />
                         </div>
 
@@ -385,16 +391,20 @@ const AddProperty = () => {
                         
                         <div className="flex items-center gap-4">
                             <label className="text-lg font-semibold" htmlFor="soilType">Type of Soil:</label>
-                            <input 
-                                type="text" 
-                                name="soilType"
-                                value={soilType}
+                            <select
+                                id="soilType"
                                 onChange={(e) => setSoilType(e.target.value)}
-                                placeholder="e.g. Clay, Loam, Sand" 
-                                id="soilType" 
-                                className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
                                 required
-                            />
+                                >
+                                <option value="" disabled selected>Select soil type</option>
+                                <option value="Loamy">Loamy</option>
+                                <option value="Clay">Clay</option>
+                                <option value="Sandy">Sandy</option>
+                                <option value="Silty">Silty</option>
+                                <option value="Chalk">Chalk</option>
+                                <option value="Peat">Peat</option>
+                                </select>
                         </div>
                         
                         <div className="flex items-center gap-4">
@@ -409,16 +419,66 @@ const AddProperty = () => {
                             />
                         </div>
                         
-                        <div className="flex items-center gap-4">
-                            <label className="text-lg font-semibold" htmlFor="possibleCrops">Possible Crops:</label>
-                            <input 
-                                type="text" 
-                                value={possibleCrops}
-                                onChange={(e) => setPossibleCrops(e.target.value)}
-                                placeholder="e.g. Carrot, Barley, Corn" 
-                                id="possibleCrops" 
-                                className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-                            />
+                        <div className="flex flex-col gap-4">
+                            <label className="text-lg font-semibold" htmlFor="possibleCrops">
+                                Possible Crops:
+                            </label>
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-4">
+                                    <input 
+                                        type="text" 
+                                        value={cropInput}
+                                        onChange={(e) => setCropInput(e.target.value)}
+                                        onKeyPress={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                if (cropInput.trim()) {
+                                                    setPossibleCrops([...possibleCrops, cropInput.trim()]);
+                                                    setCropInput('');
+                                                }
+                                            }
+                                        }}
+                                        placeholder="e.g. Carrot, Barley, Corn" 
+                                        id="possibleCrops" 
+                                        className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                    />
+                                </div>
+
+                                {/* Add More Button */}
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        if (cropInput.trim()) {
+                                            setPossibleCrops([...possibleCrops, cropInput.trim()]);
+                                            setCropInput('');
+                                        }
+                                    }}
+                                    className="px-4 py-2 text-sm text-green-600 hover:text-green-700 focus:outline-none"
+                                >
+                                    + Add More
+                                </button>
+
+                                {/* Display added crops */}
+                                <div className="flex flex-wrap gap-2">
+                                    {possibleCrops.map((crop, index) => (
+                                        <div
+                                            key={index}
+                                            className="flex items-center gap-2 px-3 py-1 bg-green-100 rounded-full"
+                                        >
+                                            <span>{crop}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setPossibleCrops(possibleCrops.filter((_, i) => i !== index));
+                                                }}
+                                                className="text-green-600 hover:text-green-700 focus:outline-none"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                         
                         <div className="flex flex-col gap-4">
