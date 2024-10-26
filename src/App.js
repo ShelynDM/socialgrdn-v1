@@ -110,7 +110,7 @@ export default function App() {
               <Route path="/RentProperty" element={<ProtectedRoute allowedRoles={[0,1,2]}><RentProperty /></ProtectedRoute>} />
               <Route path="/RentFailed" element={<ProtectedRoute allowedRoles={[0,1,2]}><RentFailed /></ProtectedRoute>} />
               <Route path="/RentConfirmation" element={<ProtectedRoute allowedRoles={[0,1,2]}><RentConfirmation /></ProtectedRoute>} />
-              <Route path="/ViewProperty" element={<ProtectedRoute allowedRoles={[0,1,2]}><ViewProperty /></ProtectedRoute>} />
+              <Route path="/ViewProperty/:id" element={<ProtectedRoute allowedRoles={[0,1,2]}><ViewProperty /></ProtectedRoute>} />
               <Route path="/AddProperty" element={<ProtectedRoute allowedRoles={[0,1,2]}><AddProperty /></ProtectedRoute>} />
               <Route path="/EditProperty" element={<ProtectedRoute allowedRoles={[0,1,2]}><EditProperty /></ProtectedRoute>} />
 

@@ -12,7 +12,6 @@ const AddProperty = () => {
     const { userId } = useUser(); // Get userId from UserContext
     const [primaryImage, setPrimaryImage] = useState(null);
     const [otherImages, setOtherImages] = useState([]);
-    const [isLocationEnabled, setIsLocationEnabled] = useState(false);
     const [selectedZone, setSelectedZone] = useState({ value: "", color: "" });
     const [propertyId, setPropertyId] = useState('');
     const [latitude, setLatitude] = useState('');
@@ -55,9 +54,6 @@ const AddProperty = () => {
         setOtherImages(selectedFiles);
     };
 
-    const handleToggle = () => {
-        setIsLocationEnabled(!isLocationEnabled);
-    };
 
     const handleZoneChange = (event) => {
         const selectedValue = event.target.value;
@@ -99,7 +95,6 @@ const AddProperty = () => {
             console.log('UserId:', userId);
             console.log('Primary Image:', primaryImage);
             console.log('Other Images:', otherImages);
-            console.log('Location Enabled:', isLocationEnabled);
             console.log('Selected Zone:', selectedZone);
             console.log('Property ID:', propertyId);
             console.log('Latitude:', latitude, 'Longitude:', longitude);
@@ -152,7 +147,6 @@ const AddProperty = () => {
                 price: parseFloat(price),
                 primaryImageUrl,
                 otherImageUrls,
-                isLocationEnabled
             };
 
             console.log('Form Data:', formData);
@@ -312,24 +306,6 @@ const AddProperty = () => {
                                 required
                                 step="any"
                             />
-                        </div>
-
-                        {/* Specific Location Toggle */}
-                        <div className="flex items-center gap-4">
-                            <div className="flex flex-col items-start">
-                                <h1 className="text-lg font-semibold">Show your specific location</h1>
-                                <p className="text-sm">Your specific location will only be visible once a reservation is made.</p>
-                            </div>
-                            <div className="flex items-center">
-                                <div
-                                    className={`w-14 h-7 flex items-center rounded-full p-1 cursor-pointer ${isLocationEnabled ? "bg-green-500" : "bg-gray-400"}`}
-                                    onClick={handleToggle}
-                                >
-                                    <div
-                                        className={`bg-white w-6 h-6 rounded-full shadow-md transform ${isLocationEnabled ? "translate-x-7" : ""}`}
-                                    ></div>
-                                </div>
-                            </div>
                         </div>
 
                         {/* Farming Zone */}

@@ -33,6 +33,7 @@ const editRentalDetailsRoutes = require('./api/EditRentalAPI');
 
 const stripeCheckoutSession = require('./api/create-checkout-session');  //payment route
 
+const updatePropertyListingRoutes = require('./api/UpdatePropertyListingAPI');
 const getPayoutsRoutes = require('./api/GetPayoutAPI');
 const getEarningsRoutes = require('./api/GetEarningsAPI');
 const getDetailedPayoutsRoutes = require('./api/GetDetailedPayoutAPI');
@@ -51,7 +52,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors({ origin: 'http://localhost:3001' }));
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../build')));
+app.use(express.static(path.join(__dirname, '../build')
+));
 
 // Use route files
 app.use('/api/users', userRoutes);
@@ -69,6 +71,7 @@ app.use('/api/registerRentalDetails', registerRentalDetailsRoutes);
 app.use('/api/editRentalDetails', editRentalDetailsRoutes);
 
 app.use('/api/addPropertyListing', addPropertyListingRoutes);// Add the new route for addPropertyListingAPI
+app.use('/api/updatePropertyListing', updatePropertyListingRoutes); // Add the new route for updating a property listing
 app.use('/api/getPayouts', getPayoutsRoutes);
 app.use('/api/getEarnings', getEarningsRoutes);
 app.use('/api/getDetailedPayouts', getDetailedPayoutsRoutes);
