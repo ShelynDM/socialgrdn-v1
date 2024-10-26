@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react"; // Importing useEffect and useState from React
 import { useNavigate } from "react-router-dom"; // Only useNavigate from react-router-dom
-
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
@@ -8,13 +7,69 @@ import SearchBar from "../../components/SearchComponents/search";
 import { useUser } from "../../UserContext";
 import Reservation from "../../components/reservationcomponent/reservation";
 
+// Component to reuse search components
+import usePropertyResult from "../../components/SearchComponents/propertyResult";
+
 
 // This is the Listing page of the application where users can view other users' listings
-
-
 export default function ReservationList() {
     const navigate = useNavigate();
     const { userId } = useUser();
+
+    // Hooks that are used to get the search functionality
+    const propertyResult = usePropertyResult();
+    const [searchQuery, setSearchQuery] = useState("");
+    const [suggestions, setSuggestions] = useState([]);
+
+    // ------------------- Imported Function to handle search query ------------------- //
+
+    // Main search query handler with fallback to default results logic
+    const handleSearchQueryChange = (event) => {
+        const query = event.target.value.toLowerCase();
+        setSearchQuery(query);
+    
+        if (query.trim() === "") {
+            setSuggestions([]);
+            navigate("/Search");
+        } else {
+            // Collect individual words from relevant fields of all properties
+            const wordSet = new Set(); // Use Set to avoid duplicates
+    
+            propertyResult.forEach((result) => {
+                Object.values(result).forEach((value) => {
+                    if (typeof value === "string") {
+                        // Split strings into individual words and store them in the Set
+                        value.split(/\s+/).forEach((word) => {
+                            if (word.toLowerCase().startsWith(query)) {
+                                wordSet.add(word);
+                            }
+                        });
+                    }
+                });
+            });
+    
+            // Convert the Set to an array and limit the suggestions to 10 words
+            setSuggestions(Array.from(wordSet).slice(0, 10));
+        }
+    };
+
+    const handleKeyDown = (event) => {
+        if (event.key === "Enter" && searchQuery.trim()) {
+            navigate(`/Search?query=${encodeURIComponent(searchQuery.trim())}`);
+        }
+    };
+
+    // Handle suggestion click
+    const handleSuggestionClick = (username) => {
+        setSearchQuery(username); // Set the clicked username as the search query
+        setSuggestions([]); // Clear suggestions
+        navigate(`/Search?query=${encodeURIComponent(username)}`);
+    };
+    
+
+    // ------------------- End of Imported Function to handle search query ------------------- //
+
+
 
 
     //this function passes the reservation id to the ReservationDetails page
@@ -25,6 +80,7 @@ export default function ReservationList() {
 
     // State to hold all reservations
     const [reservations, setReservations] = useState([]);
+
 
     // Fetching reservations from API
     useEffect(() => {
@@ -46,6 +102,7 @@ export default function ReservationList() {
         fetchReservations();
     }, [userId]);
 
+
     return (
         <div className='bg-main-background relative'>
             <div className="flex flex-col items-center justify-center gap-2 min-h-screen mx-2 pb-20 bg-main-background">
@@ -53,11 +110,24 @@ export default function ReservationList() {
                     <InAppLogo />
                 </div>
                 {/* Search Bar Section */}
-                <div className='mx-2 px-2 fixed top-12 flex w-full items-center justify-between bg-main-background'>
-                    <div className="flex-grow w-full">
-                        <SearchBar className="w-full" />
-                    </div>
+                <div className='fixed top-12 flex w-full justify-between bg-main-background'>
+                    <SearchBar value={searchQuery} onChange={handleSearchQueryChange} onKeyDown={handleKeyDown}/>
                 </div>
+                {suggestions.length > 0 && (
+                    <div className="fixed top-20 w-full z-50">
+                        <div className="shadow-lg">
+                            {suggestions.map((suggestion, index) => (
+                                <div
+                                    key={index}
+                                    className="w-full hover:bg-gray-100 cursor-pointer rounded-lg"
+                                    onClick={() => handleSuggestionClick(suggestion)}
+                                >
+                                    <p className="bg-white text-base border-b mx-2 px-2">{suggestion}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
                 {/* Updates the page title based on the number of reservations */}
                 <div className="pb-2 mt-24">
                     {reservations.length === 0 ? (

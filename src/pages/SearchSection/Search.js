@@ -14,12 +14,10 @@ import SearchResult from "../../components/SearchComponents/searchResult";
 import SearchFilter from "../../components/SearchComponents/popupSearchFilter";
 import FilterButton from "../../components/SearchComponents/filterButton";
 import SearchBar from "../../components/SearchComponents/search";
-//import axios from "axios";
 import {ref, onValue} from "firebase/database";
 import {realtimeDb} from "../../_utils/firebase";
 
 // Import the following components to reuse search components
-//import SearchWithSuggestions from "../../components/SearchComponents/searchWithSuggestions";
 import usePropertyResult from "../../components/SearchComponents/propertyResult";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -30,7 +28,7 @@ export default function Search() {
     const [searchQuery, setSearchQuery] = useState("");
     const [suggestions, setSuggestions] = useState([]);
     const [locationFetched, setLocationFetched] = useState(false);
-    const [cropData, setCropData] = useState({});
+    const [cropData, setCropData] = useState([]);
 
     // Get property results from the database
     const propertyResult = usePropertyResult();
@@ -39,27 +37,32 @@ export default function Search() {
 
     // ------------------- Location-based Filtering ------------------- //
 
+    // Helper function to convert degrees to radians
     const deg2rad = (deg) => {
         return deg * (Math.PI / 180);
     };
 
     // Haversine formula to calculate the distance between two points (latitude and longitude)
-    const haversineDistance = (userLocation, propertyResult) => {
-        const R = 6371; // Radius of the earth in km
-        const dLat = deg2rad(propertyResult.latitude - userLocation.latitude);  
+    const haversineDistance = useCallback((userLocation, propertyResult) => {
+        const R = 6371; // Radius of the Earth in km
+        const dLat = deg2rad(propertyResult.latitude - userLocation.latitude);
         const dLon = deg2rad(propertyResult.longitude - userLocation.longitude);
+
         const a =
             Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(deg2rad(userLocation.latitude)) * Math.cos(deg2rad(propertyResult.latitude)) *
+            Math.cos(deg2rad(userLocation.latitude)) *
+            Math.cos(deg2rad(propertyResult.latitude)) *
             Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         const distance = R * c; // Distance in km
-        return distance;
-    };
 
+        return distance;
+    }, []); 
 
     // Get the nearest properties to the user's location
-    const getNearestResults = (userLocation, propertyResult) => {
+    const getNearestResults = useCallback((userLocation, propertyResult) => {
+        // If the propertyResult is not an array, return an empty array this will prevent the app from crashing
         if (!Array.isArray(propertyResult)) return [];
         return propertyResult
             .map((result) => ({
@@ -69,7 +72,7 @@ export default function Search() {
             .filter((result) => result.distance <= 20)
             .sort((a, b) => a.distance - b.distance)
             .slice(0, 10);
-    };
+    }, [haversineDistance]);
 
     
     // Get the current location of the user
@@ -127,7 +130,6 @@ export default function Search() {
             try {
                 const fetchedData = snapshot.val();
                 setCropData(fetchedData);
-                console.log("Crop Data:", cropData);
             } catch (err) {
                 console.error('Error processing data:', err);
             }
@@ -137,6 +139,7 @@ export default function Search() {
         return () => unsubscribe();
     }
 
+    // Fetch crop types on page load
     useEffect(() => {
         handleCropTypes();
         // eslint-disable-next-line
@@ -208,28 +211,20 @@ export default function Search() {
     // ------------------- Display Property Results Based on Randomly and Based on user Location ------------------- //
 
     // Filter results based on user's location or display random properties if location is not available
-    const displayDefaultResults = () => {
+    const displayDefaultResults = useCallback(() => {
         if (userLocation && propertyResult.length > 0) {
-            try {
-                const nearestResults = getNearestResults(userLocation, propertyResult);
-                setFilteredResults(nearestResults);
-                console.log("Nearest Results:", nearestResults);
-            } catch (error) {
-                console.error("Error filtering results based on location:", error);
-            }
+            const nearestResults = getNearestResults(userLocation, propertyResult);
+            setFilteredResults(nearestResults);
         } else if (propertyResult.length > 0) {
-            try {
-                const randomResults = propertyResult
-                    .sort(() => Math.random() - 0.5) // Shuffle the array randomly
-                    .slice(0, 10); // Select the first 10 random items
-                setFilteredResults(randomResults);
-                console.log("Displaying random properties:", randomResults);
-            } catch (error) {
-                console.error("Error displaying random properties:", error);
-            }
+            const randomResults = propertyResult
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 10);
+            setFilteredResults(randomResults);
         }
-    };
+    }, [userLocation, propertyResult, getNearestResults]);
 
+
+    // Fetch default results on page load
     useEffect(() => {
         displayDefaultResults();
         // eslint-disable-next-line
@@ -245,31 +240,29 @@ export default function Search() {
     useEffect(() => {
         const query = new URLSearchParams(location.search).get("query") || "";
         if (query) {
-            setSearchQuery(query);
-            performSearch(query); // Trigger search if query exists
+            setSearchQuery(query); // Update state with query
+            performSearch(query);  // Perform search
         } else {
             displayDefaultResults(); // Show default results if no query
         }
         // eslint-disable-next-line
-    }, [location.search]);
-
+    }, [location.search, displayDefaultResults]);
+    
     // Main search query handler with fallback to default results logic
     const handleSearchQueryChange = (event) => {
         const query = event.target.value.toLowerCase();
         setSearchQuery(query);
-    
+
         if (query.trim() === "") {
-            displayDefaultResults(); // Show default results if query is empty
+            displayDefaultResults(); // Show default results
             setSuggestions([]);
             navigate("/Search");
         } else {
-            // Collect individual words from relevant fields of all properties
-            const wordSet = new Set(); // Use Set to avoid duplicates
-    
+            const wordSet = new Set();
+
             propertyResult.forEach((result) => {
                 Object.values(result).forEach((value) => {
                     if (typeof value === "string") {
-                        // Split strings into individual words and store them in the Set
                         value.split(/\s+/).forEach((word) => {
                             if (word.toLowerCase().startsWith(query)) {
                                 wordSet.add(word);
@@ -278,36 +271,27 @@ export default function Search() {
                     }
                 });
             });
-    
-            // Convert the Set to an array and limit the suggestions to 10 words
+
             setSuggestions(Array.from(wordSet).slice(0, 10));
         }
-    };
-    
+    };    
     
     // Trigger search or fallback results on Enter key press
     const handleKeyDown = (event) => {
-        if (event.key === "Enter") {
-            if (suggestions.length > 0) {
-                handleSuggestionClick(suggestions[0]); // Use the first suggestion
-            } else if (searchQuery.trim() === "") {
-                displayDefaultResults(); // Fallback to default results if query is empty
-            } else {
-                performSearch(searchQuery); // Perform search with the query
-            }
+        if (event.key === "Enter" && searchQuery.trim()) {
+            navigate(`/Search?query=${encodeURIComponent(searchQuery.trim())}`);
         }
-    };    
+    };   
 
     // Handle click on a suggestion and navigate
     const handleSuggestionClick = (suggestion) => {
-        setSearchQuery(suggestion); // Set the search query to the selected word
-        setSuggestions([]); // Clear the suggestions
-        performSearch(suggestion); // Perform the search with the selected word
+        setSearchQuery(suggestion);
+        setSuggestions([]);
+        navigate(`/Search?query=${encodeURIComponent(suggestion)}`);
     };
-
     
     // Perform the search logic when Enter is pressed or suggestion is clicked
-    const performSearch = useCallback((query) => {
+    function performSearch(query) {
         const filtered = propertyResult.filter((result) =>
             Object.values(result).some((value) =>
                 String(value).toLowerCase().includes(query.toLowerCase())
@@ -317,8 +301,8 @@ export default function Search() {
         setFilteredResults(filtered.slice(0, 10));
         console.log("Search Results:", filtered);
         navigate(`/Search?query=${encodeURIComponent(query)}`);
-    }, [propertyResult, navigate]);
-
+    }
+    
     
 
     // ------------------- End of Search Bar and Search Suggestions ------------------- //
@@ -340,6 +324,7 @@ export default function Search() {
     return (
         <div className='bg-main-background'>
             <div className="flex flex-col items-center justify-center gap-2 min-h-screen mx-4 pb-20 bg-main-background">
+                {/* Logo Section */}                
                 <div className='p-2 fixed top-0 left-0 w-auto sm:w-2/4 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-main-background'>
                     <InAppLogo />
                 </div>
@@ -354,27 +339,28 @@ export default function Search() {
                 </div>
                 {suggestions.length > 0 && (
                     <div className="fixed top-20 w-full z-50">
-                        <div className="shadow-lg">
+                        <div className=" shadow-lg">
                             {suggestions.map((suggestion, index) => (
-                                <div
-                                    key={index}
-                                    className="w-full px-2 hover:bg-gray-100 cursor-pointer rounded-lg"
-                                    onClick={() => handleSuggestionClick(suggestion)}
-                                >
-                                    <p className="bg-white text-base border-b mx-2 px-2">{suggestion}</p>
-                                </div>
+                                    <div
+                                        key={index}
+                                        className="w-full px-2 hover:bg-gray-100 cursor-pointer"
+                                        onClick={() => handleSuggestionClick(suggestion)}
+                                    >
+                                        <p className="bg-white text-base border-b mx-2 px-2">{suggestion}</p>
+                                    </div>
                             ))}
                         </div>
+
                     </div>
                 )}
 
                 <div className="w-auto">
                     <SearchFilter isOpen={isPopupOpen} onClose={closePopup} onApplyFilters={handlePopupSearchFilter} className="flex items-start"/>
                 </div>
+
                 {/* Search Results Section */}
                 <div className="flex flex-col w-full justify-start items-center mt-20 gap-8">
                     <div className="flex w-full justify-start pt-4 items-start">
-                        {/* <p className="text-start">Recommendations</p> */}
                         {searchQuery ? <p className="text-start"></p> : <p className="text-start">Recommendations</p>}
                     </div>
                     {filteredResults.length > 0 ? (

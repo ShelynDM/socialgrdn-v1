@@ -3,7 +3,7 @@
  * Description: This page displays all users in the system and allows the moderator to view or block a user
  * Frontend Author: Lilian Huh
  * Backend Author: Shelyn Del Mundo
- * Date: 2024-10-23
+ * Date: 2024-10-24
  */
 
 import React, { useEffect, useState, useCallback } from "react";
@@ -25,6 +25,11 @@ export default function ModeratorViewAllUsers() {
 
     // This code snippet retrieves the search query from the URL
     const query = new URLSearchParams(location.search).get("query") || "";
+
+    // Update the search query state when the query changes
+    useEffect(() => {
+        setSearchQuery(query);
+    }, [query]);
 
 
     // Fetch all users from the database
@@ -50,6 +55,7 @@ export default function ModeratorViewAllUsers() {
         setFilteredUsers(filtered);
     };
 
+    // Handle the search query change
     const handleSearchQueryChange = (event) => {
         const query = event.target.value;
         setSearchQuery(query);
@@ -71,10 +77,11 @@ export default function ModeratorViewAllUsers() {
         }
     };
 
+    // Handle the Enter key press
     const handleKeyDown = (event) => {
         if (event.key === 'Enter' && suggestions.length > 0) {
             handleSuggestionClick(suggestions[0].username);
-        }
+        };
     };
 
     // Handle the user suggestion click. It passes the username to the search bar and navigates to the search page
@@ -85,6 +92,7 @@ export default function ModeratorViewAllUsers() {
         setSuggestions([]);
     };
 
+    // Handle the user status change (block/unblock)
     const handleUserStatus = async (userID, status) => {
         const newStatus = status === '1' ? '0' : '1';
         try {
@@ -105,11 +113,13 @@ export default function ModeratorViewAllUsers() {
         }
     };
 
+    // Handle the popup open/close (For viewing more user details)
     const handlePopup = (user = null) => {
         setSelectedUser(user); // Set the selected user data
         setIsPopupOpen(!!user); // Open the popup if a user is selected
     };
 
+    // Fetch all users when the page loads
     useEffect(() => {
         fetchAllUsers();
     }, [fetchAllUsers]);
@@ -117,14 +127,17 @@ export default function ModeratorViewAllUsers() {
     return (
         <div className='bg-main-background'>
             <div className="flex flex-col items-center justify-center gap-2 min-h-screen mx-4 pb-20 bg-main-background">
+                {/* Logo Section */}
                 <div className='p-2 fixed top-0 left-0 w-auto sm:w-2/4 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-main-background'>
                     <InAppLogo />
                 </div>
 
+                {/* Search Bar Section */}
                 <div className='mx-2 px-2 fixed top-12 flex w-full bg-main-background'>
                     <SearchBar value={searchQuery} onChange={handleSearchQueryChange} onKeyDown={handleKeyDown}/>
                 </div>
 
+                {/* Display Suggestions Section */}
                 {suggestions.length > 0 && (
                     <div className="fixed top-20 w-full mx-2 px-2  z-50">
                         <div className="mx-2 bg-white shadow-lg rounded-lg">
@@ -141,6 +154,7 @@ export default function ModeratorViewAllUsers() {
                     </div>
                 )}
 
+                {/* Display Users Section */}
                 <div className="flex flex-col w-full justify-start items-center mt-20 gap-4">
                     <div className="flex w-full justify-start pt-2 items-start">
                         {searchQuery ? <p className="text-start hidden"></p> : <p className="text-start font-bold text-xl">Users</p>}
@@ -185,7 +199,7 @@ export default function ModeratorViewAllUsers() {
                         </div>
                     )}
                 </div>
-
+                {/* Popup for Viewing User Details */}
                 {isPopupOpen && selectedUser && (
                     <div className="fixed inset-0 grid place-items-center bg-black bg-opacity-50">
                         <div className="fixed w-full max-w-lg top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 rounded-lg shadow-lg z-50">
@@ -205,7 +219,7 @@ export default function ModeratorViewAllUsers() {
                                 <p className="mb-4 text-gray-600">{selectedUser.renterOrOwner}</p>
 
                                 {/* User Details Section */}
-                                <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                                <div className="grid grid-cols-2 gap-x-2 gap-y-2 text-sm">
                                     <p className="font-bold">Username:</p>
                                     <p>{selectedUser.username}</p>
 
@@ -247,6 +261,7 @@ export default function ModeratorViewAllUsers() {
                         </div>
                     </div>
                 )}
+                {/* NavBar Section */}
                 <NavBarModerator UsersColor={"00B761"} />
             </div>
         </div>

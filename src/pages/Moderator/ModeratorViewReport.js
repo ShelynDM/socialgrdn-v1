@@ -3,10 +3,14 @@ import { SlArrowRight } from "react-icons/sl";
 import InAppLogo from "../../components/Logo/inAppLogo";
 import SearchBar from "../../components/SearchComponents/search";
 import NavBarModerator from "../../components/Navbar/navbarmoderator";
+
+// Imports for search functionality
 import { useNavigate } from "react-router-dom";
 import Users from "../../components/SearchComponents/userResults"
 
 export default function ModeratorViewReport() {
+
+    // Hooks for search functionality
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState(""); // Store search query in state
     const [suggestions, setSuggestions] = useState([]);
@@ -18,6 +22,9 @@ export default function ModeratorViewReport() {
         { id: 3, month: "November", amount: "$875" },
         { id: 4, month: "December", amount: "$1400" },
     ];
+    
+
+    // ------------------- Imported Function to handle search query ------------------- //
 
     // Handle input change and update suggestions
     const handleInputChange = (event) => {
@@ -50,6 +57,8 @@ export default function ModeratorViewReport() {
         navigate(`/ModeratorViewAllUsers?query=${encodeURIComponent(username)}`);
     };
 
+    // ------------------- End of Imported Function to handle search query  ------------------- //
+ 
     return (
         <div className="bg-main-background">
             <div className="flex flex-col items-center justify-center gap-2 min-h-screen mx-4 pb-20">
