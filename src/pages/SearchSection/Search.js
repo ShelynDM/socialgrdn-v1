@@ -13,42 +13,31 @@ import Sprout from "../../assets/navbarAssets/sprout.png";
 import SearchResult from "../../components/SearchComponents/searchResult";
 import SearchFilter from "../../components/SearchComponents/popupSearchFilter";
 import FilterButton from "../../components/SearchComponents/filterButton";
+import SearchBar from "../../components/SearchComponents/search";
 //import axios from "axios";
 import {ref, onValue} from "firebase/database";
 import {realtimeDb} from "../../_utils/firebase";
 
 // Import the following components to reuse search components
-import SearchWithSuggestions from "../../components/SearchComponents/searchWithSuggestions";
+//import SearchWithSuggestions from "../../components/SearchComponents/searchWithSuggestions";
 import usePropertyResult from "../../components/SearchComponents/propertyResult";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Search() {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [userLocation, setUserLocation] = useState();
     const [filteredResults, setFilteredResults] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
+    const [suggestions, setSuggestions] = useState([]);
     const [locationFetched, setLocationFetched] = useState(false);
     const [cropData, setCropData] = useState({});
 
     // Get property results from the database
     const propertyResult = usePropertyResult();
-    const [searchParams] = useSearchParams();
+    const location = useLocation();
     const navigate = useNavigate();
 
-    // Get search query from the URL and remove it
-    useEffect(() => {
-        const query = searchParams.get("searchQuery");
-        if (query) {
-            setSearchQuery(query); // Update state with query from URL
-
-        }
-    }, [searchParams]);
-
-    
-    // Function to reset filters
-    // const resetFilters = () => {
-    //     setSearchQuery(""); // Clear search query
-    // };
+    // ------------------- Location-based Filtering ------------------- //
 
     const deg2rad = (deg) => {
         return deg * (Math.PI / 180);
@@ -109,34 +98,11 @@ export default function Search() {
         }
     }, [getUserLocation, locationFetched]);
 
-    // Filter results based on user's location or display random properties if location is not available
-    useEffect(() => {
-        if (propertyResult.length > 0) {
-            if (userLocation) {
-            try {
-                    const nearestResults = getNearestResults(userLocation, propertyResult);
-                    setFilteredResults(nearestResults);
-                    console.log("Nearest Results:", nearestResults);
-                } catch (error) {
-                    console.error("Error filtering results based on location:", error);
-                }
-            } else {
-                // Display 10 random properties if user location is not available
-                try {
-                    const randomResults = propertyResult
-                        .sort(() => Math.random() - 0.5) // Shuffle the array
-                        .slice(0, 10); // Select the first 10 random items
-                    setFilteredResults(randomResults);
-                    console.log("Displaying random properties as location is not available:", randomResults);
-                } catch (error) {
-                    console.error("Error displaying random properties:", error);
-                }
-            }
-        }
-        // eslint-disable-next-line
-    }, [userLocation, propertyResult, searchQuery]);
+    // ------------------- End of Location-based Filtering ------------------- //
 
 
+
+    // ------------------- Filter Button and Popup ------------------- //
 
     // Handle filter button click
     const filterClicked = () => {
@@ -232,35 +198,136 @@ export default function Search() {
         setFilteredResults(filtered);
         console.log("Modal Results:", filtered);
 
-    }
-
-
-    // Handle the filtered property results once the search query is triggered by "Enter" key or suggestion click
-    const handleSearchTrigger = (searchQuery) => {
-        const filtered = propertyResult.filter((result) =>
-            result.property_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            result.address_line1.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            result.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            result.province.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            result.growth_zone.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            result.crop.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            result.soil_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            result.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            result.last_name.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-        setFilteredResults(filtered.slice(0, 10));
     };
 
-    // Handle suggestion select
-    const handleSuggestionSelect = (selectedSuggestion) => {
-        console.log("Selected Suggestion:", selectedSuggestion);
-        setSearchQuery(selectedSuggestion);
+    // ------------------- End of Filter Button and Popup ------------------- //
+
+
+
+
+    // ------------------- Display Property Results Based on Randomly and Based on user Location ------------------- //
+
+    // Filter results based on user's location or display random properties if location is not available
+    const displayDefaultResults = () => {
+        if (userLocation && propertyResult.length > 0) {
+            try {
+                const nearestResults = getNearestResults(userLocation, propertyResult);
+                setFilteredResults(nearestResults);
+                console.log("Nearest Results:", nearestResults);
+            } catch (error) {
+                console.error("Error filtering results based on location:", error);
+            }
+        } else if (propertyResult.length > 0) {
+            try {
+                const randomResults = propertyResult
+                    .sort(() => Math.random() - 0.5) // Shuffle the array randomly
+                    .slice(0, 10); // Select the first 10 random items
+                setFilteredResults(randomResults);
+                console.log("Displaying random properties:", randomResults);
+            } catch (error) {
+                console.error("Error displaying random properties:", error);
+            }
+        }
     };
 
-    // handle SeacrhQueryChange
-    const handleSearchQueryChange = (query) => {
+    useEffect(() => {
+        displayDefaultResults();
+        // eslint-disable-next-line
+    }, [propertyResult, userLocation]);
+
+    // ------------------- End of Display Property Results Based on Randomly and Based on user Location ------------------- //
+
+
+    // ------------------- Search Bar and Search Suggestions ------------------- //
+
+
+    // Get query from URL and initialize search query state
+    useEffect(() => {
+        const query = new URLSearchParams(location.search).get("query") || "";
+        if (query) {
+            setSearchQuery(query);
+            performSearch(query); // Trigger search if query exists
+        } else {
+            displayDefaultResults(); // Show default results if no query
+        }
+        // eslint-disable-next-line
+    }, [location.search]);
+
+    // Main search query handler with fallback to default results logic
+    const handleSearchQueryChange = (event) => {
+        const query = event.target.value.toLowerCase();
         setSearchQuery(query);
+    
+        if (query.trim() === "") {
+            displayDefaultResults(); // Show default results if query is empty
+            setSuggestions([]);
+            navigate("/Search");
+        } else {
+            // Collect individual words from relevant fields of all properties
+            const wordSet = new Set(); // Use Set to avoid duplicates
+    
+            propertyResult.forEach((result) => {
+                Object.values(result).forEach((value) => {
+                    if (typeof value === "string") {
+                        // Split strings into individual words and store them in the Set
+                        value.split(/\s+/).forEach((word) => {
+                            if (word.toLowerCase().startsWith(query)) {
+                                wordSet.add(word);
+                            }
+                        });
+                    }
+                });
+            });
+    
+            // Convert the Set to an array and limit the suggestions to 10 words
+            setSuggestions(Array.from(wordSet).slice(0, 10));
+        }
     };
+    
+    
+    // Trigger search or fallback results on Enter key press
+    const handleKeyDown = (event) => {
+        if (event.key === "Enter") {
+            if (suggestions.length > 0) {
+                handleSuggestionClick(suggestions[0]); // Use the first suggestion
+            } else if (searchQuery.trim() === "") {
+                displayDefaultResults(); // Fallback to default results if query is empty
+            } else {
+                performSearch(searchQuery); // Perform search with the query
+            }
+        }
+    };    
+
+    // Handle click on a suggestion and navigate
+    const handleSuggestionClick = (suggestion) => {
+        setSearchQuery(suggestion); // Set the search query to the selected word
+        setSuggestions([]); // Clear the suggestions
+        performSearch(suggestion); // Perform the search with the selected word
+    };
+
+    
+    // Perform the search logic when Enter is pressed or suggestion is clicked
+    const performSearch = useCallback((query) => {
+        const filtered = propertyResult.filter((result) =>
+            Object.values(result).some((value) =>
+                String(value).toLowerCase().includes(query.toLowerCase())
+            )
+        );
+    
+        setFilteredResults(filtered.slice(0, 10));
+        console.log("Search Results:", filtered);
+        navigate(`/Search?query=${encodeURIComponent(query)}`);
+    }, [propertyResult, navigate]);
+
+    
+
+    // ------------------- End of Search Bar and Search Suggestions ------------------- //
+
+
+
+
+
+    // ------------------- Property Click ------------------- //
 
     // Handle property click to view property details
     const handlePropertyClick = (propertyId) => {
@@ -279,19 +346,28 @@ export default function Search() {
                 {/* Search Bar Section */}
                 <div className='mx-2 px-2 fixed top-12 flex w-full justify-between bg-main-background'>
                     <div className="flex-grow w-full">
-                        <SearchWithSuggestions 
-                            //value={searchQuery}
-                            searchQuery={searchQuery} 
-                            propertyResult={propertyResult} 
-                            onSuggestionSelect={handleSuggestionSelect}
-                            onSearchQueryChange={handleSearchQueryChange}
-                            onSearchTrigger={handleSearchTrigger}
-                            />
+                        <SearchBar value={searchQuery} onChange={handleSearchQueryChange} onKeyDown={handleKeyDown}/>
                     </div>
-                    <div>
+                    <div className="mx-2">
                         <FilterButton onclick={filterClicked}/>
                     </div>
                 </div>
+                {suggestions.length > 0 && (
+                    <div className="fixed top-20 w-full z-50">
+                        <div className="shadow-lg">
+                            {suggestions.map((suggestion, index) => (
+                                <div
+                                    key={index}
+                                    className="w-full px-2 hover:bg-gray-100 cursor-pointer rounded-lg"
+                                    onClick={() => handleSuggestionClick(suggestion)}
+                                >
+                                    <p className="bg-white text-base border-b mx-2 px-2">{suggestion}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 <div className="w-auto">
                     <SearchFilter isOpen={isPopupOpen} onClose={closePopup} onApplyFilters={handlePopupSearchFilter} className="flex items-start"/>
                 </div>
@@ -332,3 +408,4 @@ export default function Search() {
         </div>
     );
 }
+

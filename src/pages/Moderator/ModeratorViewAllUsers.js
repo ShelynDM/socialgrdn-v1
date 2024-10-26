@@ -10,7 +10,6 @@ import React, { useEffect, useState, useCallback } from "react";
 import InAppLogo from "../../components/Logo/inAppLogo";
 import SearchBar from "../../components/SearchComponents/search";
 import NavBarModerator from "../../components/Navbar/navbarmoderator";
-import { FaUserCircle } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export default function ModeratorViewAllUsers() {
@@ -18,27 +17,29 @@ export default function ModeratorViewAllUsers() {
     const [suggestions, setSuggestions] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null); // State for selected user
 
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Extract the query parameter from the URL
+    // This code snippet retrieves the search query from the URL
     const query = new URLSearchParams(location.search).get("query") || "";
 
-    // Fetch users from backend and filter them if a query exists
+
+    // Fetch all users from the database
     const fetchAllUsers = useCallback(async () => {
         try {
             const response = await fetch('/api/getAllUsers');
             const data = await response.json();
             setUsers(data);
             setFilteredUsers(data);
-
-            // If a query exists, apply the filter
             if (query) filterUsers(data, query);
         } catch (error) {
             console.error('Error fetching users:', error);
         }
     }, [query]);
+
 
     // Filter users based on the search query
     const filterUsers = (allUsers, query) => {
@@ -49,18 +50,15 @@ export default function ModeratorViewAllUsers() {
         setFilteredUsers(filtered);
     };
 
-    // Handle search query input changes and update the URL
     const handleSearchQueryChange = (event) => {
         const query = event.target.value;
         setSearchQuery(query);
 
         if (query.trim() === '') {
-            // Reset to show all users and clear suggestions
             setFilteredUsers(users);
             setSuggestions([]);
-            navigate('/ModeratorViewAllUsers'); // Reset URL to the base path
+            navigate('/ModeratorViewAllUsers');
         } else {
-            // Filter users and set suggestions
             filterUsers(users, query);
             const newSuggestions = users
                 .filter((user) =>
@@ -69,20 +67,17 @@ export default function ModeratorViewAllUsers() {
                 )
                 .map((user) => ({ username: user.username, email: user.email }));
             setSuggestions(newSuggestions);
-
-            // Update the URL with the search query
             navigate(`/ModeratorViewAllUsers?query=${encodeURIComponent(query)}`);
         }
     };
 
-    // Handle Enter key press to select the first suggestion and navigate
     const handleKeyDown = (event) => {
         if (event.key === 'Enter' && suggestions.length > 0) {
             handleSuggestionClick(suggestions[0].username);
         }
     };
 
-    // Handle click on a suggestion
+    // Handle the user suggestion click. It passes the username to the search bar and navigates to the search page
     const handleSuggestionClick = (username) => {
         setSearchQuery(username);
         filterUsers(users, username);
@@ -90,7 +85,6 @@ export default function ModeratorViewAllUsers() {
         setSuggestions([]);
     };
 
-    // Handle block/unblock user status
     const handleUserStatus = async (userID, status) => {
         const newStatus = status === '1' ? '0' : '1';
         try {
@@ -105,13 +99,17 @@ export default function ModeratorViewAllUsers() {
                 return;
             }
             console.log('User status updated successfully');
-            fetchAllUsers(); // Refresh the user list
+            fetchAllUsers();
         } catch (error) {
             console.error('Error updating user status:', error);
         }
     };
 
-    // Fetch users when the component mounts or when the query changes
+    const handlePopup = (user = null) => {
+        setSelectedUser(user); // Set the selected user data
+        setIsPopupOpen(!!user); // Open the popup if a user is selected
+    };
+
     useEffect(() => {
         fetchAllUsers();
     }, [fetchAllUsers]);
@@ -123,31 +121,31 @@ export default function ModeratorViewAllUsers() {
                     <InAppLogo />
                 </div>
 
-                {/* Search Bar Section */}
                 <div className='mx-2 px-2 fixed top-12 flex w-full bg-main-background'>
                     <SearchBar value={searchQuery} onChange={handleSearchQueryChange} onKeyDown={handleKeyDown}/>
                 </div>
-                {/* Username and Email Suggestions */}
+
                 {suggestions.length > 0 && (
-                    <div className="fixed top-20 w-full mx-2 px-2 bg-white shadow-lg rounded-md z-50">
+                    <div className="fixed top-20 w-full mx-2 px-2  z-50">
+                        <div className="mx-2 bg-white shadow-lg rounded-lg">
                         {suggestions.map((user, index) => (
                             <p
                                 key={index}
-                                className="mx-2px-4 py-2 border-b hover:bg-gray-100 cursor-pointer"
+                                className="mx-2 px-2 py-1 border-b hover:bg-gray-100 cursor-pointer"
                                 onClick={() => handleSuggestionClick(user.username)}
                             >
                                 <span className="font-bold">{user.username}</span> - <span className="text-gray-500">{user.email}</span>
                             </p>
                         ))}
+                        </div>
                     </div>
                 )}
 
-                <div className="flex flex-col w-full justify-start items-center mt-20 gap-8">
-                    <div className="flex w-full justify-start pt-4 items-start">
-                        <p className="text-start font-bold text-2xl">Users</p>
+                <div className="flex flex-col w-full justify-start items-center mt-20 gap-4">
+                    <div className="flex w-full justify-start pt-2 items-start">
+                        {searchQuery ? <p className="text-start hidden"></p> : <p className="text-start font-bold text-xl">Users</p>}
                     </div>
 
-                    {/* Display Filtered Users */}
                     {filteredUsers.length > 0 ? (
                         filteredUsers.map((user, index) => (
                             <div
@@ -155,31 +153,25 @@ export default function ModeratorViewAllUsers() {
                                 className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 rounded-lg border-2 border-gray-200 bg-slate-50"
                             >
                                 <div className="flex flex-grow m-2">
-                                    <div>
-                                        <FaUserCircle className="text-6xl text-gray-300" />
-                                    </div>
                                     <div className="flex w-full justify-between">
                                         <div className="flex flex-col justify-center items-start gap-1 ml-4">
                                             <h1 className="text-base font-bold">{user.username}</h1>
                                             <p className="text-sm">{user.name}</p>
                                             <p className="text-sm">{user.email}</p>
-                                            <p className="text-sm">{user.createdAt}</p>
                                             <p className="text-sm">{user.active_properties}</p>
                                             <p className="text-sm">{user.location}</p>
                                         </div>
-                                        <div className="text-sm font-bold">
+                                        <div className="text-sm font-bold mx-4">
                                             {user.renterOrOwner}
                                         </div>
                                     </div>
                                 </div>
                                 <div className="flex w-full justify-evenly m-2">
-                                    <div className="font-bold text-green-500 text-base">
+                                    <button className="font-bold text-green-500 text-base" onClick={() => handlePopup(user)}>
                                         View
-                                    </div>
+                                    </button>
                                     <button
-                                        className={`font-bold text-base ${
-                                            user.status === '1' ? 'text-red-500' : 'text-green-500'
-                                        }`}
+                                        className={`font-bold text-base ${user.status === '1' ? 'text-red-500' : 'text-green-500'}`}
                                         onClick={() => handleUserStatus(user.userID, user.status)}
                                     >
                                         {user.status === '1' ? 'Block' : 'Unblock'}
@@ -194,8 +186,68 @@ export default function ModeratorViewAllUsers() {
                     )}
                 </div>
 
-                {/* Navigation Bar */}
-                <NavBarModerator UsersColor={"00B761"}/>
+                {isPopupOpen && selectedUser && (
+                    <div className="fixed inset-0 grid place-items-center bg-black bg-opacity-50">
+                        <div className="fixed w-full max-w-lg top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 rounded-lg shadow-lg z-50">
+                            <div className="bg-white border-2 border-gray-400 p-6 rounded-lg">
+                                {/* Header Section */}
+                                <div className="grid grid-cols-2 items-center border-b border-gray-400 pb-2 mb-4">
+                                    <p className="font-bold text-lg">{selectedUser.name}</p>
+                                    <button 
+                                        onClick={() => handlePopup(null)} 
+                                        className="justify-self-end text-lg text-gray-500 hover:text-black"
+                                    >
+                                        Close
+                                    </button>
+                                </div>
+
+                                {/* Role Section */}
+                                <p className="mb-4 text-gray-600">{selectedUser.renterOrOwner}</p>
+
+                                {/* User Details Section */}
+                                <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                                    <p className="font-bold">Username:</p>
+                                    <p>{selectedUser.username}</p>
+
+                                    <p className="font-bold">Email:</p>
+                                    <p>{selectedUser.email}</p>
+
+                                    <p className="font-bold">Phone Number:</p>
+                                    <p>{selectedUser.phone_number}</p>
+
+                                    <p className="font-bold">Profession:</p>
+                                    <p>{selectedUser.profession}</p>
+
+                                    <p className="font-bold">Active Properties:</p>
+                                    <p>{selectedUser.active_properties}</p>
+
+                                    <p className="font-bold">Location:</p>
+                                    <p>{selectedUser.full_address}</p>
+
+                                    <p className="font-bold">Member Since:</p>
+                                    <p>{selectedUser.createdAt}</p>
+                                </div>
+
+                                {/* Block/Unblock Button */}
+                                <button
+                                    className={`mt-6 w-full py-2 rounded text-white font-bold ${
+                                        selectedUser.status === '1' ? 'bg-red-500' : 'bg-green-500'
+                                    }`}
+                                    onClick={async () => {
+                                        await handleUserStatus(selectedUser.userID, selectedUser.status);
+                                        setSelectedUser((prev) => ({
+                                            ...prev,
+                                            status: prev.status === '1' ? '0' : '1',
+                                        }));
+                                    }}
+                                >
+                                    {selectedUser.status === '1' ? 'Block' : 'Unblock'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                <NavBarModerator UsersColor={"00B761"} />
             </div>
         </div>
     );

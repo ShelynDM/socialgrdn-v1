@@ -88,7 +88,7 @@ export default function App() {
             <>
               {/* Search Section */}
               <Route path="/" element={<Navigate to="/Search" />} />
-              <Route path="/Search" element={<ProtectedRoute allowedRoles={[0,1,2]}><Search /></ProtectedRoute>} />
+              <Route path="/Search/:query?" element={<ProtectedRoute allowedRoles={[0,1,2]}><Search /></ProtectedRoute>} />
               <Route path="/MapSearch" element={<ProtectedRoute allowedRoles={[0,1,2]}><MapSearch /></ProtectedRoute>} />
 
               {/* Sign Up Section */}
