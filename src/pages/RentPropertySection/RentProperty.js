@@ -8,7 +8,8 @@
 
 // Importing necessary libraries
 import React, { useEffect, useState } from "react";
-import { differenceInMonths, differenceInDays, parseISO } from 'date-fns';
+import { useLocation } from 'react-router-dom';
+import { format, parse, endOfMonth } from 'date-fns';
 
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
@@ -23,19 +24,29 @@ import zoneColor from "../../components/ZoneColor/zoneColor";
 import { useUser } from "../../UserContext";
 
 export default function RentProperty() {
-    //const propertyID = useParams().id;            //parameter
-    const [propertyID] = useState(1);               //FOR Deletion
+
     const { userId } = useUser();
+
+    // Destructure navigationData from the location state
+    const location = useLocation();
+    const { propertyId, from, to, months } = location.state || {}; // Matching the key names exactly
+
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const [durationMonths, setDurationMonths] = useState('');
+
+    useEffect(() => {
+        setStartDate(from);
+        setEndDate(to);
+        setDurationMonths(months);
+    }, [from, to, months]);
+
 
     //Stores Property Object Information
     const [property, setProperty] = useState('');
 
     // Rental Information
     const [rentalID, setRentalID] = useState('null');
-    const [startDate] = useState('2024-09-01');                   //passed as parameter from view property page
-    const [endDate] = useState('2024-12-05');                     //passed as parameter from view property page
-    const [durationMonths, setDurationMonths] = useState(null);   // need to finalize issues with duration rules and pricing
-    const [durationDays, setDurationDays] = useState(null);       //need to finalize issues with duration rules and pricing
 
     //Price Information
     const [base_price, setBase_price] = useState(0.00);
@@ -43,13 +54,11 @@ export default function RentProperty() {
     const [transaction_fee, setTransaction_fee] = useState(0.00);
     const [total_price, setTotal_price] = useState(0.00);
 
-
-
     useEffect(() => {
         const fetchPropertyDetails = async () => {
             try {
                 //Fetching Property Details from API
-                const response = await fetch(`http://localhost:3000/api/getPropertyDetails?property_id=${propertyID}`);
+                const response = await fetch(`http://localhost:3000/api/getPropertyDetails?property_id=${propertyId}`);
                 if (!response.ok) {
                     console.log("Network response was not ok");
                 }
@@ -62,27 +71,8 @@ export default function RentProperty() {
         };
         fetchPropertyDetails();
         //eslint - disable - next - line
-    }, [propertyID]);
+    }, [propertyId]);
 
-    // Calculate the duration of the rental
-    const computeDuration = () => {
-        // Ensure start and end dates are valid before proceeding
-        if (startDate && endDate) {
-            // Parse the date strings into Date objects
-            const start = parseISO(startDate);
-            const end = parseISO(endDate);
-
-            // Calculate the number of complete months between the dates
-            const months = differenceInMonths(end, start);
-
-            // Calculate the number of days remaining after accounting for complete months
-            const days = differenceInDays(end, new Date(start.getFullYear(), start.getMonth() + months, start.getDate()));
-
-            setDurationMonths(months);
-            setDurationDays(days);
-        }
-
-    };
 
     // Get the current location of the user
     const computePrice = () => {
@@ -109,7 +99,6 @@ export default function RentProperty() {
     };
 
     useEffect(() => {
-        computeDuration();
         computePrice();
         //eslint-disable-next-line
     }, [property]);
@@ -175,13 +164,20 @@ export default function RentProperty() {
 
     // Register rental details to the database
     const handleRentalRegistration = async () => {
+        // Parse the start and end dates to the correct format
+        const parsedStartDate = parse(startDate, 'MMMM yyyy', new Date());
+        const formattedStartDate = format(parsedStartDate, 'yyyy-MM-01');
+
+        const parsedEndDate = parse(endDate, 'MMMM yyyy', new Date());
+        const endMonth = endOfMonth(parsedEndDate);
+        const formattedEndDate = format(endMonth, 'yyyy-MM-dd');
 
         //Preparing rental object for DB registration
         const rentalData = {
-            property_id: propertyID,
+            property_id: propertyId,
             renter_ID: userId,
-            start_date: startDate,
-            end_date: endDate,
+            start_date: formattedStartDate,
+            end_date: formattedEndDate,
             status: 0,                         // pending state, unpaid
             rent_base_price: base_price,
             tax_amount: tax_amount,
@@ -277,7 +273,7 @@ export default function RentProperty() {
                         </div>
                         <div className="mx-4 flex">
                             <p className="text-sm w-20">Duration:</p>
-                            <p className="text-sm">{durationMonths} Months {durationDays} Days</p>
+                            <p className="text-sm">{durationMonths} Months</p>
                         </div>
                     </div>
 

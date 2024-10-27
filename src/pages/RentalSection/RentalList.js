@@ -14,7 +14,7 @@ import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
 import SearchBar from "../../components/SearchComponents/search";
 import { useUser } from "../../UserContext";
-import Reservation from "../../components/rentalComponent/rental";
+import Rental from "../../components/rentalComponent/rental";
 // Component to reuse search components
 import usePropertyResult from "../../components/SearchComponents/propertyResult";
 
@@ -74,35 +74,36 @@ export default function RentalList() {
 
 
     // ------------------- End of Imported Function to handle search query ------------------- //
+
     //This function passes the rental id to the RentalDetails page
     const handleViewRental = (id) => {
         navigate(`/RentalDetails/${id}`)
-
-        // State to hold all rentals
-        const [rental, setRentals] = useState([]);
-
-
-        useEffect(() => {
-            // Fetching rentals from API
-            const fetchRentals = async () => {
-                try {
-                    const response = await fetch(`http://localhost:3000/api/getRentalList?userID=${userId}`);
-                    if (!response.ok) {
-                        console.log("Network response was not ok");
-                        return;
-                    }
-                    //stores the response in rentalData in json format
-                    const rentalData = await response.json();
-
-                    //stores rentals in the rental list
-                    setRentals(rentalData);
-                } catch (error) {
-                    console.error('Error fetching reservations:', error);
-                }
-            };
-            fetchRentals();
-        }, [userId]);
     };
+    // State to hold all rentals
+    const [rentals, setRentals] = useState([]);
+
+
+    useEffect(() => {
+        // Fetching rentals from API
+        const fetchRentals = async () => {
+            try {
+                const response = await fetch(`http://localhost:3000/api/getRentalList?userID=${userId}`);
+                if (!response.ok) {
+                    console.log("Network response was not ok");
+                    return;
+                }
+                //stores the response in rentalData in json format
+                const rentalData = await response.json();
+
+                //stores rentals in the rental list
+                setRentals(rentalData);
+            } catch (error) {
+                console.error('Error fetching reservations:', error);
+            }
+        };
+        fetchRentals();
+    }, [userId]);
+
 
 
     return (
@@ -132,7 +133,7 @@ export default function RentalList() {
                 )}
                 {/* Updates the page title based on the number of reservations */}
                 <div className="pb-2 mt-24">
-                    {rental.length === 0 ? (
+                    {rentals.length === 0 ? (
                         <h2 className="text-xl">No upcoming reservations</h2>
                     ) : (
                         <h2 className="text-xl">Upcoming Reservations</h2>
@@ -142,9 +143,9 @@ export default function RentalList() {
                 {/* Displays the rentals */}
                 <div >
                     <ul>
-                        {rental.map((rental) => (
+                        {rentals.map((rental) => (
                             <li key={rental.rental_id} onClick={() => handleViewRental(rental.rental_id)}>
-                                <Reservation
+                                <Rental
                                     name={rental.property_name}
                                     landowner={rental.property_owner}
                                     start={rental.start_date}

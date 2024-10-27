@@ -127,13 +127,9 @@ export default function App() {
               <Route path="/PayProperty" element={<ProtectedRoute allowedRoles={[0, 1, 2]}><PayProperty /></ProtectedRoute>} />
 
               {/* Rental Section */}
-              <Route path="/RentalCancelled" element={<ProtectedRoute><RentalCancelled /></ProtectedRoute>} />
-              <Route path="/RentalDetails/:id" element={<ProtectedRoute><RentalDetails /></ProtectedRoute>} />
-              <Route path="/RentalList" element={<ProtectedRoute><RentalList /></ProtectedRoute>} />
-              {/* Reservation Section */}
-              {/* <Route path="/ReservationCancelled" element={<ProtectedRoute allowedRoles={[0,1,2]}><ReservationCancelled /></ProtectedRoute>} />
-              <Route path="/ReservationDetails/:id" element={<ProtectedRoute allowedRoles={[0,1,2]}><ReservationDetails /></ProtectedRoute>} />
-              <Route path="/ReservationList" element={<ProtectedRoute allowedRoles={[0,1,2]}><ReservationList /></ProtectedRoute>} /> */}
+              <Route path="/RentalCancelled" element={<ProtectedRoute allowedRoles={[0, 1]}><RentalCancelled /></ProtectedRoute>} />
+              <Route path="/RentalDetails/:id" element={<ProtectedRoute allowedRoles={[0, 1]}><RentalDetails /></ProtectedRoute>} />
+              <Route path="/RentalList" element={<ProtectedRoute allowedRoles={[0, 1]}><RentalList /></ProtectedRoute>} />
 
               {/* Moderator Section */}
               <Route path="/ModeratorViewMonthlyReport" element={<ProtectedRoute allowedRoles={[0]}><ModeratorViewMonthlyReport /></ProtectedRoute>} />
