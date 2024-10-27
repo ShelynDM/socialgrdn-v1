@@ -1,3 +1,10 @@
+/**
+ * GetSearchResultsAPI.js
+ * Description: This is the API for fetching the property for the search results
+ * Backend Author: Shelyn Del Mundo
+ * Date: 2024-10-23
+ */
+
 const express = require('express');
 const router = express.Router();
 

@@ -67,3 +67,7 @@ input[type="range"]::-moz-range-thumb {
   background: #96fcbd;
   border-radius: 999px;
 }
+/* text input border should be green onclick */
+input[type="text"]:focus {
+  border: 1px solid #7bffac;
+}

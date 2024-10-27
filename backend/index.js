@@ -1,4 +1,13 @@
-// index.js
+/**
+ * index.js
+ * Description: This is the file that handles the server setup and database connection
+ * Backend Author:  Donald Jans Uy
+ *                  Doniyor Rakhmanov
+ *                  Lilian Huh
+ *                  Shelyn Del Mundo
+ *                  Tiana Bautista
+ * Date: 2024-10-23
+ */
 
 // Import the credentials from the _credentials.js file
 const credentials = require('./_credentials');
@@ -24,11 +33,15 @@ const editRentalDetailsRoutes = require('./api/EditRentalAPI');
 
 const stripeCheckoutSession = require('./api/create-checkout-session');  //payment route
 
-
+const updatePropertyListingRoutes = require('./api/UpdatePropertyListingAPI');
 const getPayoutsRoutes = require('./api/GetPayoutAPI');
+const getEarningsRoutes = require('./api/GetEarningsAPI');
 const getDetailedPayoutsRoutes = require('./api/GetDetailedPayoutAPI');
 const getPropStatusRoutes = require('./api/GetPropStatusAPI');
 const updatePropStatusRoutes = require('./api/UpdatePropStatusAPI');
+const getUserRoleRoutes = require('./api/GetUserRoleAPI');
+const getAllUsersRoutes = require('./api/GetAllUsersAPI');
+const HandleUserStatusAPI = require('./api/HandleUserStatusAPI');
 
 const app = express();
 const port = 3000;
@@ -39,7 +52,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors({ origin: 'http://localhost:3001' }));
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../build')));
+app.use(express.static(path.join(__dirname, '../build')
+));
 
 // Use route files
 app.use('/api/users', userRoutes);
@@ -56,12 +70,17 @@ app.use('/api/create-checkout-session', stripeCheckoutSession); //payment route
 app.use('/api/registerRentalDetails', registerRentalDetailsRoutes);
 app.use('/api/editRentalDetails', editRentalDetailsRoutes);
 
-
 app.use('/api/addPropertyListing', addPropertyListingRoutes);// Add the new route for addPropertyListingAPI
+app.use('/api/updatePropertyListing', updatePropertyListingRoutes); // Add the new route for updating a property listing
 app.use('/api/getPayouts', getPayoutsRoutes);
+app.use('/api/getEarnings', getEarningsRoutes);
 app.use('/api/getDetailedPayouts', getDetailedPayoutsRoutes);
 app.use('/api/getPropStatus', getPropStatusRoutes);
 app.use('/api/updatePropStatus', updatePropStatusRoutes);
+
+app.use('/api/getUserRole', getUserRoleRoutes);
+app.use('/api/getAllUsers', getAllUsersRoutes);
+app.use('/api/handleUserStatus', HandleUserStatusAPI);
 
 
 // The "catchall" handler

@@ -1,13 +1,26 @@
+/**
+ * SearchResult.js
+ * Description: Component that displays the search results of the user's search query and recommended properties
+ * Frontend Author: Shelyn Del Mundo
+ * Backend Author: Shelyn Del Mundo
+ * Date: 2024-10-23
+ */
+
+import React, {useState} from "react";
 import PlantIcon from "../../assets/listingAssets/Plant-icon.png";
 import FarmAreaIcon from "../../assets/listingAssets/FarmArea-icon.png";
 import SoilIcon from "../../assets/listingAssets/Soil-icon.png";
-import { Link } from "react-router-dom";
 import ZoneColor from "../ZoneColor/zoneColor";
 
-export default function SearchResult({propertyName, addressLine1, city, province, first_name, last_name, growthZone, propertyImage ,propertyCrop, dimensionLength, dimensionWidth, dimensionHeight, soilType}) {
 
+export default function SearchResult({propertyName, addressLine1, city, province, first_name, last_name, growthZone, propertyImage ,propertyCrop, dimensionLength, dimensionWidth, dimensionHeight, soilType, onClick}) {
+    const [isClicked, setIsClicked] = useState(false);
+
+    const handleButtonClick = () => {
+        setIsClicked((prevState) => !prevState);
+    }
     return (
-        <div className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 rounded-lg border-2 py-1 border-gray-200 bg-main-background">
+        <div className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 rounded-lg border-2 py-1 border-gray-200 bg-main-background" onClick={onClick}>
             <div className="px-6 pt-2">
                 <div className="flex flex-row justify-between mb-2">
                     <div>
@@ -15,7 +28,14 @@ export default function SearchResult({propertyName, addressLine1, city, province
                         <p className="text-gray-700 text-sm">{addressLine1} {city} {province}</p>
                     </div>
                     <div>
-                        <Link href="#" className="text-green-500 font-bold text-lg ml-auto">View</Link>
+                        <button
+                            onClick={handleButtonClick}
+                            className={`font-bold text-lg ml-2 transition-colors duration-300 ${
+                                isClicked ? 'text-green-900' : 'text-green-500'
+                            }`}
+                            >
+                            View
+                        </button>                    
                     </div>
                 </div>
                 <div className="flex flex-row justify-between">
