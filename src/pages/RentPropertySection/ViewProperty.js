@@ -28,7 +28,7 @@ const ViewProperty = () => {
       const apiUrl = `/api/getPropertyDetails?property_id=${id}`;
       console.log('Fetching property details from:', apiUrl);
       console.log('Property ID:', id);
-      
+
       try {
         const response = await fetch(apiUrl);
         if (!response.ok) {
@@ -66,10 +66,10 @@ const ViewProperty = () => {
 
       // Log the full rentDuration object
       console.log('Current rentDuration state:', rentDuration);
-      
+
       // Log the data being sent to navigation
       console.log('Navigation data being sent:', navigationData);
-      
+
       // Log individual values for verification
       console.log('Property ID:', id);
       console.log('Start Date:', rentDuration.startDate.formatted);
@@ -93,7 +93,7 @@ const ViewProperty = () => {
       );
     }
 
-    
+
     return (
       <div className="relative mb-4">
         <img
@@ -151,7 +151,7 @@ const ViewProperty = () => {
       <InAppLogo />
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <BackButton onClick={() => navigate(-1)} className="mb-6" />
-        
+
         <div className="bg-white rounded-xl shadow-sm p-6">
           <div className="space-y-6">
             <div className="flex justify-between items-center">
@@ -162,8 +162,8 @@ const ViewProperty = () => {
               />
             </div>
 
-            <ImageCarousel 
-              images={[property.primaryImage, ...(property.otherImages || [])].filter(Boolean)} 
+            <ImageCarousel
+              images={[property.primaryImage, ...(property.otherImages || [])].filter(Boolean)}
             />
 
             <div className="flex items-center text-gray-600">
@@ -178,7 +178,7 @@ const ViewProperty = () => {
                 ].filter(Boolean).join(', ')}
               </p>
             </div>
-            
+
             <div className="grid gap-6">
               <section>
                 <h2 className="font-semibold text-gray-900 mb-2">About Property</h2>
@@ -211,22 +211,22 @@ const ViewProperty = () => {
                   </p>
                 </div>
                 <div className="col-span-2">
-                    <p className="text-sm font-semibold">Rent Details</p>
-                    {rentDuration ? (
-                      <div className="mt-2">
-                        <p className="text-sm text-gray-700">
-                          From: {rentDuration.startDate.formatted}
-                        </p>
-                        <p className="text-sm text-gray-700">
-                          To: {rentDuration.endDate.formatted}
-                        </p>
-                        <p className="text-sm text-green-600 font-medium mt-1">
-                          Duration: {rentDuration.monthsDiff + 1} Months
-                        </p>
-                      </div>
-                    ) : (
-                      <p className="text-sm text-gray-700">No duration selected</p>
-                    )}
+                  <p className="text-sm font-semibold">Rent Details</p>
+                  {rentDuration ? (
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-700">
+                        From: {rentDuration.startDate.formatted}
+                      </p>
+                      <p className="text-sm text-gray-700">
+                        To: {rentDuration.endDate.formatted}
+                      </p>
+                      <p className="text-sm text-green-600 font-medium mt-1">
+                        Duration: {rentDuration.monthsDiff + 1} Months
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-700">No duration selected</p>
+                  )}
                 </div>
 
               </section>
@@ -239,11 +239,10 @@ const ViewProperty = () => {
                 <div className="mt-4">
                   <LongButton
                     buttonName="Rent Property"
-                    className={`w-full ${
-                      rentDuration 
-                        ? "bg-green-600 text-white hover:bg-green-700" 
+                    className={`w-full ${rentDuration
+                        ? "bg-green-600 text-white hover:bg-green-700"
                         : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    } transition-colors`}
+                      } transition-colors`}
                     onClick={rentDuration ? handleRentProperty : undefined}
                   />
                 </div>

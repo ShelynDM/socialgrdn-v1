@@ -1,7 +1,14 @@
+/**
+ * RentFailed.js
+ * Description: Page for displaying the message that a rental failed and not confirmed
+ * Author: Tiana Bautista
+ * Date: 2024-10-23
+ */
+
+// Importing necessary libraries
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-//import { useNavigate, useLocation } from "react-router-dom";
-//import { useParams } from 'react-router-dom';
+import { useLocation } from "react-router-dom"; //useLocation is used to extract rental_id from the query string
 
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
@@ -17,32 +24,31 @@ export default function RentFailed() {
     const navigate = useNavigate();
 
     // Extract the rental_id from the query string
-    // const location = useLocation();
-    // const queryParams = new URLSearchParams(location.search);
-    // const rental_id = queryParams.get('rental_id');
-    // console.log(rental_id); // This should log "114"
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const rental_id = queryParams.get('rental_id');
 
-    const [rental_id, setRental_id] = useState(''); // Hardcoded rental_id for testing purposes
-    setRental_id(5);
     //Stores Rental Object Information
     const [rental, setRental] = useState('');
 
+    // Rental Information 
     const [propertyAddress, setPropertyAddress] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
 
 
-    //Fetching Rent Details from API
     useEffect(() => {
         const fetchRentalDetails = async () => {
             try {
-
-                const response = await fetch(`http://localhost:3000/api/GetRentalDetails?rental_id=${rental_id}`);
+                //Fetching Rent Details from API
+                const response = await fetch(`http://localhost:3000/api/GetRentalDetails?rentalID=${rental_id}`);
                 if (!response.ok) {
                     console.log("Network response was not ok");
                 }
+                //stores the response in rentalData in json format
                 const rentalData = await response.json();
                 setRental(rentalData);
+
                 // Convert timestamps to 'Month Day, Year' format
                 const formattedStartDate = new Date(rentalData.start_date).toLocaleDateString('en-US', {
                     month: 'long',
@@ -55,8 +61,6 @@ export default function RentFailed() {
                 });
 
                 setPropertyAddress(rentalData.address_line1 + ', ' + rentalData.city + ', ' + rentalData.province);
-                // setPropertyZone(rentalData.growth_zone);
-                // setPropertyName(rentalData.property_name);
                 setStartDate(formattedStartDate);
                 setEndDate(formattedEndDate);
             } catch (error) {
@@ -67,12 +71,12 @@ export default function RentFailed() {
         //eslint - disable - next - line
     }, [rental_id]);
 
-    const handleBackToReservations = () => {
-        navigate('/ReservationList');
+    // Function to navigate back to My Reservations
+    const handleBackToRentals = () => {
+        navigate('/RentalList');
     };
 
     return (
-
         <div className='bg-main-background'>
             {/* Main Content */}
             <div className="flex flex-col items-center min-h-screen mx-4 pb-20  pt-20 bg-main-background">
@@ -82,11 +86,10 @@ export default function RentFailed() {
                 </div>
 
                 <div className="w-96 h-5/6 rounded-lg border-2 py-1 border-gray-200 bg-main-background">
-                    {/* Payment not successful start */}
                     <div>
                         {/* Rent Information */}
                         <div className="">
-                            <h1 className="font-semibold text-2xl mx-4">Booking# {rental_id} Payment Failed</h1>
+                            <h1 className="font-semibold text-2xl mx-4">Booking Failure for Booking# {rental_id}</h1>
                             {/* Listing Duration */}
                             <div className="mx-4 flex">
                                 <p className="text-sm">{startDate}</p>
@@ -121,12 +124,11 @@ export default function RentFailed() {
                             </div>
                         </div>
                     </div>
-                    {/* Payment not successful end */}
 
                     <div className="self-center p-5">
-
+                        {/* Button to go back to My Reservations */}
                         <LongButton buttonName='Back to Reservations'
-                            onClick={handleBackToReservations}
+                            onClick={handleBackToRentals}
                             className='p-2 w-full rounded shadow-lg bg-green-600 text-white font-bold' />
                     </div>
                 </div>
