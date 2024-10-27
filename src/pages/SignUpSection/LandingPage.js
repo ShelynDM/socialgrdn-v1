@@ -1,3 +1,11 @@
+/**
+ * LandingPage.js
+ * Description: This page is the landing page of the application where users can sign up or log in
+ * Frontend Author: Shelyn Del Mundo
+ * Backend Author: Shelyn Del Mundo
+ * Date: 2024-10-23
+ */
+
 import React from 'react';
 import logo from '../../assets/logo/SocialGrdnLogo.png';
 import LongButton from '../../components/Buttons/longButton';

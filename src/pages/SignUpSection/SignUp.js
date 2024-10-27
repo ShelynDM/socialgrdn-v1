@@ -1,3 +1,12 @@
+/**
+ * SearchBar.js
+ * Description: Component that displays a search bar with a search icon.
+ * Frontend Author: Shelyn Del Mundo
+ * Backend Author: Shelyn Del Mundo
+ *                  Donald Jans Uy
+ * Date: 2024-10-23
+ */
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';

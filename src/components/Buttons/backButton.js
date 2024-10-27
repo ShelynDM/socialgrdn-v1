@@ -1,3 +1,11 @@
+/**
+ * BackButton.js
+ * Description: Component that displays and handles the back button
+ * Frontend Author: Shelyn Del Mundo
+ * Backend Author: Shelyn Del Mundo
+ * Date: 2024-10-23
+ */
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { IoArrowBackSharp } from "react-icons/io5";

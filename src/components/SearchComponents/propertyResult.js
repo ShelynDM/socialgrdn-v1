@@ -1,3 +1,10 @@
+/**
+ * PropertyResult.js
+ * Description: This component fetches the property data from the API
+ * Backend Author: Shelyn Del Mundo
+ * Date: 2024-10-23
+ */
+
 import { useState, useEffect } from "react";
 
 export default function PropertyResult() {

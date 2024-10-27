@@ -5,13 +5,10 @@ const stripe = require('stripe')('sk_test_51Q2bKFLm0aJYZy9zsMBApv62ayj6Bc3s1WlbJ
 
 // TEST DETAILS:
 // Payment succeeds
-
 // 4242 4242 4242 4242
+
 // Payment requires authentication
-
 // 4000 0025 0000 3155
-// Payment is declined
-
 
 // Define the route using the router
 router.post('/', async (req, res) => {
@@ -35,7 +32,7 @@ router.post('/', async (req, res) => {
             ],
             mode: 'payment',
             success_url: `http://localhost:3001/RentConfirmation?rental_id=${rental_id}`,
-            cancel_url: 'http://localhost:3001/payment-cancel',
+            cancel_url: `http://localhost:3001/RentFailed?rental_id=${rental_id}`,
         });
         // Log the session URL to the console for testing purposes
         console.log("Stripe session created, redirecting to:", session.url);
