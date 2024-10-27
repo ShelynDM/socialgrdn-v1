@@ -1,3 +1,11 @@
+/**
+ * RentConfirmation.js
+ * Description: Page for displaying the message that a rental is confirmed
+ * Author: Tiana Bautista, Shelyn del Mundo
+ * Date: 2024-10-23
+ */
+
+// Importing necessary libraries
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom"; //useLocation is used to extract rental_id from the query string
@@ -23,24 +31,24 @@ export default function RentConfirmation() {
     //Stores Rental Object Information
     const [rental, setRental] = useState('');
 
-    const paymentStatus = 1; // 1 = Payment Successful, 0 = Payment Failed
     // Rental Information 
-
     const [propertyAddress, setPropertyAddress] = useState('');
-
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
 
-    //Fetching Rent Details from API
+
     useEffect(() => {
         const fetchRentalDetails = async () => {
             try {
+                //Fetching Rent Details from API
                 const response = await fetch(`http://localhost:3000/api/GetRentalDetails?rentalID=${rental_id}`);
                 if (!response.ok) {
                     console.log("Network response was not ok");
                 }
+                //stores the response in rentalData in json format
                 const rentalData = await response.json();
                 setRental(rentalData);
+
                 // Convert timestamps to 'Month Day, Year' format
                 const formattedStartDate = new Date(rentalData.start_date).toLocaleDateString('en-US', {
                     month: 'long',
@@ -51,32 +59,34 @@ export default function RentConfirmation() {
                     month: 'long',
                     day: 'numeric',
                 });
-
-                setPropertyAddress(rentalData.address_line1 + ', ' + rentalData.city + ', ' + rentalData.province);
                 setStartDate(formattedStartDate);
                 setEndDate(formattedEndDate);
+                setPropertyAddress(rentalData.address_line1 + ', ' + rentalData.city + ', ' + rentalData.province);
             } catch (error) {
                 console.error('Error fetching property details:', error);
             }
         };
-
         fetchRentalDetails();
-
         //eslint - disable - next - line
     }, [rental_id]);
 
     //Updating Rent Details to DB
     useEffect(() => {
+        // If rental is not set, return
         if (!rental) {
             return;
         }
+        //preparing updated rental object for patch request
         const updatedRental = rental;
+        //setting status to 1 to indicate that the rental is confirmed
         updatedRental.status = 1;
+        //formatting the dates to be stored in the database
         updatedRental.start_date = new Date(rental.start_date).toLocaleDateString('en-CA');
         updatedRental.end_date = new Date(rental.end_date).toLocaleDateString('en-CA');
 
         const patchRental = async () => {
             try {
+                //Patch Request to update rental details
                 const response = await fetch(`http://localhost:3000/api/editRentalDetails`,
                     {
                         method: 'PATCH',
@@ -93,14 +103,13 @@ export default function RentConfirmation() {
                 console.error('Error updating rental details:', error);
             }
         };
-
         patchRental();
         //eslint - disable - next - line
     }, [rental, rental_id]);
 
-
-    const handleBackToReservations = () => {
-        navigate('/ReservationList');
+    // Function to navigate back to My Rentals
+    const handleBackToRentals = () => {
+        navigate('/RentalList');
     };
 
     return (
@@ -113,57 +122,48 @@ export default function RentConfirmation() {
                 </div>
 
                 <div className="w-96 h-5/6 rounded-lg border-2 py-1 border-gray-200 bg-main-background">
-                    {/* Checks if payment was successful */}
-                    {paymentStatus === 0 ?
-                        //If payment was not successful
+                    <div>
+                        {/* Rent Information */}
                         <div className="">
-                            <h1 className="font-semibold text-2xl mx-4">Payment Failed</h1>
-                        </div>
-                        :
-                        //Payment successful start
-                        <div>
-                            {/* Rent Information */}
-                            <div className="">
-                                <h1 className="font-semibold text-2xl mx-4">Booking# {rental_id} is Confirmed</h1>
-                                {/* Listing Duration */}
-                                <div className="mx-4 flex">
-                                    <p className="text-sm">{startDate}</p>
-                                    <p className="mx-1 text-sm"> - </p>
-                                    <p className="text-sm">{endDate}</p>
-                                </div>
-                                <div className="px-6 pt-2">
-                                    {/* Listing Title */}
-                                    <div className="flex flex-row justify-between mb-2">
-                                        <div>
-                                            <h1 className="font-bold text-lg ">{rental.property_name}</h1>
-                                        </div>
+                            <h1 className="font-semibold text-2xl mx-4">Booking# {rental_id} is Confirmed</h1>
+                            {/* Listing Duration */}
+                            <div className="mx-4 flex">
+                                <p className="text-sm">{startDate}</p>
+                                <p className="mx-1 text-sm"> - </p>
+                                <p className="text-sm">{endDate}</p>
+                            </div>
+                            <div className="px-6 pt-2">
+                                {/* Listing Title */}
+                                <div className="flex flex-row justify-between mb-2">
+                                    <div>
+                                        <h1 className="font-bold text-lg ">{rental.property_name}</h1>
                                     </div>
-                                    {/* Listing Description */}
-                                    <div className="flex flex-row justify-between">
+                                </div>
+                                {/* Listing Description */}
+                                <div className="flex flex-row justify-between">
 
-                                        {/* Listing Address */}
-                                        <div className="flex">
-                                            <LuMapPin />
-                                            <p className="text-xs">{propertyAddress}</p>
-                                        </div>
-                                        {/* Farming Zone */}
-                                        <div className="flex flex-row gap-1">
-                                            <div className="w-4 h-4 border-1 border-gray-400" style={{ backgroundColor: zoneFormat(rental.growth_zone) }}></div>
-                                            <p className="text-xs text-gray-500">Zone {rental.growth_zone}</p>
-                                        </div>
+                                    {/* Listing Address */}
+                                    <div className="flex">
+                                        <LuMapPin />
+                                        <p className="text-xs">{propertyAddress}</p>
                                     </div>
-                                </div>
-                                {/* Listing Image */}
-                                <div className="w-auto h-52 flex justify-center items-center mx-4 p-1">
-                                    <img className="w-full h-full rounded-lg border-2 border-gray-200" src={ExampleImage} alt="Garden" />
+                                    {/* Farming Zone */}
+                                    <div className="flex flex-row gap-1">
+                                        <div className="w-4 h-4 border-1 border-gray-400" style={{ backgroundColor: zoneFormat(rental.growth_zone) }}></div>
+                                        <p className="text-xs text-gray-500">Zone {rental.growth_zone}</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>//Payment successful end
-                    }
+                            {/* Listing Image */}
+                            <div className="w-auto h-52 flex justify-center items-center mx-4 p-1">
+                                <img className="w-full h-full rounded-lg border-2 border-gray-200" src={ExampleImage} alt="Garden" />
+                            </div>
+                        </div>
+                    </div>
                     <div className="self-center p-5">
-
+                        {/* Button to go back to My Reservations */}
                         <LongButton buttonName='Back to Reservations'
-                            onClick={handleBackToReservations}
+                            onClick={handleBackToRentals}
                             className='p-2 w-full rounded shadow-lg bg-green-600 text-white font-bold' />
                     </div>
                 </div>

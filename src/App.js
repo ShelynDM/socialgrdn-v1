@@ -19,7 +19,6 @@ import EditProfile from './pages/ProfileSection/EditProfile';
 import ViewProfile from './pages/ProfileSection/ViewProfile';
 
 // Rent Property Section
-import Listing from './pages/RentPropertySection/Listing';
 import RentProperty from './pages/RentPropertySection/RentProperty';
 import RentConfirmation from './pages/RentPropertySection/RentConfirmation';
 import RentFailed from './pages/RentPropertySection/RentFailed';
@@ -38,9 +37,9 @@ import EditProperty from './pages/ListingSection/EditProperty';
 import PayProperty from './pages/PayPropertySection/PayProperty';
 
 // Reservation Pages Section
-import ReservationCancelled from './pages/ReservationSection/ReservationCancelled';
-import ReservationDetails from './pages/ReservationSection/ReservationDetails';
-import ReservationList from './pages/ReservationSection/ReservationList';
+import RentalCancelled from './pages/RentalSection/RentalCancelled';
+import RentalDetails from './pages/RentalSection/RentalDetails';
+import RentalList from './pages/RentalSection/RentalList';
 
 // Landowner Gross Earnings Section
 import GrossEarnings from './pages/LandownerEarnings/GrossEarnings';
@@ -93,7 +92,6 @@ export default function App() {
               <Route path="/ViewProfile" element={<ProtectedRoute><ViewProfile /></ProtectedRoute>} />
 
               {/* Rent Property Section */}
-              <Route path="/Listing" element={<ProtectedRoute><Listing /></ProtectedRoute>} />
               <Route path="/RentProperty" element={<ProtectedRoute><RentProperty /></ProtectedRoute>} />
               <Route path="/RentFailed" element={<ProtectedRoute><RentFailed /></ProtectedRoute>} />
               <Route path="/RentConfirmation" element={<ProtectedRoute><RentConfirmation /></ProtectedRoute>} />
@@ -113,10 +111,10 @@ export default function App() {
               {/* Pay Property Section */}
               <Route path="/PayProperty" element={<ProtectedRoute><PayProperty /></ProtectedRoute>} />
 
-              {/* Reservation Section */}
-              <Route path="/ReservationCancelled" element={<ProtectedRoute><ReservationCancelled /></ProtectedRoute>} />
-              <Route path="/ReservationDetails/:id" element={<ProtectedRoute><ReservationDetails /></ProtectedRoute>} />
-              <Route path="/ReservationList" element={<ProtectedRoute><ReservationList /></ProtectedRoute>} />
+              {/* Rental Section */}
+              <Route path="/RentalCancelled" element={<ProtectedRoute><RentalCancelled /></ProtectedRoute>} />
+              <Route path="/RentalDetails/:id" element={<ProtectedRoute><RentalDetails /></ProtectedRoute>} />
+              <Route path="/RentalList" element={<ProtectedRoute><RentalList /></ProtectedRoute>} />
 
               {/* Moderator Section */}
               <Route path="/ModeratorViewMonthlyReport" element={<ProtectedRoute><ModeratorViewMonthlyReport /></ProtectedRoute>} />

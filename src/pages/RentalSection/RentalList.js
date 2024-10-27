@@ -1,49 +1,53 @@
-import React, { useEffect, useState } from "react"; // Importing useEffect and useState from React
-import { useNavigate } from "react-router-dom"; // Only useNavigate from react-router-dom
+/**
+ * ReservationList.js
+ * Description: Page for displaying a list of rentals for the user
+ * Author: Tiana Bautista
+ * Date: 2024-10-23
+ */
+
+// Importing necessary libraries
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
 import SearchBar from "../../components/SearchComponents/search";
 import { useUser } from "../../UserContext";
-import Reservation from "../../components/reservationcomponent/reservation";
+import Reservation from "../../components/rentalComponent/rental";
 
-
-// This is the Listing page of the application where users can view other users' listings
-
-
-export default function ReservationList() {
+export default function RentalList() {
     const navigate = useNavigate();
     const { userId } = useUser();
 
-
-    //this function passes the reservation id to the ReservationDetails page
-    const handleViewReservation = (id) => {
-        navigate(`/ReservationDetails/${id}`);
+    //This function passes the rental id to the RentalDetails page
+    const handleViewRental = (id) => {
+        navigate(`/RentalDetails/${id}`);
     };
 
+    // State to hold all rentals
+    const [rental, setRentals] = useState([]);
 
-    // State to hold all reservations
-    const [reservations, setReservations] = useState([]);
 
-    // Fetching reservations from API
     useEffect(() => {
-        const fetchReservations = async () => {
+        // Fetching rentals from API
+        const fetchRentals = async () => {
             try {
                 const response = await fetch(`http://localhost:3000/api/getRentalList?userID=${userId}`);
                 if (!response.ok) {
                     console.log("Network response was not ok");
                     return;
                 }
+                //stores the response in rentalData in json format
                 const rentalData = await response.json();
-                //stores reservations in the Reservations list
-                setReservations(rentalData);
+
+                //stores rentals in the rental list
+                setRentals(rentalData);
             } catch (error) {
                 console.error('Error fetching reservations:', error);
             }
         };
-
-        fetchReservations();
+        fetchRentals();
     }, [userId]);
 
     return (
@@ -58,28 +62,28 @@ export default function ReservationList() {
                         <SearchBar className="w-full" />
                     </div>
                 </div>
-                {/* Updates the page title based on the number of reservations */}
+                {/* Updates the page title based on the number of rentals */}
                 <div className="pb-2 mt-24">
-                    {reservations.length === 0 ? (
+                    {rental.length === 0 ? (
                         <h2 className="text-xl">No upcoming reservations</h2>
                     ) : (
                         <h2 className="text-xl">Upcoming Reservations</h2>
                     )}
 
                 </div>
-                {/* Displays the reservations */}
+                {/* Displays the rentals */}
                 <div >
                     <ul>
-                        {reservations.map((reservation) => (
-                            <li key={reservation.rental_id} onClick={() => handleViewReservation(reservation.rental_id)}>
+                        {rental.map((rental) => (
+                            <li key={rental.rental_id} onClick={() => handleViewRental(rental.rental_id)}>
                                 <Reservation
-                                    name={reservation.property_name}
-                                    landowner={reservation.property_owner}
-                                    start={reservation.start_date}
-                                    end={reservation.end_date}
-                                    address={reservation.address_line1 + ', ' + reservation.city + ', ' + reservation.province}
-                                    growthZone={reservation.growth_zone}
-                                    image={reservation.image_url}
+                                    name={rental.property_name}
+                                    landowner={rental.property_owner}
+                                    start={rental.start_date}
+                                    end={rental.end_date}
+                                    address={rental.address_line1 + ', ' + rental.city + ', ' + rental.province}
+                                    growthZone={rental.growth_zone}
+                                    image={rental.image_url}
                                 />
                             </li>
                         ))}

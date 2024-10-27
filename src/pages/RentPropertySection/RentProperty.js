@@ -1,6 +1,14 @@
+/**
+ * RentProperty.js
+ * Description: Page for displaying the summary of 
+ * rental information and payment details before payment
+ * Author: Tiana Bautista, Shelyn del Mundo
+ * Date: 2024-10-23
+ */
+
+// Importing necessary libraries
 import React, { useEffect, useState } from "react";
 import { differenceInMonths, differenceInDays, parseISO } from 'date-fns';
-//import { useParams } from 'react-router-dom';
 
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
@@ -22,7 +30,7 @@ export default function RentProperty() {
     //Stores Property Object Information
     const [property, setProperty] = useState('');
 
-    // Rental  
+    // Rental Information
     const [rentalID, setRentalID] = useState('null');
     const [startDate] = useState('2024-09-01');                   //passed as parameter from view property page
     const [endDate] = useState('2024-12-05');                     //passed as parameter from view property page
@@ -36,28 +44,31 @@ export default function RentProperty() {
     const [total_price, setTotal_price] = useState(0.00);
 
 
-    //Fetching Property Details from API
+
     useEffect(() => {
         const fetchPropertyDetails = async () => {
             try {
+                //Fetching Property Details from API
                 const response = await fetch(`http://localhost:3000/api/getPropertyDetails?property_id=${propertyID}`);
                 if (!response.ok) {
                     console.log("Network response was not ok");
                 }
+                //stores the response in propertyData in json format
                 const propertyData = await response.json();
                 setProperty(propertyData);
             } catch (error) {
                 console.error('Error fetching property details:', error);
             }
         };
-
         fetchPropertyDetails();
         //eslint - disable - next - line
     }, [propertyID]);
 
     // Calculate the duration of the rental
     const computeDuration = () => {
+        // Ensure start and end dates are valid before proceeding
         if (startDate && endDate) {
+            // Parse the date strings into Date objects
             const start = parseISO(startDate);
             const end = parseISO(endDate);
 
@@ -106,7 +117,7 @@ export default function RentProperty() {
     const handlePaymentPage = async () => {
         try {
             // Register rental details to the database and get the rentalID
-            const generatedRentalID = await handleRentalRegistration();  // Wait for rental registration
+            const generatedRentalID = await handleRentalRegistration();
 
             if (rentalID === null) {
                 console.error('Failed to register rental details');
@@ -135,8 +146,9 @@ export default function RentProperty() {
 
         console.log('API start paymentData:', paymentData);
 
-        //API call to register rental details
+
         try {
+            //API call to register rental details
             const response = await fetch('http://localhost:3001/api/create-checkout-session', {
                 method: 'POST',
                 headers: {
@@ -148,7 +160,6 @@ export default function RentProperty() {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            // Handle the response
             const result = await response.json();
             console.log('Payment session created successfully:', result);
 
@@ -157,7 +168,6 @@ export default function RentProperty() {
 
         } catch (error) {
             console.error('Error occurred while creating payment session:', error);
-            //alert('Failed to create payment session. Please try again.');
         }
 
     };
@@ -179,10 +189,9 @@ export default function RentProperty() {
         };
         console.log('API start rentalData:', rentalData);
 
-        //API call to register rental details
-        try {
-            console.log('API start');
 
+        try {
+            //API call to register rental details
             const response = await fetch('http://localhost:3000/api/registerRentalDetails', {
                 method: 'POST',
                 headers: {
@@ -190,9 +199,7 @@ export default function RentProperty() {
                 },
                 body: JSON.stringify(rentalData),  // Convert data to JSON format
             });
-
             console.log('Rental registration response:', response);
-            //alert('Payment API response ' + response);
 
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -309,6 +316,7 @@ export default function RentProperty() {
                 <div className="mx-4 my-2 text-center text-xs">
                     <p>By continuing with this booking, I agree to SocialGrdn's Terms of use and Privacy Policy</p>
                 </div>
+                {/* Payment Button */}
                 <AgreeAndPay
                     buttonName='Agree and Pay'
                     type='submit'

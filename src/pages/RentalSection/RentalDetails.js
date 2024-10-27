@@ -1,4 +1,12 @@
-import React, { useEffect, useState } from "react"; // Importing useEffect and useState from React
+/**
+ * ReservationDetails.js
+ * Description: Page for displaying the details of a rental
+ * Author: Tiana Bautista
+ * Date: 2024-10-23
+ */
+
+// Importing necessary libraries
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useParams } from 'react-router-dom';
 
@@ -11,33 +19,36 @@ import zoneColor from "../../components/ZoneColor/zoneColor";
 import { differenceInMonths, differenceInDays, parseISO } from 'date-fns';
 
 
-export default function ReservationDetails() {
+export default function RentalDetails() {
+    //internal state variables
     const [showCancelModal, setShowCancelModal] = useState(false);
     const navigate = useNavigate();
     const rentalID = useParams().id;            //parameter
-    const [reservation, setReservation] = useState('');
+    const [rental, setRental] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [durationMonths, setDurationMonths] = useState(null);   // need to finalize issues with duration rules and pricing
     const [durationDays, setDurationDays] = useState(null);       //need to finalize issues with duration rules and pricing
 
-    // Fetching reservations from API
+
     useEffect(() => {
-        const fetchReservation = async () => {
+        const fetchRentals = async () => {
             try {
-                console.log("rentalID :" + rentalID);
+                //fetching rental details from the API
                 const response = await fetch(`http://localhost:3000/api/GetRentalDetails?rentalID=${rentalID}`);
                 if (!response.ok) {
                     console.log("Network response was not ok");
                     return;
                 }
-                const reservationData = await response.json();
+                //Assigning response to reservationData to store the data in json format
+                const rentalData = await response.json();
+
                 //Convert timestamps to 'Month Day, Year' format
-                const formattedStartDate = new Date(reservationData.start_date).toLocaleDateString('en-US', {
+                const formattedStartDate = new Date(rentalData.start_date).toLocaleDateString('en-US', {
                     month: 'long',
                     day: 'numeric',
                 });
-                const formattedEndDate = new Date(reservationData.end_date).toLocaleDateString('en-US', {
+                const formattedEndDate = new Date(rentalData.end_date).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
@@ -45,24 +56,22 @@ export default function ReservationDetails() {
                 setStartDate(formattedStartDate);
                 setEndDate(formattedEndDate);
 
-                //stores reservations in the Reservations list
-                setReservation(reservationData);
-                //computeDuration();
+                //stores rentals in the rental list
+                setRental(rentalData);
             } catch (error) {
                 console.error('Error fetching reservations:', error);
             }
         };
-
-        fetchReservation();
+        fetchRentals();
     }, [rentalID]);
 
+    // Function to calculate the duration of the rental
     const computeDuration = () => {
-        if (reservation.start_date && reservation.end_date) {
-            const start = parseISO(reservation.start_date);
-            const end = parseISO(reservation.end_date);
+        if (rental.start_date && rental.end_date) {
+            // Parse ISO strings to Date objects
+            const start = parseISO(rental.start_date);
+            const end = parseISO(rental.end_date);
 
-            console.log(start);
-            console.log(end);
             // Calculate the number of complete months between the dates
             const months = differenceInMonths(end, start);
 
@@ -73,55 +82,94 @@ export default function ReservationDetails() {
             setDurationDays(days);
         }
     };
-
+    // Function to handle the cancel button click
     const handleCancelClick = () => {
         setShowCancelModal(true);
     };
 
+    // Function to close the cancel modal
     const handleCloseCancelModal = () => {
         setShowCancelModal(false);
     };
-
-    const handleConfirmCancellation = () => {
-        navigate('/ReservationCancelled');
+    // Function to handle the confirmation of the cancellation
+    const handleConfirmCancellation = async () => {
+        await handleRentalCancellation();
+        navigate('/RentalCancelled');
     };
+
+
+
     useEffect(() => {
         computeDuration();
         //eslint-disable-next-line
-    }, [reservation]);
+    }, [rental]);
 
+    // Register rental details to the database
+    const handleRentalCancellation = async () => {
+        // If rental is not set, return
+        if (!rental) {
+            return;
+        }
+        //preparing updated rental object for patch request
+        const updatedRental = rental;
+        //setting status to 0 to indicate that the rental is cancelled
+        updatedRental.status = 0;
+        //formatting the dates to be stored in the database
+        updatedRental.start_date = new Date(rental.start_date).toLocaleDateString('en-CA');
+        updatedRental.end_date = new Date(rental.end_date).toLocaleDateString('en-CA');
+
+        const patchRental = async () => {
+            try {
+                //Patch Request to update rental details
+                const response = await fetch(`http://localhost:3000/api/editRentalDetails`,
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(updatedRental),
+                    }
+                );
+                if (!response.ok) {
+                    throw new Error('Failed to update rental data.');
+                }
+            } catch (error) {
+                console.error('Error updating rental details:', error);
+            }
+        };
+        patchRental();
+    };
 
     return (
         <div className='bg-main-background relative'>
             <InAppLogo />
-
             <div className="flex flex-col items-center justify-center gap-2 min-h-screen pb-20 pt-10">
                 <BackButton />
 
+                {/* Reservation Details */}
                 <section className="mb-3 mt-5 rounded-lg border-2 py-1 border-gray-200 bg-main-background">
-                    <img src={reservation.image_url} alt="Listing" className="w-full h-auto" />
-
+                    <img src={rental.image_url} alt="Listing" className="w-full h-auto" />
                     <div className="p-3">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center">
                                 <FaLocationDot className="text-1" />
-                                <h2 className="text-xl font-bold ml-2">{reservation.property_name}</h2>
+                                <h2 className="text-xl font-bold ml-2">{rental.property_name}</h2>
                             </div>
                             {/* Farming Zone */}
                             <div className="flex items-center flex-row gap-1">
-                                <div className="w-4 h-4 border border-gray-400" style={{ backgroundColor: zoneColor(reservation.growth_zone) }}></div>
-                                <p>Zone {reservation.growth_zone}</p>
+                                <div className="w-4 h-4 border border-gray-400" style={{ backgroundColor: zoneColor(rental.growth_zone) }}></div>
+                                <p>Zone {rental.growth_zone}</p>
                             </div>
                         </div>
                         <div>
-                            <p className="px-6">{reservation.address_line1 + ', ' + reservation.city + ', ' + reservation.province}</p>
+                            <p className="px-6">{rental.address_line1 + ', ' + rental.city + ', ' + rental.province}</p>
                         </div>
                     </div>
 
                     <div className="p-3 text-sm">
                         <h2 className="font-bold">Reservation details</h2>
                         <div className="flex text-sm">
-                            <p>{reservation.description}</p>
+                            <p>{rental.description}</p>
                         </div>
                         <div className="p-3 flex">
                             <div className="w-1/3">
@@ -141,16 +189,16 @@ export default function ReservationDetails() {
                         <div className="flex text-sm">
                             <table className=" w-full">
                                 <tr>
-                                    <td className="w-2/3"><p>{reservation.property_name} x {durationMonths} month/s</p></td>
-                                    <td className="w-1/3"><p>CAD {reservation.rent_base_price}</p></td>
+                                    <td className="w-2/3"><p>{rental.property_name} x {durationMonths} month/s</p></td>
+                                    <td className="w-1/3"><p>CAD {rental.rent_base_price}</p></td>
                                 </tr>
                                 <tr>
                                     <td className="w-2/3"><p>SocialGrdn fee (3%)</p></td>
-                                    <td className="w-1/3"><p>CAD {reservation.transaction_fee}</p></td>
+                                    <td className="w-1/3"><p>CAD {rental.transaction_fee}</p></td>
                                 </tr>
                                 <tr>
                                     <td className="w-1/3"><p>Taxes</p></td>
-                                    <td className="w-1/3"><p>CAD {reservation.tax_amount}</p></td>
+                                    <td className="w-1/3"><p>CAD {rental.tax_amount}</p></td>
                                 </tr>
                             </table>
                         </div>
@@ -160,9 +208,9 @@ export default function ReservationDetails() {
                             <table className=" w-full">
                                 <tr>
                                     <td className="w-2/3"><p>Total</p></td>
-                                    <td className="w-1/3"><p>CAD {(parseFloat(reservation.rent_base_price) +
-                                        parseFloat(reservation.transaction_fee) +
-                                        parseFloat(reservation.tax_amount)).toLocaleString(undefined, {
+                                    <td className="w-1/3"><p>CAD {(parseFloat(rental.rent_base_price) +
+                                        parseFloat(rental.transaction_fee) +
+                                        parseFloat(rental.tax_amount)).toLocaleString(undefined, {
                                             minimumFractionDigits: 2,
                                             maximumFractionDigits: 2
                                         })}
@@ -179,24 +227,24 @@ export default function ReservationDetails() {
                                 <tr>
                                     <td className="w-2/3"><p>Dimensions</p></td>
                                     <td className="w-1/3"><p>
-                                        {reservation.dimensions_height} x {reservation.dimensions_length} x {reservation.dimensions_width}
+                                        {rental.dimensions_height} x {rental.dimensions_length} x {rental.dimensions_width}
                                     </p></td>
                                 </tr>
                                 <tr>
                                     <td className="w-2/3"><p>Soil type</p></td>
-                                    <td className="w-1/3"><p>{reservation.soil_type}</p></td>
+                                    <td className="w-1/3"><p>{rental.soil_type}</p></td>
                                 </tr>
                                 <tr>
                                     <td className="w-1/3"><p>Amenities</p></td>
-                                    <td className="w-1/3"><p>{reservation.amenities}</p></td>
+                                    <td className="w-1/3"><p>{rental.amenities}</p></td>
                                 </tr>
                                 <tr>
                                     <td className="w-1/3"><p>Restrictions</p></td>
-                                    <td className="w-1/3"><p>{reservation.restrictions}</p></td>
+                                    <td className="w-1/3"><p>{rental.restrictions}</p></td>
                                 </tr>
                                 <tr>
                                     <td className="w-1/3"><p>Possible Crops</p></td>
-                                    <td className="w-1/3"><p>{reservation.crop_name}</p></td>
+                                    <td className="w-1/3"><p>{rental.crop_name}</p></td>
                                 </tr>
                             </table>
                         </div>
