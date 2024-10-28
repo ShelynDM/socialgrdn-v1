@@ -50,7 +50,8 @@ router.get('/', (req, res) => {
     }
 
     if (results.length === 0) {
-      return res.status(404).send('No users found');
+      // Return an empty array if no users are found
+      return res.status(200).json([]);
     } else {
       return res.status(200).json(results);
     }

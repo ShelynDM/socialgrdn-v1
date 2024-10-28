@@ -17,7 +17,12 @@ export default function UserResult() {
                 throw new Error("Network response was not ok");
             }
             const users = await response.json();
-            setUsersResult(users);
+            if (users.length === 0) {
+                console.log("No users found");
+                setUsersResult([]);
+            } else {
+                setUsersResult(users);
+            }
         } catch (error) {
             console.error("Error fetching search results:", error);
         }

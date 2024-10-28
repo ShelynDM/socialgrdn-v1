@@ -17,7 +17,12 @@ export default function PropertyResult() {
                 throw new Error("Network response was not ok");
             }
             const propertyData = await response.json();
-            setPropertyResult(propertyData);
+            if (propertyData.length === 0) {
+                console.log("No properties found");
+                setPropertyResult([]);
+            } else {
+                setPropertyResult(propertyData);
+            }
         } catch (error) {
             console.error("Error fetching search results:", error);
         }

@@ -13,6 +13,7 @@ import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
 
 import BackMoreButton from "../../components/Buttons/backMoreButton";
+
 export default function Payouts() {
     const [renterPayouts, setRenterPayouts] = useState([]);
     const { userId } = useUser();
@@ -25,7 +26,12 @@ export default function Payouts() {
             const response = await fetch(`/api/getPayouts?userID=${userId}`);
             if (!response.ok) throw new Error("Failed to fetch payouts");
             const data = await response.json();
+            if (data.length === 0) {
+                console.log("No payouts found for the user");
+                setRenterPayouts([]);
+            } else {
             setRenterPayouts(data);
+            }
         } catch (error) {
             console.error("Error fetching payouts:", error);
         }
@@ -37,7 +43,12 @@ export default function Payouts() {
             const response = await fetch(`/api/getDetailedPayouts?userID=${userId}`);
             if (!response.ok) throw new Error("Failed to fetch detailed payouts");
             const data = await response.json();
-            setDetailedPayouts(data);
+            if (data.length === 0) {
+                console.log("No detailed payouts found for the user");
+                setDetailedPayouts([]);
+            } else {
+                setDetailedPayouts(data);
+            }
         } catch (error) {
             console.error("Error fetching detailed payouts:", error);
         }
