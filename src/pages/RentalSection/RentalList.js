@@ -1,7 +1,8 @@
 /**
  * ReservationList.js
  * Description: Page for displaying a list of rentals for the user
- * Author: Tiana Bautista
+ * Frontend Author: Tiana Bautista
+ * Backend Author: Tiana Bautista, Shelyn del Mundo
  * Date: 2024-10-23
  */
 

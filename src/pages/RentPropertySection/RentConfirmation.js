@@ -1,7 +1,8 @@
 /**
  * RentConfirmation.js
  * Description: Page for displaying the message that a rental is confirmed
- * Author: Tiana Bautista, Shelyn del Mundo
+ * Frontend Author: Shelyn del Mundo
+ * Backend Author: Tiana Bautista
  * Date: 2024-10-23
  */
 
