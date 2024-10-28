@@ -96,6 +96,13 @@ export default function RentalList() {
                 //stores the response in rentalData in json format
                 const rentalData = await response.json();
 
+                // Check if rentalData is an empty array
+                if (rentalData.length === 0) {
+                    console.log("No reservations found for the user.");
+                    setRentals([]); // Set rentals to empty array
+                    return;
+                }
+
                 //stores rentals in the rental list
                 setRentals(rentalData);
             } catch (error) {
