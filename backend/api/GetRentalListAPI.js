@@ -1,11 +1,13 @@
 /**
  * GetRentalListAPI.js
- * Get rental details through user id and filtered by status (1)
- * by joining rental, propertylisting, userprofile, propertyprimaryimages and propertylocation tables
+ * Description: API to get/fetch all rentals based on the user's ID
+ * Author: Tiana Bautista
+ * Date: 2024-10-15
  */
 const express = require('express');
 const router = express.Router();
 
+// Get all rentals based on the user's ID
 router.get('/', (req, res) => {
   const { userID } = req.query;
 
@@ -34,7 +36,7 @@ LEFT JOIN
 WHERE
     r.renter_ID = ? AND r.status = 1
 `;
-
+  // Execute the SQL query
   db.query(query, [userID], (err, results) => {
     if (err) {
       console.error('Database error:', err);
@@ -42,7 +44,7 @@ WHERE
     }
 
     if (results.length === 0) {
-      return res.status(404).send('No reservations found for the user');
+      return res.status(200).json([]);
     }
 
     return res.status(200).json(results);

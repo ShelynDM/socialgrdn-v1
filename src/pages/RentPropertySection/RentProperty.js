@@ -2,7 +2,8 @@
  * RentProperty.js
  * Description: Page for displaying the summary of 
  * rental information and payment details before payment
- * Author: Tiana Bautista, Shelyn del Mundo
+ * Frontend Author: Shelyn del Mundo
+ * Backend Author: Tiana Bautista
  * Date: 2024-10-23
  */
 
