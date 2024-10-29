@@ -1,3 +1,10 @@
+/**
+ * ForgotPassword.js
+ * Description: Page for users to reset their password
+ * Author: Lilian Huh
+ * Date: 2024-10-23
+ */
+
 import React, { useState } from "react";
 import LongButton from "../../components/Buttons/longButton";
 import BackButton from "../../components/Buttons/backButton";

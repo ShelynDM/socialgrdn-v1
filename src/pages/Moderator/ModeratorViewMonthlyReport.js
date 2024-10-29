@@ -1,10 +1,15 @@
+/**
+ * ModeratorViewMonthlyReport.js
+ * Description: This page displays all users in the system and allows the moderator to view or block a user
+ * Frontend Author: Lilian Huh
+ * Backend Author: 
+ * Date: 2024-10-24
+ */
 
+import React from "react";
 import InAppLogo from "../../components/Logo/inAppLogo";
-
 import SearchBar from "../../components/SearchComponents/search";
-
 import NavBarModerator from "../../components/Navbar/navbarmoderator";
-
 
 export default function ModeratorViewMonthlyReport() {
     // Dummy data for renter payouts

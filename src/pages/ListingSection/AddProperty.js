@@ -1,3 +1,11 @@
+/**
+ * AddProperty.js
+ * Description: Page for users to add a property listing
+ * FrontEnd: Lilian Huh
+ *BackEnd: 
+ * Date: 2024-10-23
+ */
+
 import React, { useState, useEffect } from 'react';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import InAppLogo from "../../components/Logo/inAppLogo";

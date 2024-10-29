@@ -1,3 +1,11 @@
+/**
+ * ViewMyListings.js
+ * Description: Page for users to add a property listing
+ * FrontEnd: Lilian Huh
+ *BackEnd: 
+ * Date: 2024-10-23
+ */
+
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import InAppLogo from "../../components/Logo/inAppLogo";
