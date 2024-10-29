@@ -179,10 +179,13 @@ const AddProperty = () => {
             console.log(result);
     
             alert('Property added successfully!');
+            return true;
+
             // Redirect or perform any other action after successful submission
         } catch (error) {
             console.error('Error adding property: ', error);
             alert('An error occurred while adding the property.');
+            return false;
         }
     };
 
@@ -513,9 +516,14 @@ const AddProperty = () => {
                         <LongButton
                             buttonName="Publish Listing"
                             className="w-full rounded shadow-lg bg-green-500 text-white font-bold"
-                            type="submit"
-                            onClick={handleSubmit}
-                            pagePath="/ListingConfirmation"
+                            type="button" // Change to button type
+                            onClick={async (e) => {
+                                e.preventDefault();
+                                const success = await handleSubmit(e);
+                                if (success) {
+                                    window.location.href = '/ListingConfirmation';
+                                }
+                            }}
                         />
                     </form>
                 </div>
