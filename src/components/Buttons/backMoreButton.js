@@ -1,14 +1,16 @@
 /**
  * backMoreButton.js
  * Description: Button component for back and more options
- * Author: Lilian Huh
+ * Frontend Author: Lilian Huh
+ * Backend Author: Lilian Huh
  * Date: 2024-10-23
  */
 
+// Import necessary libraries
 import React, { useState } from "react";
-import { SlArrowLeft } from "react-icons/sl";
 import { useNavigate } from "react-router-dom";
 import { CgDetailsMore } from "react-icons/cg";
+import { IoArrowBackSharp } from "react-icons/io5";
 
 export default function BackMoreButton() {
     const navigate = useNavigate();
@@ -20,19 +22,24 @@ export default function BackMoreButton() {
     };
 
     return (
-        <div className="relative flex justify-between items-center p-4 w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 mx-auto">
-            <button 
-                onClick={() => navigate(-1)} 
-                className="text-gray-500 hover:text-black focus:outline-none ml-2"
-            >
-                <SlArrowLeft size={20} />
-            </button>
-            <button 
-                onClick={toggleSidebar} 
-                className="text-gray-500 hover:text-black focus:outline-none"
-            >
-                <CgDetailsMore size={28} />
-            </button>
+        <div className="mx-auto w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 p-6"> 
+            <div className="flex justify-between items-center">
+                {/* Back Button */}
+                <button 
+                    onClick={() => navigate(-1)} 
+                    className="text-gray-500 hover:text-black focus:outline-none"
+                >
+                    <IoArrowBackSharp />
+                </button>
+
+                {/* More Options Button */}
+                <button 
+                    onClick={toggleSidebar} 
+                    className="text-gray-500 hover:text-black focus:outline-none"
+                >
+                    <CgDetailsMore />
+                </button>
+            </div>
 
             {/* Sidebar */}
             <div
@@ -42,12 +49,14 @@ export default function BackMoreButton() {
             >
                 <div className="p-4">
                     <h2 className="text-xl font-bold mb-4">Reports</h2>
+                    {/* Gross earnings */}
                     <button 
                         onClick={() => navigate("/grossEarnings")} 
                         className="block w-full text-left py-2 px-4 mb-2 text-gray-700 hover:bg-gray-200"
                     >
                         Gross Earnings
                     </button>
+                    {/* Payouts */}
                     <button 
                         onClick={() => navigate("/payouts")} 
                         className="block w-full text-left py-2 px-4 text-gray-700 hover:bg-gray-200"

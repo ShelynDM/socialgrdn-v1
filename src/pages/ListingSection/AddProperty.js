@@ -2,10 +2,11 @@
  * AddProperty.js
  * Description: Page for users to add a property listing
  * FrontEnd: Lilian Huh
- *BackEnd: 
+ * BackEnd: Donald Uy
  * Date: 2024-10-23
  */
 
+// Import necessary libraries
 import React, { useState, useEffect } from 'react';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import InAppLogo from "../../components/Logo/inAppLogo";
@@ -16,7 +17,9 @@ import { storage } from '../../_utils/firebase';
 import LongButton from '../../components/Buttons/longButton';
 import { useUser } from '../../UserContext';
 
+// Define AddProperty component
 const AddProperty = () => {
+    // Initialize state variables
     const { userId } = useUser(); // Get userId from UserContext
     const [primaryImage, setPrimaryImage] = useState(null);
     const [otherImages, setOtherImages] = useState([]);
@@ -40,39 +43,43 @@ const AddProperty = () => {
     const [restrictions, setRestrictions] = useState('');
     const [price, setPrice] = useState('');
 
+    // Generate a random property ID
     useEffect(() => {
         const generatePropertyId = () => {
             const randomNum = Math.floor(Math.random() * 100000);
             return `${randomNum}`;
         };
-        
+        // Set property ID
         setPropertyId(generatePropertyId());
-
         console.log('Current User ID:', userId);
     }, [userId]);
 
+    // Handle primary image upload
     const handlePrimaryImageChange = (e) => {
         if (e.target.files[0]) {
             setPrimaryImage(e.target.files[0]);
         }
     };
 
+    // Handle other images upload
     const handleOtherImagesChange = (e) => {
         const selectedFiles = Array.from(e.target.files);
         setOtherImages(selectedFiles);
     };
 
-
+    // Handle zone change
     const handleZoneChange = (event) => {
         const selectedValue = event.target.value;
         const selectedColor = event.target.options[event.target.selectedIndex].style.backgroundColor;
         setSelectedZone({ value: selectedValue, color: selectedColor });
     };
 
+    // Upload image to Firebase Storage
     const uploadImage = async (image, path) => {
         const storageRef = ref(storage, path);
         const uploadTask = uploadBytesResumable(storageRef, image);
 
+        // Return a promise to handle upload progress and completion
         return new Promise((resolve, reject) => {
             uploadTask.on(
                 "state_changed",
@@ -94,11 +101,11 @@ const AddProperty = () => {
         });
     };
 
+    // Handle form submission
     const handleSubmit = async (event) => {
         event.preventDefault();
     
         try {
-
            // Debugging logs
             console.log('UserId:', userId);
             console.log('Primary Image:', primaryImage);
@@ -130,7 +137,6 @@ const AddProperty = () => {
                 )
             );
     
-            
             // Collect form data
             const formData = {
                 userId: parseInt(userId), // Ensure userId is a number
@@ -185,10 +191,19 @@ const AddProperty = () => {
 
     return (
         <div className="bg-main-background relative">
-            <InAppLogo />
-            <BackButton />
-            <div className="flex flex-col items-center justify-center gap-2 min-h-screen pb-20">
-                <div className="px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3">
+            <div className="flex flex-col items-center justify-center gap-2 min-h-screen mx-4 pb-6 bg-main-background">
+                           
+                <div className='px-2 fixed top-0 left-0 w-auto sm:w-2/4 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-main-background'>
+                    <InAppLogo />
+                </div>
+                
+                <div className='fixed top-10 flex w-full justify-between bg-main-background'>
+                    <div className="flex-grow w-full">
+                        <BackButton/>
+                    </div>
+                    
+                </div>
+                <div className="px-4 w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 mb-20 mt-20">
                     <form className="flex flex-col flex-grow w-full gap-4 mb-8" onSubmit={handleSubmit}>
                         {/* Primary Image Upload */}
                         <div className="flex flex-col gap-4">
