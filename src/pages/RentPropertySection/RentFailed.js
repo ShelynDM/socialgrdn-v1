@@ -1,7 +1,8 @@
 /**
  * RentFailed.js
  * Description: Page for displaying the message that a rental failed and not confirmed
- * Author: Tiana Bautista
+ * Frontend Author: Tiana Bautista
+ * Backend Author: Tiana Bautista
  * Date: 2024-10-23
  */
 

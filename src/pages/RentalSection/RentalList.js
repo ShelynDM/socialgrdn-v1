@@ -1,7 +1,8 @@
 /**
  * ReservationList.js
  * Description: Page for displaying a list of rentals for the user
- * Author: Tiana Bautista
+ * Frontend Author: Tiana Bautista
+ * Backend Author: Tiana Bautista, Shelyn del Mundo
  * Date: 2024-10-23
  */
 
@@ -94,6 +95,13 @@ export default function RentalList() {
                 }
                 //stores the response in rentalData in json format
                 const rentalData = await response.json();
+
+                // Check if rentalData is an empty array
+                if (rentalData.length === 0) {
+                    console.log("No reservations found for the user.");
+                    setRentals([]); // Set rentals to empty array
+                    return;
+                }
 
                 //stores rentals in the rental list
                 setRentals(rentalData);

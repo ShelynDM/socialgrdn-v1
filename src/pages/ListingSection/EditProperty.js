@@ -1,3 +1,11 @@
+/**
+ * EditProperty.js
+ * Description: This page is Edit Property page where user can edit the property details.
+ * FrontEnd: Lilian Huh
+ *BackEnd: Donald Uy
+ * Date: 2024-10-23
+ */
+
 import React, { useState, useEffect } from 'react';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useNavigate, useParams } from 'react-router-dom';

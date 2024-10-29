@@ -42,7 +42,8 @@ router.get('/', (req, res) => {
     }
 
     if (results.length === 0) {
-      return res.status(404).json({ message: 'No payouts found for the user' });
+      // Return an empty array if no payouts are found
+      return res.status(200).json([]);
     }
 
     const formattedResults = results.map((row, index) => ({

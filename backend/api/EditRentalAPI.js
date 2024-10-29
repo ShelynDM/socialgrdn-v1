@@ -1,3 +1,10 @@
+/**
+ * EdiRental.js
+ * Description: API to edit rental information
+ * Author: Tiana Bautista
+ * Date: 2024-10-18
+ */
+
 const express = require('express');
 const router = express.Router();
 

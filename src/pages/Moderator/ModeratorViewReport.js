@@ -1,3 +1,11 @@
+/**
+ * ModeratorViewReport.js
+ * Description: Page to view reports for the moderator
+ * Frontend Author: Lilian Huh
+ * Backend Author: 
+ * Date: 2024-10-24
+ */
+
 import React, { useState } from "react";
 import { SlArrowRight } from "react-icons/sl";
 import { useNavigate } from "react-router-dom";
