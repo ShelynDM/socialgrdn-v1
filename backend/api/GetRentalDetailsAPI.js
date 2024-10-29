@@ -1,20 +1,20 @@
 /**
  * GetRentalDetailsAPI.js
- * Get rental details through rentalID
- * by joining rental, propertylisting, userprofile and propertylocation tables
- * 
- * Used by pages\ReservationSection\ReservationDetails.js
+ * Description: API to get rental details
+ * Author: Tiana Bautista
+ * Date: 2024-10-18
  */
 const express = require('express');
 const router = express.Router();
 
+// GET request to fetch rental details
 router.get('/', (req, res) => {
   const { rentalID } = req.query;
 
   if (!rentalID) {
     return res.status(400).send('rentalID is required');
   }
-
+  // SQL query to fetch rental details
   const query = `
     SELECT
     r.rental_id, r.start_date, r.end_date, r.status, r.rent_base_price, r.tax_amount, r.transaction_fee, r.renter_ID,
@@ -39,7 +39,7 @@ LEFT JOIN
 WHERE
     r.rental_ID = ?
 `;
-
+  // Execute the SQL query
   db.query(query, [rentalID], (err, results) => {
     if (err) {
       console.error('Database error:', err);

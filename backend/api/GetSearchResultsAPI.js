@@ -13,6 +13,7 @@ router.get('/', (req, res) => {
   const query = `
     SELECT 
         pl.property_id,
+        pl.userID,
         pl.property_name, 
         plo.address_line1, 
         plo.city, 
@@ -62,7 +63,8 @@ router.get('/', (req, res) => {
     }
 
     if (results.length === 0) {
-      return res.status(404).send('No properties found');
+      // Return an empty array if no properties are found
+      return res.status(200).json([]);
     } else {
       return res.status(200).json(results);
     }

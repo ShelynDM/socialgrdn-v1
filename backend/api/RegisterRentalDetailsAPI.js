@@ -1,6 +1,14 @@
+/**
+ * RegisterRentalDetailsAPI.js
+ * Description: API to register new rentals to DB
+ * Author: Tiana Bautista
+ * Date: 2024-10-15
+ */
+
 const express = require('express');
 const router = express.Router();
 
+// Register new rental
 router.post('/', (req, res) => {
   const { property_id, renter_ID, start_date, end_date, status, rent_base_price, tax_amount, transaction_fee } = req.body;
 
@@ -16,17 +24,14 @@ router.post('/', (req, res) => {
   const values = [
     property_id, renter_ID, start_date, end_date, status, rent_base_price, tax_amount, transaction_fee
   ];
-
+  // Execute the SQL query
   db.query(query, values, (err, results) => {
     if (err) {
       console.error('Error registering rental information to db.', err);
-      //res.status(500).send('Error registering rental information to db.');
       return res.status(500).json({ error: 'Database error' });
     } else {
-      //res.status(200).send('Rental information registered successfully');
-      //return res.status(200).json({ exists: false });
 
-      // The last inserted ID can be accessed with results.insertId
+      // Fetching the last inserted ID to return to the frontend
       const rent_id = results.insertId;
       console.log('Rental  from API:', rent_id);
       // Send back a response with the last inserted ID

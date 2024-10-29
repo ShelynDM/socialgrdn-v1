@@ -9,11 +9,12 @@
 import React from "react";
 import { FaSearch } from "react-icons/fa";
 
-export default function SearchBar({ value, onChange, onClick, onKeyDown }) {
+export default function SearchBar({ value, onChange, onClick, onKeyDown, onClickSearchIcon }) {
     return (
     <div className="w-full flex items-center input-wrapper rounded-md border border-gray-300 p-1 mx-2 ">
-        <FaSearch className="search-icon mx-1"/>
-        <input placeholder="Search" className="w-full outline-none focus:border-none" type="text" value={value} onChange={onChange} onClick={onClick} onKeyDown={onKeyDown}/>
+        <input placeholder="Search" className=" px-2 w-full outline-none focus:border-none" type="text" value={value} onChange={onChange} onClick={onClick} onKeyDown={onKeyDown}/>
+        <FaSearch className="search-icon mx-1" onClick={onClickSearchIcon}/>
+
     </div>
   );
 }
