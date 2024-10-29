@@ -13,6 +13,7 @@ router.get('/', (req, res) => {
   const query = `
     SELECT 
         pl.property_id,
+        pl.userID,
         pl.property_name, 
         plo.address_line1, 
         plo.city, 
