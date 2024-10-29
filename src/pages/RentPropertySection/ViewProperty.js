@@ -150,8 +150,9 @@ const ViewProperty = () => {
     <div className="bg-gray-50 min-h-screen">
       <InAppLogo />
       <div className="container mx-auto px-4 py-8 max-w-2xl">
-        <BackButton onClick={() => navigate(-1)} className="mb-6" />
-
+        <div className="fixed">
+          <BackButton onClick={() => navigate(-1)} className="mb-6" />
+        </div>
         <div className="bg-white rounded-xl shadow-sm p-6">
           <div className="space-y-6">
             <div className="flex justify-between items-center">
@@ -161,11 +162,11 @@ const ViewProperty = () => {
                 triggerText="Select Rent Duration"
               />
             </div>
-
-            <ImageCarousel
-              images={[property.primaryImage, ...(property.otherImages || [])].filter(Boolean)}
-            />
-
+            <div>
+              <ImageCarousel
+                images={[property.primaryImage, ...(property.otherImages || [])].filter(Boolean)}
+              />
+            </div>
             <div className="flex items-center text-gray-600">
               <FaLocationDot className="text-xl flex-shrink-0" />
               <p className="ml-2">
@@ -240,8 +241,8 @@ const ViewProperty = () => {
                   <LongButton
                     buttonName="Rent Property"
                     className={`w-full ${rentDuration
-                        ? "bg-green-600 text-white hover:bg-green-700"
-                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      ? "bg-green-600 text-white hover:bg-green-700"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
                       } transition-colors`}
                     onClick={rentDuration ? handleRentProperty : undefined}
                   />

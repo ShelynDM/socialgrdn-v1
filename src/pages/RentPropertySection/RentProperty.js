@@ -15,9 +15,7 @@ import { format, parse, endOfMonth } from 'date-fns';
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
-import { IoArrowBackSharp } from "react-icons/io5";
-import SearchBar from "../../components/SearchComponents/search";
-import ExampleImage from "../../assets/exampleAssets/imgExample.jpg";
+import BackButton from "../../components/Buttons/backButton";
 import AgreeAndPay from "../../components/Buttons/longButton";
 import { LuMapPin } from "react-icons/lu";
 import zoneColor from "../../components/ZoneColor/zoneColor";
@@ -184,8 +182,19 @@ export default function RentProperty() {
             tax_amount: tax_amount,
             transaction_fee: transaction_fee
         };
-        console.log('API start rentalData:', rentalData);
 
+        // Check if any property in rentalData is missing a value
+        const hasEmptyValue = Object.values(rentalData).some(value =>
+            value === null || value === undefined || value === ''
+        );
+
+        if (hasEmptyValue) {
+            console.log("One or more fields in rentalData are missing values.");
+            return null;
+        } else {
+            console.log("All fields in rentalData have values.");
+            console.log('API start rentalData:', rentalData);
+        }
 
         try {
             //API call to register rental details
@@ -224,14 +233,10 @@ export default function RentProperty() {
                     <InAppLogo />
                 </div>
 
-                {/* Top Bar Section (Back Button, Search, Filter) */}
-                <div className="flex items-center justify-between fixed top-0 left-0 right-0 mt-10 px-4 bg-main-background">
-                    <button>
-                        <IoArrowBackSharp size={25} />
-                    </button>
-                    <div className="flex-grow w-full">
-                        <SearchBar className="w-full" />
-                    </div>
+                {/* Back Button*/}
+                <div className="flex items-center justify-between fixed top-0 left-0 right-0 mt-10 bg-main-background">
+                    <BackButton />
+
                 </div>
 
                 {/* Rent Information */}
@@ -261,7 +266,7 @@ export default function RentProperty() {
 
                     {/* Listing Image */}
                     <div className="w-auto h-52 flex justify-center items-center mx-4 p-1">
-                        <img className="w-full h-full rounded-lg border-2 border-gray-200" src={ExampleImage} alt="Garden" />
+                        <img className="w-full h-full rounded-lg border-2 border-gray-200" src={property.image_url} alt="Garden" />
                     </div>
 
                     {/* Listing Duration */}
