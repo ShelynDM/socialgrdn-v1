@@ -1,3 +1,11 @@
+/**
+ * AddProperty.js
+ * Description: Page for users to add a property listing
+ * FrontEnd: Lilian Huh
+ *BackEnd: Donald Uy
+ * Date: 2024-10-23
+ */
+
 import React from "react";
 import { FaUser, FaUserCircle, FaUserTie } from "react-icons/fa";
 import { IoRibbonOutline } from "react-icons/io5";
