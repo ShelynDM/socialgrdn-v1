@@ -1,3 +1,11 @@
+/**
+ * Profile.js
+ * Description: Page for viewing your own profile page
+ * FrontEnd: Lilian Huh
+ *BackEnd: 
+ * Date: 2024-10-23
+ */
+
 "use client"
 import React, { useState, useEffect } from "react";
 import InAppLogo from "../../components/Logo/inAppLogo";

@@ -16,6 +16,7 @@ import FilterButton from "../../components/SearchComponents/filterButton";
 import SearchBar from "../../components/SearchComponents/search";
 import {ref, onValue} from "firebase/database";
 import {realtimeDb} from "../../_utils/firebase";
+import {useUser} from "../../UserContext";
 
 // Import the following components to reuse search components
 import usePropertyResult from "../../components/SearchComponents/propertyResult";
@@ -29,6 +30,7 @@ export default function Search() {
     const [suggestions, setSuggestions] = useState([]);
     const [locationFetched, setLocationFetched] = useState(false);
     const [cropData, setCropData] = useState([]);
+    const { userId } = useUser();
 
     // Get property results from the database
     const propertyResult = usePropertyResult();
@@ -303,6 +305,10 @@ export default function Search() {
         navigate(`/Search?query=${encodeURIComponent(query)}`);
     }
     
+    const handleSearchIconClick = () => {
+        performSearch(searchQuery);
+        setSuggestions([]);
+    };
     
 
     // ------------------- End of Search Bar and Search Suggestions ------------------- //
@@ -314,11 +320,17 @@ export default function Search() {
     // ------------------- Property Click ------------------- //
 
     // Handle property click to view property details
-    const handlePropertyClick = (propertyId) => {
+    const handlePropertyClick = (propertyId, userID) => {
         console.log("Property ID:", propertyId);
         // Navigate to the property details page
-        navigate(`/ViewProperty/${propertyId}`);
-    }
+        // If the current user login id is the same as the property owner id, navigate to the View own property page
+        if (String(userId) === String(userID)) {
+            navigate(`/ViewMyProperty/${propertyId}`);
+        } else {
+            navigate(`/ViewProperty/${propertyId}`);
+        }
+        
+    };
 
 
     return (
@@ -331,7 +343,7 @@ export default function Search() {
                 {/* Search Bar Section */}
                 <div className='mx-2 px-2 fixed top-12 flex w-full justify-between bg-main-background'>
                     <div className="flex-grow w-full">
-                        <SearchBar value={searchQuery} onChange={handleSearchQueryChange} onKeyDown={handleKeyDown}/>
+                        <SearchBar value={searchQuery} onChange={handleSearchQueryChange} onKeyDown={handleKeyDown} onClickSearchIcon={handleSearchIconClick}/>
                     </div>
                     <div className="mx-2">
                         <FilterButton onclick={filterClicked}/>
@@ -341,13 +353,13 @@ export default function Search() {
                     <div className="fixed top-20 w-full z-50">
                         <div className=" shadow-lg">
                             {suggestions.map((suggestion, index) => (
-                                    <div
-                                        key={index}
-                                        className="w-full px-2 hover:bg-gray-100 cursor-pointer"
-                                        onClick={() => handleSuggestionClick(suggestion)}
-                                    >
-                                        <p className="bg-white text-base border-b mx-2 px-2">{suggestion}</p>
-                                    </div>
+                                <div
+                                    key={index}
+                                    className="w-full px-2 hover:bg-gray-100 cursor-pointer"
+                                    onClick={() => handleSuggestionClick(suggestion)}
+                                >
+                                    <p className="bg-white text-base border-b mx-2 px-2">{suggestion}</p>
+                                </div>
                             ))}
                         </div>
 
@@ -381,7 +393,7 @@ export default function Search() {
                                 dimensionHeight={result.dimensions_height}
                                 soilType={result.soil_type}
 
-                                onClick={() => handlePropertyClick(result.property_id)}
+                                onClick={() => handlePropertyClick(result.property_id, result.userID)}
                             />
                         ))
                     ) : (

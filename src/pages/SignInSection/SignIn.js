@@ -1,3 +1,10 @@
+/**
+ * SignIn.js
+ * Description: Page for users to sign in to their account
+ * Author: Shelyn DelMundo
+ * Date: 2024-10-23
+ */
+
 import React, { useState } from 'react';
 import logo from '../../assets/logo/SocialGrdnLogo.png';
 import LongButton from '../../components/Buttons/longButton';
