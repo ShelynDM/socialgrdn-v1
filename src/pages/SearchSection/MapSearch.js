@@ -46,7 +46,6 @@ export default function MapSearch() {
   const [userLocation, setUserLocation] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null); // For holding selected property details
-  const [filteredResults, setFilteredResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [mapHeight, setMapHeight] = useState('40vh');
