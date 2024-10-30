@@ -29,7 +29,6 @@ router.get('/', (req, res) => {
                 WHERE pl.userID = u.userID
             ) THEN 'Renter & Owner'
             WHEN u.role = '1' THEN 'Renter'
-            WHEN u.role = '2' THEN 'Owner'
             ELSE 'Unknown'
         END AS renterOrOwner
     FROM 

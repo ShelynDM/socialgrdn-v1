@@ -240,10 +240,22 @@ export default function Search() {
 
     // Get query from URL and initialize search query state
     useEffect(() => {
+        const sanitizeQuery = (query) => {
+            // Remove any character that is not a letter or number
+            return query.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+        };
+        
         const query = new URLSearchParams(location.search).get("query") || "";
+        
         if (query) {
-            setSearchQuery(query); // Update state with query
-            performSearch(query);  // Perform search
+            const sanitizedQuery = sanitizeQuery(query);
+        
+            if (sanitizedQuery) {
+                setSearchQuery(sanitizedQuery); // Update state with sanitized query
+                performSearch(sanitizedQuery);  // Perform search with sanitized input
+            } else {
+                displayDefaultResults(); // Show default results if query is empty after sanitization
+            }
         } else {
             displayDefaultResults(); // Show default results if no query
         }
@@ -253,6 +265,7 @@ export default function Search() {
     // Main search query handler with fallback to default results logic
     const handleSearchQueryChange = (event) => {
         const query = event.target.value.toLowerCase();
+        
         setSearchQuery(query);
 
         if (query.trim() === "") {
