@@ -266,6 +266,7 @@ export default function MapSearch() {
                 soilType={selectedPlace.soil_type}
                 imageUrl={selectedPlace.image_url}
                 growthZone={selectedPlace.growth_zone}
+                propertyImage={selectedPlace.propertyImage}
 
 
 
@@ -283,7 +284,7 @@ export default function MapSearch() {
                   first_name={result.first_name}
                   last_name={result.last_name}
                   growthZone={result.growth_zone}
-                  propertyImage={result.photo}
+                  propertyImage={result.propertyImage}
                   propertyCrop={result.crop}
                   dimensionLength={result.dimensions_length}
                   dimensionWidth={result.dimensions_width}
