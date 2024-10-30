@@ -1,7 +1,17 @@
+/**
+ * addPropertyListingAPI.js
+ * Description: API to add Property listings
+ * Author: Donald Jans Uy
+ * Date: 2024-10-20
+ */
+
+// Import the express module and create a router to define API routes
 const express = require('express');
 const router = express.Router();
 
+// Define a POST route to handle property listing submissions
 router.post('/', (req, res) => {
+    // Extract data from the request body (details about the property)
   const {
     userId,
     propertyId,
@@ -27,7 +37,7 @@ router.post('/', (req, res) => {
     longitude
   } = req.body;
 
-  // Start a transaction
+// Start a database transaction to ensure all database operations succeed together
   db.beginTransaction((err) => {
     if (err) {
       console.error('Transaction error:', err);

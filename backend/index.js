@@ -2,19 +2,19 @@
  * index.js
  * Description: This is the file that handles the server setup and database connection
  * Backend Author:  Donald Jans Uy
- *                  Doniyor Rakhmanov
  *                  Lilian Huh
  *                  Shelyn Del Mundo
  *                  Tiana Bautista
- * Date: 2024-10-23
+ * Date: 2024-10-30
  */
 
-// Import the credentials from the _credentials.js file
-const credentials = require('./_credentials');
+// Importing libraries and modules for server and database connection
+const credentials = require('./_credentials'); 
 const express = require('express');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+
 const path = require('path');
 
 // Import route files
@@ -66,12 +66,12 @@ app.use('/api/getPropertyDetails', getPropDetailsRoutes);
 app.use('/api/GetRentalDetails', getRentalDetailsRoutes);
 app.use('/api/addPropertyListing', addPropertyListingRoutes);
 app.use('/api/getRentalList', getRentalListRoutes);
-app.use('/api/create-checkout-session', stripeCheckoutSession); //payment route
+app.use('/api/create-checkout-session', stripeCheckoutSession);
 app.use('/api/registerRentalDetails', registerRentalDetailsRoutes);
 app.use('/api/editRentalDetails', editRentalDetailsRoutes);
 
-app.use('/api/addPropertyListing', addPropertyListingRoutes);// Add the new route for addPropertyListingAPI
-app.use('/api/updatePropertyListing', updatePropertyListingRoutes); // Add the new route for updating a property listing
+app.use('/api/addPropertyListing', addPropertyListingRoutes);
+app.use('/api/updatePropertyListing', updatePropertyListingRoutes); 
 app.use('/api/getPayouts', getPayoutsRoutes);
 app.use('/api/getEarnings', getEarningsRoutes);
 app.use('/api/getDetailedPayouts', getDetailedPayoutsRoutes);
