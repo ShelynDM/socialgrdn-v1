@@ -26,12 +26,12 @@ const getUserPropertiesRoutes = require('./api/GetUserPropAPI');
 const getSearchResultsRoutes = require('./api/GetSearchResultsAPI');
 const getPropDetailsRoutes = require('./api/GetPropDetailsAPI');
 const getRentalDetailsRoutes = require('./api/GetRentalDetailsAPI');
-const addPropertyListingRoutes = require('./api/addPropertyListingAPI');// Import your new addPropertyListingAPI
+const addPropertyListingRoutes = require('./api/addPropertyListingAPI');
 const getRentalListRoutes = require('./api/GetRentalListAPI');
 const registerRentalDetailsRoutes = require('./api/RegisterRentalDetailsAPI');
 const editRentalDetailsRoutes = require('./api/EditRentalAPI');
 
-const stripeCheckoutSession = require('./api/create-checkout-session');  //payment route
+const stripeCheckoutSession = require('./api/create-checkout-session');
 
 const updatePropertyListingRoutes = require('./api/UpdatePropertyListingAPI');
 const getPayoutsRoutes = require('./api/GetPayoutAPI');
@@ -55,7 +55,7 @@ app.use(cors({ origin: 'http://localhost:3001' }));
 app.use(express.static(path.join(__dirname, '../build')
 ));
 
-// Use route files
+// Route files gonna use for the API endpoint
 app.use('/api/users', userRoutes);
 app.use('/api/profile', getIDRoutes);
 app.use('/api/editProfile', editProfileRoutes);
@@ -93,9 +93,7 @@ app.listen(port, (err) => {
   if (err) {
     console.error('Error starting the server:', err);
   } else {
-    // Establish MySQL connection
     const db = mysql.createConnection({
-      // Use the db credentials from the _credentials.js file
       host: credentials.host,
       user: credentials.user,
       password: credentials.password,
@@ -109,7 +107,7 @@ app.listen(port, (err) => {
       }
     });
 
-    // Make the database connection available globally
+    //
     global.db = db;
   }
 });

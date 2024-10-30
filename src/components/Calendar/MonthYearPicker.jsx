@@ -1,6 +1,16 @@
+/**
+ * MonthYearPicker.js
+ * Description: A React component for selecting a range of months for rentals or bookings.
+ * Author: Donald Jans Uy
+ * Date: 2024-10-20
+ */
+
+//imports
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
+
+// declaring the states
 const MonthRangePicker = ({ onSelect, triggerText = "Select Date Range" }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -8,12 +18,14 @@ const MonthRangePicker = ({ onSelect, triggerText = "Select Date Range" }) => {
   const [endDate, setEndDate] = useState(null);
   const [selectingStart, setSelectingStart] = useState(true);
   
+
   const months = [
     "January", "February", "March", "April",
     "May", "June", "July", "August",
     "September", "October", "November", "December"
   ];
 
+  //change of the displayed year
   const handleYearChange = (increment) => {
     setCurrentDate(prevDate => {
       const newDate = new Date(prevDate);
@@ -22,6 +34,7 @@ const MonthRangePicker = ({ onSelect, triggerText = "Select Date Range" }) => {
     });
   };
 
+  // calculating number of days in between start and end dates
   const calculateDaysBetween = (start, end) => {
     if (!start || !end) return 0;
     const date1 = new Date(start.year, start.month - 1);
@@ -34,11 +47,13 @@ const MonthRangePicker = ({ onSelect, triggerText = "Select Date Range" }) => {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
+  //# of month calculation
   const calculateMonthsBetween = (start, end) => {
     if (!start || !end) return 0;
     return (end.year - start.year) * 12 + (end.month - start.month);
   };
 
+  //logic for selecting the month
   const handleMonthSelect = (monthIndex) => {
     const selectedDate = {
       month: monthIndex + 1,
@@ -62,12 +77,14 @@ const MonthRangePicker = ({ onSelect, triggerText = "Select Date Range" }) => {
     }
   };
 
+  //check logic for making sure 3 months difference
   const isValidDateRange = () => {
     if (!startDate || !endDate) return false;
     const monthsDiff = calculateMonthsBetween(startDate, endDate);
-    return monthsDiff >= 2; // 3 months inclusive (e.g., Jan to Mar is 2 months difference)
+    return monthsDiff >= 2; //
   };
 
+  //Logic when confirming the selected date
   const handleConfirm = () => {
     if (!isValidDateRange()) {
       alert("Minimum rental duration is 3 months. Please select a longer duration.");
@@ -83,7 +100,6 @@ const MonthRangePicker = ({ onSelect, triggerText = "Select Date Range" }) => {
     setSelectingStart(true);
   };
 
-  // Return button stays as "Select Rent Duration" unless dates are selected
   if (!isOpen) {
     return (
       <button
@@ -95,6 +111,7 @@ const MonthRangePicker = ({ onSelect, triggerText = "Select Date Range" }) => {
     );
   }
 
+  //check if a month is in the selected date range
   const isDateInRange = (monthIndex) => {
     if (!startDate || !endDate) return false;
     
@@ -124,6 +141,7 @@ const MonthRangePicker = ({ onSelect, triggerText = "Select Date Range" }) => {
     return isAfterStart && isBeforeEnd;
   };
 
+  //show the difference between the seleected dates in months and days
   const getDaysBetweenText = () => {
     if (startDate && endDate) {
       const monthsDiff = calculateMonthsBetween(startDate, endDate);
@@ -156,6 +174,7 @@ const MonthRangePicker = ({ onSelect, triggerText = "Select Date Range" }) => {
     );
   }
 
+  //the UI of the modal
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">

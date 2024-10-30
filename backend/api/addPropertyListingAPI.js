@@ -11,7 +11,6 @@ const router = express.Router();
 
 // Define a POST route to handle property listing submissions
 router.post('/', (req, res) => {
-    // Extract data from the request body (details about the property)
   const {
     userId,
     propertyId,
