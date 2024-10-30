@@ -2,7 +2,7 @@
  * ViewMyListings.js
  * Description: Page for users to add a property listing
  * FrontEnd: Lilian Huh
- *BackEnd: 
+  *BackEnd: Donald Uy
  * Date: 2024-10-23
  */
 

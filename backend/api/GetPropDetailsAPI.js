@@ -1,13 +1,23 @@
+/**
+ * getPropertyDetailsAPI.js
+ * Description: API to retrieve details of a property listing
+ * Author: Donald Jans Uy
+ * Date: 2024-10-26
+ */
+
 const express = require('express');
 const router = express.Router();
 
+// Handle GET request to retrieve property details based on property_id
 router.get('/', (req, res) => {
   const { property_id } = req.query;
 
+    // Check for Property_id
   if (!property_id) {
     return res.status(400).send('property_id is required');
   }
 
+  //sql query for getting the property details
   const query = `
   SELECT 
       p.property_id, p.property_name, p.description, p.growth_zone,
@@ -37,6 +47,9 @@ router.get('/', (req, res) => {
       p.property_id
   `;
 
+
+  //query execution
+
   db.query(query, [property_id], (err, results) => {
     if (err) {
       console.error('Database error:', err);
@@ -64,7 +77,7 @@ router.get('/', (req, res) => {
     property.otherImages = property.other_image_urls ? property.other_image_urls.split(',') : [];
     delete property.other_image_urls;
 
-    // Convert latitude and longitude to numbers if they exist, otherwise null
+    // Convert latitude and longitude to numbers
     property.latitude = property.latitude !== null ? parseFloat(property.latitude) : null;
     property.longitude = property.longitude !== null ? parseFloat(property.longitude) : null;
 

@@ -1,37 +1,53 @@
+/**
+ * AddressAutocomplete.js
+ * Description: A React component for address autocompletion using the Geoapify API.
+ * Author: Donald Jans Uy
+ * Date: 2024-10-20
+ */
+
 import React, { useState, useEffect, useRef } from 'react';
 
 const AddressAutocomplete = ({ 
     onAddressSelect, 
-    resultLimit = 20,  // Default limit of 20 results
-    countryCodes = ['us', 'ca']  // Default to US and Canada
+    resultLimit = 20,  
+    countryCodes = ['us', 'ca']  // Default to US and Canada only
 }) => {
-    const [searchText, setSearchText] = useState('');
-    const [suggestions, setSuggestions] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [showSuggestions, setShowSuggestions] = useState(false);
-    const suggestionRef = useRef(null);
 
-    const GEOAPIFY_API_KEY = 'f4a5f61255ad45e6b71371ff6718394d';
+    // declaring the states
+    const [searchText, setSearchText] = useState(''); 
+    const [suggestions, setSuggestions] = useState([]); 
+    const [isLoading, setIsLoading] = useState(false); 
+    const [showSuggestions, setShowSuggestions] = useState(false); 
+    const suggestionRef = useRef(null); 
+
+    //using Geoapify apy 
+    const geoapifyAPIKEY = process.env.REACT_APP_GEOAPIFY_API_KEY;
 
     useEffect(() => {
+        // Handle click outside of the suggestions box
         const handleClickOutside = (event) => {
             if (suggestionRef.current && !suggestionRef.current.contains(event.target)) {
-                setShowSuggestions(false);
+                setShowSuggestions(false); // Hide suggestions if clicked outside
             }
         };
 
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        // Add event listener for mouse clicks
+        document.addEventListener('mousedown', handleClickOutside); 
+
+        // Cleanup on unmount
+        return () => document.removeEventListener('mousedown', handleClickOutside); 
     }, []);
 
     const searchAddress = async (text) => {
+        // Return if text length is less than 3 characters
         if (text.length < 3) {
             setSuggestions([]);
             setShowSuggestions(false);
             return;
         }
 
-        setIsLoading(true);
+        // Set loading state to true
+        setIsLoading(true); 
         try {
             // Create the filter string from countryCodes array
             const filterString = countryCodes.map(code => `countrycode:${code}`).join(',');
@@ -42,27 +58,32 @@ const AddressAutocomplete = ({
                 `&limit=${resultLimit}` +
                 `&filter=${filterString}` +
                 `&format=json` +
-                `&apiKey=${GEOAPIFY_API_KEY}`
+                `&apiKey=${geoapifyAPIKEY}`
             );
-            const data = await response.json();
+            const data = await response.json(); 
             
             if (data.results) {
-                setSuggestions(data.results);
-                setShowSuggestions(true);
+
+                // Set the suggestions state
+                setSuggestions(data.results); 
+
+                // Show the suggestions dropdown
+                setShowSuggestions(true); 
             }
         } catch (error) {
-            console.error('Error fetching address suggestions:', error);
+            console.error('Error fetching address suggestions:', error); 
         }
-        setIsLoading(false);
+        setIsLoading(false); // Reset loading state
     };
 
     const handleInputChange = (e) => {
-        const value = e.target.value;
-        setSearchText(value);
-        searchAddress(value);
+        const value = e.target.value; // Get input value
+        setSearchText(value); // Update search text state
+        searchAddress(value); // Trigger address search
     };
 
     const handleSuggestionClick = (suggestion) => {
+        // Prepare address data from the selected suggestion
         const addressData = {
             addressLine1: suggestion.street || '',
             city: suggestion.city || '',
@@ -74,9 +95,14 @@ const AddressAutocomplete = ({
             formatted: suggestion.formatted || ''
         };
 
-        setSearchText(addressData.formatted);
-        setShowSuggestions(false);
-        onAddressSelect(addressData);
+        // Set search text to the formatted address
+        setSearchText(addressData.formatted); 
+
+        // Hide suggestions
+        setShowSuggestions(false); 
+
+        // Pass selected address data to the parent component
+        onAddressSelect(addressData); 
     };
 
     return (
@@ -85,7 +111,7 @@ const AddressAutocomplete = ({
                 type="text"
                 value={searchText}
                 onChange={handleInputChange}
-                placeholder="Full Addresseses"
+                placeholder="Full Address"
                 className="w-full p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
             />
             

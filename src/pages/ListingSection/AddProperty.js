@@ -2,20 +2,23 @@
  * AddProperty.js
  * Description: Page for users to add a property listing
  * FrontEnd: Lilian Huh
- *BackEnd: 
+ *BackEnd: Donald Jans Uy
  * Date: 2024-10-23
  */
 
 import React, { useState, useEffect } from 'react';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { ref as databaseRef, onValue } from 'firebase/database';
+import { storage, realtimeDb } from '../../_utils/firebase';
+
 import InAppLogo from "../../components/Logo/inAppLogo";
 import BackButton from "../../components/Buttons/backButton";
 import NavBar from "../../components/Navbar/navbar";
-import Sprout from "../../assets/navbarAssets/sprout.png";
-import { storage } from '../../_utils/firebase';
 import LongButton from '../../components/Buttons/longButton';
-import { useUser } from '../../UserContext';
 import AddressAutocomplete from '../../components/AutoComplete/AddressAutoComplete';
+import zoneColor from '../../components/ZoneColor/zoneColor';
+import Sprout from "../../assets/navbarAssets/sprout.png";
+import { useUser } from '../../UserContext';
 
 const AddProperty = () => {
     const { userId } = useUser(); // Get userId from UserContext
@@ -41,17 +44,36 @@ const AddProperty = () => {
     const [possibleCrops, setPossibleCrops] = useState([]);
     const [restrictions, setRestrictions] = useState('');
     const [price, setPrice] = useState('');
+    const [cityZoneData, setCityZoneData] = useState({});
+    const zoneOptions = ['0a', '0b', '1a', '1b', '2a', '2b', '3a', '3b', '4a', '4b'];
 
+    // Combine both effects into one organized effect
     useEffect(() => {
+        // Property ID generation
         const generatePropertyId = () => {
             const randomNum = Math.floor(Math.random() * 100000);
             return `${randomNum}`;
         };
         
         setPropertyId(generatePropertyId());
-
         console.log('Current User ID:', userId);
-    }, [userId]);
+
+        // City zone data fetching
+        const dataRef = databaseRef(realtimeDb, 'cities');
+        const unsubscribe = onValue(dataRef, (snapshot) => {
+            try {
+                const fetchedData = snapshot.val();
+                setCityZoneData(fetchedData);
+            } catch (err) {
+                console.error('Error processing city zone data:', err);
+            }
+        });
+
+        // Cleanup function
+        return () => {
+            unsubscribe();
+        };
+    }, [userId]); // Include both dependencies
 
     const handlePrimaryImageChange = (e) => {
         if (e.target.files[0]) {
@@ -72,12 +94,27 @@ const AddProperty = () => {
         setCountry(addressData.country);
         setLatitude(addressData.latitude.toString());
         setLongitude(addressData.longitude.toString());
+        
+        // Auto-select zone based on city
+        const cityEntry = Object.entries(cityZoneData).find(
+            ([_, data]) => data.name.toLowerCase() === addressData.city.toLowerCase()
+        );
+
+        if (cityEntry) {
+            const [_, cityData] = cityEntry;
+            setSelectedZone({
+                value: cityData.code,
+                color: zoneColor(cityData.code)
+            });
+        }
     };
 
     const handleZoneChange = (event) => {
-        const selectedValue = event.target.value;
-        const selectedColor = event.target.options[event.target.selectedIndex].style.backgroundColor;
-        setSelectedZone({ value: selectedValue, color: selectedColor });
+        const value = event.target.value;
+        setSelectedZone({
+            value,
+            color: zoneColor(value)
+        });
     };
 
     const uploadImage = async (image, path) => {
@@ -196,6 +233,49 @@ const AddProperty = () => {
             return false;
         }
     };
+
+        // Modified Zone selection section in your form
+        const renderZoneSection = () => (
+            <div className="flex items-center gap-4">
+                <label className="text-lg font-semibold" htmlFor="zone">Growth Zone:</label>
+                <div className="flex-grow relative">
+                    <div className="w-full"> {/* Added wrapper div with w-full */}
+                        {selectedZone.value ? (
+                            <div 
+                                className="w-full p-2 border border-gray-400 rounded-lg shadow-lg" // Added w-full
+                                style={{ 
+                                    backgroundColor: selectedZone.color,
+                                    color: '#000000'
+                                }}
+                            >
+                                {selectedZone.value}
+                            </div>
+                        ) : (
+                            <select
+                                id="growth_zone"
+                                name="growth_zone"
+                                className="w-full p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                onChange={handleZoneChange}
+                                value={selectedZone.value}
+                                style={{ backgroundColor: selectedZone.color, color: '#000000' }}
+                                required
+                            >
+                                <option value="">Select a zone</option>
+                                {zoneOptions.map((zone) => (
+                                    <option 
+                                        key={zone} 
+                                        value={zone} 
+                                        style={{ backgroundColor: zoneColor(zone) }}
+                                    >
+                                        {zone}
+                                    </option>
+                                ))}
+                            </select>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
 
     return (
         <div className="bg-main-background relative">
@@ -327,26 +407,7 @@ const AddProperty = () => {
 
                         {/* Farming Zone */}
                         <div className="flex items-center gap-4">
-                            <label className="text-lg font-semibold" htmlFor="zone">Farming Zone:</label>
-                            <select
-                                id="growth_zone"
-                                name="growth_zone"
-                                className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
-                                onChange={handleZoneChange}
-                                value={selectedZone.value}
-                                style={{ backgroundColor: selectedZone.color, color: '#000000' }} 
-                                required
-                            >
-                                <option value="">Select a zone</option>
-                                <option value="0a" style={{ backgroundColor: '#d7bde2' }}>0a</option>
-                                <option value="0b" style={{ backgroundColor: '#c39bd3' }}>0b</option>
-                                <option value="1a" style={{ backgroundColor: '#7fb3d5' }}>1a</option>
-                                <option value="1b" style={{ backgroundColor: '#a9cce3' }}>1b</option>
-                                <option value="2a" style={{ backgroundColor: '#a3e4d7' }}>2a</option>
-                                <option value="2b" style={{ backgroundColor: '#7dcea0' }}>2b</option>
-                                <option value="3a" style={{ backgroundColor: '#28b463' }}>3a</option> 
-                                <option value="3b" style={{ backgroundColor: '#a9dfbf' }}>3b</option>
-                            </select>
+                            {renderZoneSection()}
                         </div>
 
                         {/* Description */}

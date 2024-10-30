@@ -164,9 +164,10 @@ export default function MapSearch() {
       >
         <div className="w-full" style={{ position: 'relative' }}>
           <div style={mapWrapperStyle(mapHeight)}>
-            <Autocomplete onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)} onPlaceChanged={handlePlaceSelect}>
+            <Autocomplete onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)} onPlaceChanged={handlePlaceSelect} >
               <input
                 type="text"
+                
                 placeholder="Search for a place..."
                 style={{
                   boxSizing: 'border-box',
@@ -185,6 +186,7 @@ export default function MapSearch() {
                   top: '10px',
                   zIndex: 1000,
                 }}
+                onClick={toggleMapExpansion}
               />
             </Autocomplete>
 
