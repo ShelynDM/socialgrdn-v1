@@ -320,7 +320,7 @@ export default function Search() {
     // ------------------- Property Click ------------------- //
 
     // Handle property click to view property details
-    const handlePropertyClick = (propertyId, userID) => {
+    const handlePropertyClick = (propertyId, userID,) => {
         console.log("Property ID:", propertyId);
         // Navigate to the property details page
         // If the current user login id is the same as the property owner id, navigate to the View own property page
@@ -386,7 +386,7 @@ export default function Search() {
                                 first_name={result.first_name}
                                 last_name={result.last_name}
                                 growthZone={result.growth_zone}
-                                propertyImage={result.photo}
+                                propertyImage={result.propertyImage}
                                 propertyCrop={result.crop}
                                 dimensionLength={result.dimensions_length}
                                 dimensionWidth={result.dimensions_width}
