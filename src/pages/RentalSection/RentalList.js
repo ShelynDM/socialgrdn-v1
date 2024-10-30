@@ -67,10 +67,16 @@ export default function RentalList() {
     };
 
     // Handle suggestion click
-    const handleSuggestionClick = (username) => {
-        setSearchQuery(username); // Set the clicked username as the search query
+    const handleSuggestionClick = (query) => {
+        setSearchQuery(query); // Set the clicked username as the search query
         setSuggestions([]); // Clear suggestions
-        navigate(`/Search?query=${encodeURIComponent(username)}`);
+        navigate(`/Search?query=${encodeURIComponent(query)}`);
+    };
+
+    // Handle search icon click
+    const handleSearchIconClick = () => {
+        const query = searchQuery.trim();
+        navigate(`/Search?query=${encodeURIComponent(query)}`);
     };
 
 
@@ -122,7 +128,7 @@ export default function RentalList() {
                 </div>
                 {/* Search Bar Section */}
                 <div className='fixed top-12 flex w-full justify-between bg-main-background'>
-                    <SearchBar value={searchQuery} onChange={handleSearchQueryChange} onKeyDown={handleKeyDown} />
+                    <SearchBar value={searchQuery} onChange={handleSearchQueryChange} onKeyDown={handleKeyDown} onClickSearchIcon={handleSearchIconClick} />
                 </div>
                 {suggestions.length > 0 && (
                     <div className="fixed top-20 w-full z-50">

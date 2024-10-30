@@ -13,6 +13,7 @@ import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/
 import { auth } from '../../_utils/firebase';
 import logo from '../../assets/logo/SocialGrdnLogo.png';
 import LongButton from '../../components/Buttons/longButton';
+import AddressAutocomplete from '../../components/AutoComplete/AddressAutoComplete';
 
 export default function SignUp() {
     const [formData, setFormData] = useState({
@@ -26,193 +27,281 @@ export default function SignUp() {
         userAddress: '',
         userCity: '',
         userProvince: '',
-        userPostalCode: ''
+        userPostalCode: '',
     });
-    const [error, setError] = useState('');
+
+    const [errors, setErrors] = useState({});
     const [emailMessage, setEmailMessage] = useState('');
-    
     const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prevState => ({
             ...prevState,
-            [name]: value
+            [name]: value,
         }));
+    };
+
+    const handleAddressSelect = (addressData) => {
+        setFormData(prevState => ({
+            ...prevState,
+            userAddress: addressData.addressLine1,
+            userCity: addressData.city,
+            userProvince: addressData.province,
+            userPostalCode: addressData.postalCode,
+        }));
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+        const { email, password, firstname, lastname, username, profession, phoneNumber } = formData;
+
+        if (!email.includes('@') || !email.includes('.')) {
+            newErrors.email = 'Please enter a valid email address.';
+        }
+        if (password.length < 6 || !/\d/.test(password)) {
+            newErrors.password = 'Password must be at least 6 characters long and contain a number.';
+        }
+        if (!firstname.match(/^[a-zA-Z\s]+$/)) {
+            newErrors.firstname = 'First name is required and should only contain letters.';
+        }
+        if (!lastname.match(/^[a-zA-Z\s]+$/)) {
+            newErrors.lastname = 'Last name is required should only contain letters.';
+        }
+        if (!username.match(/^\w+$/)) {
+            newErrors.username = 'Username is required and should only contain letters, numbers, and underscores.';
+        }
+
+        if (
+            phoneNumber &&
+            (!/^[\d+\-()\s]+$/.test(phoneNumber) || 
+            phoneNumber.replace(/\D/g, '').length !== 10) 
+        ) {
+            newErrors.phoneNumber = 'Invalid phone number.';
+        }
+
+        if (phoneNumber) {
+            const cleanedPhoneNumber = phoneNumber.replace(/\D/g, '');
+        
+            // Check if the cleaned phone number has exactly 10 digits
+            if (cleanedPhoneNumber.length === 10) {
+                // Format the phone number to (123) 456-7890
+                formData.phoneNumber = formatPhoneNumber(phoneNumber);
+            } else {
+                newErrors.phoneNumber = 'Invalid phone number. Must contain exactly 10 digits.';
+            }
+        }
+
+        if (profession && !profession.match(/^[a-zA-Z0-9\s]+$/)) {
+            newErrors.profession = 'Profession should only contain letters, numbers, and spaces.';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const formatPhoneNumber = (number) => {
+        // Extract only digits from the phone number
+        const cleaned = number.replace(/\D/g, '');
+    
+        // Format as (123) 456-7890 if it's 10 digits
+        if (cleaned.length === 10) {
+            return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+        }
+    
+        // Return the original number if it can't be formatted
+        return number;
     };
 
     const handleSignUp = async (event) => {
         event.preventDefault();
-        const { email, password, firstname, lastname, username } = formData;
-    
-        if (email && password && email.includes('@') && email.includes('.') && password.length >= 6 && firstname && lastname && username) {
-            try {
-                // Log the data that is about to be sent to the server
-                console.log('Data being sent to the database:', formData);
-    
-                const response = await fetch('/api/users/register', {
-                    method: 'POST',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData),
-                });
-    
-                if (response.ok) {
-                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                    const user = userCredential.user;
-                    await sendEmailVerification(user);
-                    setEmailMessage('Verification email sent! Please check your inbox.');
-                    navigate('/VerifyEmail');
-                } else {
-                    const errorText = await response.text();
-                    setError(`User registration failed: ${errorText}`);
-                }
-            } catch (error) {
-                setError(error.message);
-                console.log(error);
+
+        if (!validateForm()) {
+            return;
+        };
+
+        try {
+            const { email, password } = formData;
+
+            console.log('Data being sent to the server:', formData);
+            const response = await fetch('/api/users/register', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
+
+            if (response.ok) {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                await sendEmailVerification(user);
+                setEmailMessage('Verification email sent! Please check your inbox.');
+                navigate('/VerifyEmail');
+            } else {
+                const errorText = await response.text();
+                setErrors({ general: `User registration failed: ${errorText}` });
             }
-        } else {
-            if (!email || !password || !firstname || !lastname || !username) {
-                setError('Please fill in all required fields: email, password, first name, last name, and username.');
-            } else if (!email.includes('@') || !email.includes('.')) {
-                setError('Please enter a valid email.');
-            } else if (password.length < 6) {
-                setError('Password must be at least 6 characters.');
-            }
+        } catch (error) {
+            setErrors({ general: error.message });
+            console.error(error);
         }
     };
 
     return (
         <div className='bg-main-background relative'>
-            <div className="flex flex-col items-center justify-center gap-2 min-h-screen m-2 pb-20">
-                <div>
-                    <strong className='text-3xl'>Welcome!</strong>
-                </div>
-                <div>
-                    <img src={logo} alt="Social Grdn Logo" className="w-auto h-auto" />
-                </div>
+            <div className="flex flex-col items-center justify-center gap-2 min-h-screen m-2 pb-20 bg-main-background">
+                <strong className='text-3xl'>Welcome!</strong>
+                <img src={logo} alt="Social Grdn Logo" className="w-auto h-auto" />
+
                 <div className='w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 text-left px-4'>
                     <p className='font-bold'>Sign up to get started</p>
                 </div>
-                <div className='px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3'>
-                    <form className="flex flex-col flex-grow w-full gap-4" onSubmit={handleSignUp}>
+
+                <form className="flex flex-col gap-4 px-4 w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3" onSubmit={handleSignUp}>
+                    {!errors.email ? (
                         <input
-                            type="email"
-                            placeholder="Email"
+                            type="text"
                             name="email"
+                            placeholder="Email"
                             value={formData.email}
                             onChange={handleChange}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
-                            required
+                            className='p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
                         />
+                    ) : (
+                        <input
+                        type="text"
+                        name="email"
+                        placeholder="Email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className='p-2 border border-red-500 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
+                        />
+                    )}
+
+                    {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+
+                    {!errors.password ? (
                         <input
                             type="password"
-                            placeholder="Password"
                             name="password"
+                            placeholder="Password"
                             value={formData.password}
                             onChange={handleChange}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
-                            required
+                            className='p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
                         />
+                    ) : (
+                        <input
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        value={formData.password}
+                        onChange={handleChange}
+                            className='p-2 border border-red-500 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
+                        />
+                    )}
+                    {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+
+                    {!errors.firstname ? (
                         <input
                             type="text"
-                            placeholder="First Name"
                             name="firstname"
+                            placeholder="First Name"
                             value={formData.firstname}
                             onChange={handleChange}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
-                            required
+                            className='p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
                         />
+                    ) : (
+                        <input
+                        type="text"
+                        name="firstname"
+                        placeholder="First Name"
+                        value={formData.firstname}
+                        onChange={handleChange}
+                            className='p-2 border border-red-500 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
+                        />
+                    )}
+                    {errors.firstname && <p className="text-red-500 text-sm">{errors.firstname}</p>}
+
+                    {!errors.lastname ? (
                         <input
                             type="text"
-                            placeholder="Last Name"
                             name="lastname"
+                            placeholder="Last Name"
                             value={formData.lastname}
                             onChange={handleChange}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
-                            required
+                            className='p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
                         />
+                    ) : (
+                        <input
+                        type="text"
+                        name="lastname"
+                        placeholder="Last Name"
+                        value={formData.lastname}
+                        onChange={handleChange}
+                            className='p-2 border border-red-500 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
+                        />
+                    )}
+                    {errors.lastname && <p className="text-red-500 text-sm">{errors.lastname}</p>}
+
+                    {!errors.username ? (
                         <input
                             type="text"
-                            placeholder="Username"
                             name="username"
+                            placeholder="Username"
                             value={formData.username}
                             onChange={handleChange}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
-                            required
+                            className='p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
                         />
-                        <p className='text-gray-600 italic'>Optional</p>
+                    ) : (
                         <input
-                            type="text"
-                            placeholder="Profession"
-                            name="profession"
-                            value={formData.profession}
-                            onChange={handleChange}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
+                        type="text"
+                        name="username"
+                        placeholder="Username"
+                        value={formData.username}
+                        onChange={handleChange}
+                            className='p-2 border border-red-500 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
                         />
-                        <input
-                            type="tel"
-                            placeholder="Phone Number"
-                            name="phoneNumber"
-                            value={formData.phoneNumber}
-                            onChange={handleChange}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
-                        />
-                        <input
-                            type="text"
-                            placeholder="Address Line 1"
-                            name="userAddress"
-                            value={formData.userAddress}
-                            onChange={handleChange}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
-                        />
-                        <input
-                            type="text"
-                            placeholder="City"
-                            name="userCity"
-                            value={formData.userCity}
-                            onChange={handleChange}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
-                        />
-                        <input
-                            type="text"
-                            placeholder="Province"
-                            name="userProvince"
-                            value={formData.userProvince}
-                            onChange={handleChange}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
-                        />
-                        <input
-                            type="text"
-                            placeholder="Postal Code"
-                            name="userPostalCode"
-                            value={formData.userPostalCode}
-                            onChange={handleChange}
-                            className='p-2 border border-gray-300 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
-                        />
-                        <LongButton 
-                            buttonName='Sign up'
-                            type='submit'
-                            className='py-2 w-full rounded shadow-lg bg-green-600 text-white font-bold'
-                        />
-                        {emailMessage && <p className="text-green-500 mt-2">{emailMessage}</p>}
-                    </form>
-                    <div className='w-full'>
-                        {error && <p className="text-red-500 mt-2 text-left">{error}</p>}
-                    </div>
-                </div>
-                <div className='px-6 text-sm'>
-                    <p>By signing up, you agree to the <strong>Terms, Conditions</strong> and <strong>Privacy Policy</strong>.</p>
-                </div>
-                <div className='px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3'>
-                    <LongButton 
-                        buttonName='Already a member?'
-                        className=' w-full bg-green-200 font-bold'
-                        pagePath="/SignIn"
+                    )}
+                    {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
+
+                    
+                    <p className='text-gray-600 italic'>Optional</p>
+
+                    <input
+                        type="text"
+                        placeholder="Profession"
+                        name="profession"
+                        value={formData.profession}
+                        onChange={handleChange}
+                        className='p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
                     />
-                </div>
+                    {errors.profession && <p className="text-red-500 text-sm">{errors.profession}</p>}
+
+
+                    <AddressAutocomplete onAddressSelect={handleAddressSelect} countryCodes={['ca']}/>
+
+                    <input
+                        type="tel"
+                        placeholder="Phone Number"
+                        name="phoneNumber"
+                        value={formData.phoneNumber}
+                        onChange={handleChange}
+                        className='p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
+                    />
+
+                    {errors.phoneNumber && <p className="text-red-500 text-sm">{errors.phoneNumber}</p>}
+
+                    <LongButton
+                        buttonName='Sign up'
+                        type='submit'
+                        className='py-2 w-full bg-green-600 text-white font-bold'
+                    />
+                    {errors.general && <p className="text-red-500">{errors.general}</p>}
+                    {emailMessage && <p className="text-green-500">{emailMessage}</p>}
+                </form>
+
+                <p>By signing up, you agree to the <strong>Terms, Conditions</strong> and <strong>Privacy Policy</strong>.</p>
+                <LongButton buttonName='Already a member?' pagePath="/SignIn" className='w-full bg-green-200' />
             </div>
         </div>
     );

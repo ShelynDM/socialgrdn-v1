@@ -1,13 +1,23 @@
+/**
+ * RegisterAPI.js
+ * Description: API to handle user registration and check user existence by email
+ * Author: Donald Jans Uy
+ * Date: 2024-10-20
+ */
+
 const express = require('express');
 const router = express.Router();
 
+// Handle POST request to register a new user
 router.post('/register', (req, res) => {
   const { email, firstname, lastname, username, profession, phoneNumber, userAddress, userCity, userProvince, userPostalCode } = req.body;
 
+  // Check if required fields are provided
   if (!firstname || !lastname || !username || !email) {
     return res.status(400).send('First name, last name, username, and email are required');
   }
 
+// SQL query to insert a new user profile into the database
   const query = `
     INSERT INTO UserProfile (
       email, first_name, last_name, username, profession, phone_number, 
@@ -18,7 +28,8 @@ router.post('/register', (req, res) => {
     email, firstname, lastname, username, profession, phoneNumber, 
     userAddress, userCity, userProvince, userPostalCode
   ];
-
+ 
+  // Execute the query to register the user
   db.query(query, values, (err, results) => {
     if (err) {
       console.error('Error registering user:', err);
@@ -28,6 +39,8 @@ router.post('/register', (req, res) => {
     }
   });
 });
+
+// Handle POST request to check if a user exists by email
 
 router.post('/check-user', async (req, res) => {
   const { email } = req.body;

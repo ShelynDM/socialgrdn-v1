@@ -46,7 +46,6 @@ export default function MapSearch() {
   const [userLocation, setUserLocation] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null); // For holding selected property details
-  const [filteredResults, setFilteredResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [mapHeight, setMapHeight] = useState('40vh');
@@ -165,9 +164,10 @@ export default function MapSearch() {
       >
         <div className="w-full" style={{ position: 'relative' }}>
           <div style={mapWrapperStyle(mapHeight)}>
-            <Autocomplete onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)} onPlaceChanged={handlePlaceSelect}>
+            <Autocomplete onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)} onPlaceChanged={handlePlaceSelect} >
               <input
                 type="text"
+                
                 placeholder="Search for a place..."
                 style={{
                   boxSizing: 'border-box',
@@ -186,6 +186,7 @@ export default function MapSearch() {
                   top: '10px',
                   zIndex: 1000,
                 }}
+                onClick={toggleMapExpansion}
               />
             </Autocomplete>
 
@@ -265,6 +266,7 @@ export default function MapSearch() {
                 soilType={selectedPlace.soil_type}
                 imageUrl={selectedPlace.image_url}
                 growthZone={selectedPlace.growth_zone}
+                propertyImage={selectedPlace.propertyImage}
 
 
 
@@ -282,7 +284,7 @@ export default function MapSearch() {
                   first_name={result.first_name}
                   last_name={result.last_name}
                   growthZone={result.growth_zone}
-                  propertyImage={result.photo}
+                  propertyImage={result.propertyImage}
                   propertyCrop={result.crop}
                   dimensionLength={result.dimensions_length}
                   dimensionWidth={result.dimensions_width}

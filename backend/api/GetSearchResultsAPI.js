@@ -9,10 +9,10 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  // No need for userID since data is not dependent on the user
   const query = `
     SELECT 
         pl.property_id,
+        pl.userID,
         pl.property_name, 
         plo.address_line1, 
         plo.city, 
@@ -23,13 +23,14 @@ router.get('/', (req, res) => {
         up.first_name, 
         up.last_name, 
         pl.growth_zone,
-        MIN(pc.crop_name) AS crop,  -- Select the first crop for each property
+        MIN(pc.crop_name) AS crop,  
         pl.dimensions_length, 
         pl.dimensions_width, 
         pl.dimensions_height,
         pl.dimensions_length * pl.dimensions_width AS area,
         MIN(pl.soil_type) AS soil_type,
-        pl.rent_base_price
+        pl.rent_base_price,
+        ppi.image_url AS propertyImage
     FROM 
         UserProfile up
     JOIN 
@@ -38,6 +39,8 @@ router.get('/', (req, res) => {
         PropertyLocation plo ON pl.location_id = plo.location_id
     JOIN 
         PropertyCrops pc ON pl.property_id = pc.property_id
+    LEFT JOIN 
+        propertyprimaryimages ppi ON pl.property_id = ppi.property_id
     GROUP BY 
         pl.property_id, 
         pl.property_name, 
@@ -52,8 +55,9 @@ router.get('/', (req, res) => {
         pl.growth_zone,
         pl.dimensions_length, 
         pl.dimensions_width, 
-        pl.dimensions_height`;
-
+        pl.dimensions_height,
+        ppi.image_url
+  `;
 
   db.query(query, (err, results) => {
     if (err) {
@@ -62,7 +66,6 @@ router.get('/', (req, res) => {
     }
 
     if (results.length === 0) {
-      // Return an empty array if no properties are found
       return res.status(200).json([]);
     } else {
       return res.status(200).json(results);

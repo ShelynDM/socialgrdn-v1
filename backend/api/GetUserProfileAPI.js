@@ -1,6 +1,15 @@
+/**
+ * GetUserProfileAPI.js
+ * Description: API to retrieve a user profile based on userID
+ * Author: Donald Jans Uy
+ * Date: 2024-09-15
+ */
+
+
 const express = require('express');
 const router = express.Router();
 
+// Handle GET request to retrieve user profile based on userI
 router.get('/', (req, res) => {
   const { userID } = req.query;
 
@@ -8,6 +17,7 @@ router.get('/', (req, res) => {
     return res.status(400).send('userID is required');
   }
 
+  // SQL query to retrieve user profile using userID
   const query = 'SELECT * FROM UserProfile WHERE userID = ?';
   db.query(query, [userID], (err, results) => {
     if (err) {

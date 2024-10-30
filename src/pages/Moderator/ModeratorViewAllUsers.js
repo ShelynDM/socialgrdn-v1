@@ -28,7 +28,19 @@ export default function ModeratorViewAllUsers() {
 
     // Update the search query state when the query changes
     useEffect(() => {
-        setSearchQuery(query);
+        const sanitizeQuery = (query) => {
+            // Remove any character that is not a letter or number
+            return query.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+        };
+
+        if (query) {
+            const sanitizedQuery = sanitizeQuery(query);
+        
+            if (sanitizedQuery) {
+                setSearchQuery(sanitizedQuery); // Update state with sanitized query
+            }
+        }
+
     }, [query]);
 
 
