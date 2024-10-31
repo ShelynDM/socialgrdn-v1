@@ -316,9 +316,13 @@ export default function SignUp() {
                     {emailMessage && <p className="text-green-500">{emailMessage}</p>}
                 </form>
 
-                <p>By signing up, you agree to the <strong>Terms, Conditions</strong> and <strong>Privacy Policy</strong>.</p>
                 {/* Already a member button */}
-                <LongButton buttonName='Already a member?' pagePath="/SignIn" className='w-full bg-green-200' />
+                <div className='px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3'>
+                    <p>By signing up, you agree to the <strong>Terms, Conditions</strong> and <strong>Privacy Policy</strong>.</p>
+                    <LongButton buttonName='Already a member?' 
+                        className='p-2 w-full rounded shadow-lg bg-green-200 font-bold'
+                        pagePath="/SignIn"/>
+                </div>
             </div>
         </div>
     );
