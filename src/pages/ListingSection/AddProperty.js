@@ -6,11 +6,11 @@
  * Date: 2024-10-23
  */
 
+// Import necessary libraries
 import React, { useState, useEffect } from 'react';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { ref as databaseRef, onValue } from 'firebase/database';
 import { storage, realtimeDb } from '../../_utils/firebase';
-
 import InAppLogo from '../../components/Logo/inAppLogo';
 import BackButton from '../../components/Buttons/backButton';
 import NavBar from '../../components/Navbar/navbar';
@@ -21,7 +21,9 @@ import Sprout from '../../assets/navbarAssets/sprout.png';
 import { useUser } from '../../UserContext';
 import { useNavigate } from 'react-router-dom';
 
+// AddProperty component
 const AddProperty = () => {
+	// State variables
 	const { userId } = useUser(); // Get userId from UserContext
 	const [primaryImage, setPrimaryImage] = useState(null);
 	const [otherImages, setOtherImages] = useState([]);
@@ -46,18 +48,6 @@ const AddProperty = () => {
 	const [restrictions, setRestrictions] = useState('');
 	const [price, setPrice] = useState('');
 	const [cityZoneData, setCityZoneData] = useState({});
-	const zoneOptions = [
-		'0a',
-		'0b',
-		'1a',
-		'1b',
-		'2a',
-		'2b',
-		'3a',
-		'3b',
-		'4a',
-		'4b',
-	];
 
 	// Combine both effects into one organized effect
 	useEffect(() => {
@@ -93,13 +83,16 @@ const AddProperty = () => {
 		}
 	};
 
+	// Navigation hook
 	const navigate = useNavigate();
 
+	// Handle other images change
 	const handleOtherImagesChange = (e) => {
 		const selectedFiles = Array.from(e.target.files);
 		setOtherImages(selectedFiles);
 	};
 
+	// Handle address selection
 	const handleAddressSelect = (addressData) => {
 		setAddressLine1(addressData.addressLine1);
 		setCity(addressData.city);
@@ -123,6 +116,7 @@ const AddProperty = () => {
 		}
 	};
 
+	// Handle zone change
 	const handleZoneChange = (event) => {
 		const value = event.target.value;
 		setSelectedZone({
@@ -131,10 +125,12 @@ const AddProperty = () => {
 		});
 	};
 
+	// Image upload function
 	const uploadImage = async (image, path) => {
 		const storageRef = ref(storage, path);
 		const uploadTask = uploadBytesResumable(storageRef, image);
 
+		// Return a promise to handle the upload task
 		return new Promise((resolve, reject) => {
 			uploadTask.on(
 				'state_changed',
@@ -156,6 +152,8 @@ const AddProperty = () => {
 			);
 		});
 	};
+
+	// Error message states
 	const [imageErrorMsg, setImageErrorMsg] = useState(''); // Initially empty
 	const [propertyNameErrorMsg, setPropertyNameErrorMsg] = useState(''); // Initially empty
 	const [propertyPriceErrorMsg, setPropertyPriceErrorMsg] = useState(''); // Initial message
@@ -164,6 +162,7 @@ const AddProperty = () => {
 	const [soilTypeErrorMsg, setSoilTypeErrorMsg] = useState(''); // Initial message
 	const [possibleCropsErrorMsg, setPossibleCropsErrorMsg] = useState(''); // Initial message
 
+	// Form validation function
 	const formValidation = () => {
 		let isValid = true;
 		if (!primaryImage) {
@@ -211,6 +210,7 @@ const AddProperty = () => {
 		return isValid;
 	};
 
+	// Handle form submission
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 		let isValid = formValidation();
@@ -334,11 +334,9 @@ const AddProperty = () => {
 			</label>
 			<div className="flex-grow relative">
 				<div className="w-full">
-					{' '}
-					{/* Added wrapper div with w-full */}
 					{selectedZone.value ? (
 						<div
-							className="w-full p-2 border border-gray-400 rounded-lg shadow-lg" // Added w-full
+							className="w-full p-2 border border-gray-400 rounded-lg shadow-lg"
 							style={{
 								backgroundColor: selectedZone.color,
 								color: '#000000',
@@ -347,37 +345,30 @@ const AddProperty = () => {
 							{selectedZone.value}
 						</div>
 					) : (
-						<select
-							id="growth_zone"
-							name="growth_zone"
-							className="w-full p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
-							onChange={handleZoneChange}
-							value={selectedZone.value}
-							style={{ backgroundColor: selectedZone.color, color: '#000000' }}
-							required
-						>
-							<option value="">Select a zone</option>
-							{zoneOptions.map((zone) => (
-								<option
-									key={zone}
-									value={zone}
-									style={{ backgroundColor: zoneColor(zone) }}
-								>
-									{zone}
-								</option>
-							))}
-						</select>
+						<div className="w-full p-2 border border-gray-400 rounded-lg shadow-lg text-gray-500">
+							Set automatically
+						</div>
 					)}
 				</div>
 			</div>
 		</div>
 	);
 
+	// Return the JSX for the AddProperty component
 	return (
 		<div className="bg-main-background relative">
-			<InAppLogo />
-			<div className="flex flex-col mt-12 items-center justify-center gap-2 min-h-screen pb-20">
-				<BackButton />
+			<div className="flex flex-col items-center justify-center gap-2 min-h-screen mx-2 pb-6 mt-14 bg-main-background ">
+				<div className="px-2 fixed top-0 left-0 w-auto sm:w-2/4 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-main-background ">
+					<InAppLogo />
+				</div>
+				<div className="fixed top-10 flex w-full justify-between bg-main-background ">
+					<div className="flex-grow w-full">
+						<BackButton />
+					</div>
+				</div>
+				<div className="mt-4">
+					<p className="text-2xl font-bold text-center">Add your property</p>
+				</div>
 
 				<div className="px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3">
 					<form
