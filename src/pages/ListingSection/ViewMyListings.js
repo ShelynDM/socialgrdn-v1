@@ -6,30 +6,19 @@
  * Date: 2024-10-23
  */
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import Sprout from "../../assets/navbarAssets/sprout.png";
 import LongButton from "../../components/Buttons/longButton";
-import SideNavBar from "../../components/Navbar/sidenavbar";
 import { useUser } from "../../UserContext";
 import BackMoreButton from "../../components/Buttons/backMoreButton";
 
 export default function ViewMyListings() {
     const [listings, setListings] = useState([]);
-    const [isSideNavOpen, setSideNavOpen] = useState(false);
-    const sideNavRef = useRef(null);
     const { userId } = useUser();
     const navigate = useNavigate();
-
-    const openSideNav = () => {
-        setSideNavOpen(true);
-    };
-
-    const closeSideNav = () => {
-        setSideNavOpen(false);
-    };
 
     useEffect(() => {
         const fetchListings = async () => {
@@ -51,18 +40,6 @@ export default function ViewMyListings() {
         }
     }, [userId]);
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (sideNavRef.current && !sideNavRef.current.contains(event.target)) {
-                closeSideNav();
-            }
-        };
-
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []);
 
     const formatAddress = (listing) => {
         const { address_line1, city, province, postal_code } = listing;
@@ -80,7 +57,6 @@ export default function ViewMyListings() {
                     <InAppLogo />
                 </div>
             </header>
-
             <div>
                 <BackMoreButton />
             </div>
@@ -93,14 +69,10 @@ export default function ViewMyListings() {
             </div>
           
             <div className="flex flex-col items-center justify-center flex-grow mx-4 px-6 ">
-
                 <div className="px-4 w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 mb-32">
-
                     <div className="text-center mb-6">
                         <h1 className="text-xl font-normal">You have {listings.length} listings</h1>
                     </div>
-
-                    <SideNavBar ref={sideNavRef} isOpen={isSideNavOpen} onClose={closeSideNav} />
 
                     <div className="w-full space-y-4">
                         {listings.length > 0 ? (
@@ -126,7 +98,7 @@ export default function ViewMyListings() {
                                 </div>
                             ))
                         ) : (
-                            <p>No listings available.</p>
+                            null
                         )}
                     </div>
                 </div>
