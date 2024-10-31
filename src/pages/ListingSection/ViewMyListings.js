@@ -12,10 +12,9 @@ import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import Sprout from "../../assets/navbarAssets/sprout.png";
 import LongButton from "../../components/Buttons/longButton";
-import BackButton from "../../components/Buttons/backButton";
 import SideNavBar from "../../components/Navbar/sidenavbar";
-import { TfiAlignRight } from "react-icons/tfi";
 import { useUser } from "../../UserContext";
+import BackMoreButton from "../../components/Buttons/backMoreButton";
 
 export default function ViewMyListings() {
     const [listings, setListings] = useState([]);
@@ -76,26 +75,27 @@ export default function ViewMyListings() {
 
     return (
         <div className="bg-main-background min-h-screen flex flex-col justify-between">
-            <InAppLogo />
-
-            <div className="flex flex-col items-center justify-center flex-grow top-0 mt-10 mx-4 px-6 ">
-                <div className="flex px-4 w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 justify-between">
-                    <div className="text-start">
-                        <BackButton />
-                    </div>
-                    <div className="text-right">
-                        <button onClick={openSideNav}>
-                            <TfiAlignRight />
-                        </button>
-                    </div>
+            <header className="p-4 flex items-center justify-between">
+                <div className="p-2 fixed top-0 left-0 w-auto sm:w-2/4 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-main-background z-10">
+                    <InAppLogo />
                 </div>
+            </header>
+
+            <div>
+                <BackMoreButton />
+            </div>
+            <div className="flex flex-col items-center justify-center flex-grow mx-4 px-6 ">
+                <LongButton
+                    buttonName="+ Add New Listing"
+                    className="w-full rounded shadow-lg bg-green-500 text-black font-semibold"
+                    pagePath="/AddProperty"
+                /> 
+            </div>
+          
+            <div className="flex flex-col items-center justify-center flex-grow mx-4 px-6 ">
 
                 <div className="px-4 w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 mb-32">
-                    <LongButton
-                        buttonName="+ Add New Listing"
-                        className="w-full rounded shadow-lg bg-green-500 text-black font-semibold mb-6 mt-6"
-                        pagePath="/AddProperty"
-                    />
+
                     <div className="text-center mb-6">
                         <h1 className="text-xl font-normal">You have {listings.length} listings</h1>
                     </div>

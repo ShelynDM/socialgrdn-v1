@@ -6,9 +6,10 @@
  */
 
 import React, { useState } from "react";
-import { SlArrowLeft } from "react-icons/sl";
 import { useNavigate } from "react-router-dom";
 import { CgDetailsMore } from "react-icons/cg";
+import { IoArrowBackSharp } from "react-icons/io5";
+
 
 export default function BackMoreButton() {
     const navigate = useNavigate();
@@ -25,7 +26,7 @@ export default function BackMoreButton() {
                 onClick={() => navigate(-1)} 
                 className="text-gray-500 hover:text-black focus:outline-none ml-2"
             >
-                <SlArrowLeft size={20} />
+                <IoArrowBackSharp size={20} />
             </button>
             <button 
                 onClick={toggleSidebar} 

@@ -26,7 +26,7 @@ const SideNavBar = React.forwardRef(({ isOpen, onClose }, ref) => {
                   ${isOpen ? "translate-x-0" : "translate-x-full"
                 }`}
         >
-            <div className="p-4 mt-10">
+            <div className="p-4">
 
                 <p className="block py-4 px-8 hover:font-bold border-b-2 border-slate-600" onClick={handleNavToMyEarnings}>
                     Gross Earnings
