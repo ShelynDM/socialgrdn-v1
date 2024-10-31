@@ -60,17 +60,7 @@ const EditProperty = () => {
     const [otherImageUrls, setOtherImageUrls] = useState([]);
     const [imagesToDelete, setImagesToDelete] = useState([]);
 
-    const zoneColors = {
-        '0a': '#d7bde2',
-        '0b': '#c39bd3',
-        '1a': '#7fb3d5',
-        '1b': '#a9cce3',
-        '2a': '#a3e4d7',
-        '2b': '#7dcea0',
-        '3a': '#28b463',
-        '3b': '#a9dfbf'
-    };
-
+    
     useEffect(() => {
         const fetchPropertyData = async () => {
             setIsLoading(true);
@@ -105,7 +95,7 @@ const EditProperty = () => {
                     price: data.rent_base_price || '',
                     selectedZone: { 
                         value: data.growth_zone || '', 
-                        color: zoneColors[data.growth_zone] || '' 
+                        // color: zoneColors[data.growth_zone] || '' 
                     }
                 });
 
@@ -138,7 +128,7 @@ const EditProperty = () => {
             ...prev,
             selectedZone: {
                 value: selectedValue,
-                color: zoneColors[selectedValue]
+                // color: zoneColors[selectedValue]
             }
         }));
     };
