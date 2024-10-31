@@ -6,12 +6,17 @@
  *        Lilia Huh
  *        Shelyn Del Mundo
  *        Tiana Bautista
- * 
+ *
  * Date: 2024-10-23
  */
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import {
+	BrowserRouter as Router,
+	Routes,
+	Route,
+	Navigate,
+} from 'react-router-dom';
 // SignUp Section
 import LandingPage from './pages/SignUpSection/LandingPage';
 import SignUp from './pages/SignUpSection/SignUp';
@@ -73,93 +78,287 @@ import { UserProvider } from './UserContext'; // Import the UserProvider
 //import { loadStripe } from '@stripe/stripe-js';
 //const stripePromise = loadStripe('pk_test_51Q2bKFLm0aJYZy9zjEVCE8j46DB65CeMLdzRbsgQHjZE7yhmpnehuGyaS9PRhaEywzngrxc94rich04HvQQQixU2007gqxkrhn'); // Initialize Stripe with your publishable key
 
-
 //Restricted Route
 import RestrictedRoute from './pages/RestrictedRoute';
 
 export default function App() {
-  const { currentUser } = useUserAuth();
+	const { currentUser } = useUserAuth();
 
-  return (
-    <UserProvider>
-      <Router>
-        <Routes>
-          {currentUser ? (
-            <>
-              {/* Search Section */}
-              <Route path="/" element={<Navigate to="/Search" />} />
-              <Route path="/Search/:query?" element={<ProtectedRoute allowedRoles={[0, 1, 2]}><Search /></ProtectedRoute>} />
-              <Route path="/MapSearch" element={<ProtectedRoute allowedRoles={[0, 1, 2]}><MapSearch /></ProtectedRoute>} />
+	return (
+		<UserProvider>
+			<Router>
+				<Routes>
+					{currentUser ? (
+						<>
+							{/* Search Section */}
+							<Route path="/" element={<Navigate to="/Search" />} />
+							<Route
+								path="/Search/:query?"
+								element={
+									<ProtectedRoute allowedRoles={[0, 1, 2]}>
+										<Search />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/MapSearch"
+								element={
+									<ProtectedRoute allowedRoles={[0, 1, 2]}>
+										<MapSearch />
+									</ProtectedRoute>
+								}
+							/>
 
-              {/* Sign Up Section */}
-              <Route path="/LandingPage" element={<LandingPage />} />
-              <Route path="/SignUp" element={<SignUp />} />
-              <Route path="/VerifyEmail" element={<VerifyEmail />} />
+							{/* Sign Up Section */}
+							<Route path="/LandingPage" element={<LandingPage />} />
+							<Route path="/SignUp" element={<SignUp />} />
+							<Route path="/VerifyEmail" element={<VerifyEmail />} />
 
-              {/* Sign In Section */}
-              <Route path="/SignIn" element={<SignIn />} />
-              <Route path="/ForgotPassword" element={<ForgotPassword />} />
+							{/* Sign In Section */}
+							<Route path="/SignIn" element={<SignIn />} />
+							<Route path="/ForgotPassword" element={<ForgotPassword />} />
 
-              {/* Profile Section */}
-              <Route path="/Profile" element={<ProtectedRoute allowedRoles={[1, 2]}><Profile /></ProtectedRoute>} />
-              <Route path="/EditProfile" element={<ProtectedRoute allowedRoles={[1, 2]}><EditProfile /></ProtectedRoute>} />
-              <Route path="/ViewProfile" element={<ProtectedRoute allowedRoles={[1, 2]}><ViewProfile /></ProtectedRoute>} />
+							{/* Profile Section */}
+							<Route
+								path="/Profile"
+								element={
+									<ProtectedRoute allowedRoles={[1, 2]}>
+										<Profile />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/EditProfile"
+								element={
+									<ProtectedRoute allowedRoles={[1, 2]}>
+										<EditProfile />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/ViewProfile"
+								element={
+									<ProtectedRoute allowedRoles={[1, 2]}>
+										<ViewProfile />
+									</ProtectedRoute>
+								}
+							/>
 
-              {/* Rent Property Section */}
-              <Route path="/Listing" element={<ProtectedRoute allowedRoles={[0, 1, 2]}><Listing /></ProtectedRoute>} />
-              <Route path="/RentProperty" element={<ProtectedRoute allowedRoles={[0, 1, 2]}><RentProperty /></ProtectedRoute>} />
-              <Route path="/RentFailed" element={<ProtectedRoute allowedRoles={[0, 1, 2]}><RentFailed /></ProtectedRoute>} />
-              <Route path="/RentConfirmation" element={<ProtectedRoute allowedRoles={[0, 1, 2]}><RentConfirmation /></ProtectedRoute>} />
-              <Route path="/ViewProperty/:id" element={<ProtectedRoute allowedRoles={[0, 1, 2]}><ViewProperty /></ProtectedRoute>} />
-              <Route path="/AddProperty" element={<ProtectedRoute allowedRoles={[0, 1, 2]}><AddProperty /></ProtectedRoute>} />
-              <Route path="/EditProperty" element={<ProtectedRoute allowedRoles={[0, 1, 2]}><EditProperty /></ProtectedRoute>} />
+							{/* Rent Property Section */}
+							<Route
+								path="/Listing"
+								element={
+									<ProtectedRoute allowedRoles={[0, 1, 2]}>
+										<Listing />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/RentProperty"
+								element={
+									<ProtectedRoute allowedRoles={[0, 1, 2]}>
+										<RentProperty />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/RentFailed"
+								element={
+									<ProtectedRoute allowedRoles={[0, 1, 2]}>
+										<RentFailed />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/RentConfirmation"
+								element={
+									<ProtectedRoute allowedRoles={[0, 1, 2]}>
+										<RentConfirmation />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/ViewProperty/:id"
+								element={
+									<ProtectedRoute allowedRoles={[0, 1, 2]}>
+										<ViewProperty />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/AddProperty"
+								element={
+									<ProtectedRoute allowedRoles={[0, 1, 2]}>
+										<AddProperty />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/EditProperty"
+								element={
+									<ProtectedRoute allowedRoles={[0, 1, 2]}>
+										<EditProperty />
+									</ProtectedRoute>
+								}
+							/>
 
-              {/* This route now dynamically receives the property_id as a URL param */}
-              <Route path="/ViewMyProperty/:id" element={<ProtectedRoute allowedRoles={[0, 1, 2]}><ViewMyProperty /></ProtectedRoute>} />
+							{/* This route now dynamically receives the property_id as a URL param */}
+							<Route
+								path="/ViewMyProperty/:id"
+								element={
+									<ProtectedRoute allowedRoles={[0, 1, 2]}>
+										<ViewMyProperty />
+									</ProtectedRoute>
+								}
+							/>
 
-              {/* Listing Section */}
-              <Route path="/PropertyLists" element={<ProtectedRoute allowedRoles={[0, 1, 2]}><PropertyLists /></ProtectedRoute>} />
-              <Route path="/DeletionConfirmation" element={<ProtectedRoute allowedRoles={[0, 1, 2]}><DeletionConfirmation /></ProtectedRoute>} />
-              <Route path="/ListingConfirmation" element={<ProtectedRoute allowedRoles={[0, 1, 2]}><ListingConfirmation /></ProtectedRoute>} />
-              <Route path="/ViewMyListings" element={<ProtectedRoute allowedRoles={[0, 1, 2]}><ViewMyListings /></ProtectedRoute>} />
+							{/* Listing Section */}
+							<Route
+								path="/PropertyLists"
+								element={
+									<ProtectedRoute allowedRoles={[0, 1, 2]}>
+										<PropertyLists />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/DeletionConfirmation"
+								element={
+									<ProtectedRoute allowedRoles={[0, 1, 2]}>
+										<DeletionConfirmation />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/ListingConfirmation"
+								element={
+									<ProtectedRoute allowedRoles={[0, 1, 2]}>
+										<ListingConfirmation />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/ListingConfirmation/:propertyId"
+								element={
+									<ProtectedRoute allowedRoles={[0, 1, 2]}>
+										<ListingConfirmation />
+									</ProtectedRoute>
+								}
+							/>
 
-              {/* Pay Property Section */}
-              <Route path="/PayProperty" element={<ProtectedRoute allowedRoles={[0, 1, 2]}><PayProperty /></ProtectedRoute>} />
+							<Route
+								path="/ViewMyListings"
+								element={
+									<ProtectedRoute allowedRoles={[0, 1, 2]}>
+										<ViewMyListings />
+									</ProtectedRoute>
+								}
+							/>
 
-              {/* Rental Section */}
-              <Route path="/RentalCancelled" element={<ProtectedRoute allowedRoles={[0, 1,2]}><RentalCancelled /></ProtectedRoute>} />
-              <Route path="/RentalDetails/:id" element={<ProtectedRoute allowedRoles={[0, 1,2]}><RentalDetails /></ProtectedRoute>} />
-              <Route path="/RentalList" element={<ProtectedRoute allowedRoles={[0, 1,2]}><RentalList /></ProtectedRoute>} />
+							{/* Pay Property Section */}
+							<Route
+								path="/PayProperty"
+								element={
+									<ProtectedRoute allowedRoles={[0, 1, 2]}>
+										<PayProperty />
+									</ProtectedRoute>
+								}
+							/>
 
-              {/* Moderator Section */}
-              <Route path="/ModeratorViewMonthlyReport" element={<ProtectedRoute allowedRoles={[0]}><ModeratorViewMonthlyReport /></ProtectedRoute>} />
-              <Route path="/ModeratorViewAllUsers/:query?" element={<ProtectedRoute allowedRoles={[0]}><ModeratorViewAllUsers /></ProtectedRoute>} />
-              <Route path="/ModeratorViewReport" element={<ProtectedRoute allowedRoles={[0]}><ModeratorViewReport /></ProtectedRoute>} />
-              <Route path="/ModeratorViewProfile" element={<ProtectedRoute allowedRoles={[0]}><ModeratorViewProfile /></ProtectedRoute>} />
+							{/* Rental Section */}
+							<Route
+								path="/RentalCancelled"
+								element={
+									<ProtectedRoute allowedRoles={[0, 1, 2]}>
+										<RentalCancelled />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/RentalDetails/:id"
+								element={
+									<ProtectedRoute allowedRoles={[0, 1, 2]}>
+										<RentalDetails />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/RentalList"
+								element={
+									<ProtectedRoute allowedRoles={[0, 1, 2]}>
+										<RentalList />
+									</ProtectedRoute>
+								}
+							/>
 
+							{/* Moderator Section */}
+							<Route
+								path="/ModeratorViewMonthlyReport"
+								element={
+									<ProtectedRoute allowedRoles={[0]}>
+										<ModeratorViewMonthlyReport />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/ModeratorViewAllUsers/:query?"
+								element={
+									<ProtectedRoute allowedRoles={[0]}>
+										<ModeratorViewAllUsers />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/ModeratorViewReport"
+								element={
+									<ProtectedRoute allowedRoles={[0]}>
+										<ModeratorViewReport />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/ModeratorViewProfile"
+								element={
+									<ProtectedRoute allowedRoles={[0]}>
+										<ModeratorViewProfile />
+									</ProtectedRoute>
+								}
+							/>
 
+							{/* Landowner Gross Earnings Section */}
+							<Route
+								path="/GrossEarnings"
+								element={
+									<ProtectedRoute allowedRoles={[0, 1, 2]}>
+										<GrossEarnings />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/Payouts"
+								element={
+									<ProtectedRoute allowedRoles={[0, 1, 2]}>
+										<Payouts />
+									</ProtectedRoute>
+								}
+							/>
 
-              {/* Landowner Gross Earnings Section */}
-              <Route path="/GrossEarnings" element={<ProtectedRoute allowedRoles={[0, 1, 2]}><GrossEarnings /></ProtectedRoute>} />
-              <Route path="/Payouts" element={<ProtectedRoute allowedRoles={[0, 1, 2]}><Payouts /></ProtectedRoute>} />
-
-              {/* Restricted Route */}
-              <Route path="/RestrictedRoute" element={<RestrictedRoute />} />
-            </>
-          ) : (
-            <>
-              <Route path="/" element={<Navigate to="/LandingPage" />} />
-              <Route path="/LandingPage" element={<LandingPage />} />
-              <Route path="/SignIn" element={<SignIn />} />
-              <Route path="/SignUp" element={<SignUp />} />
-              <Route path="/ForgotPassword" element={<ForgotPassword />} />
-              <Route path="/VerifyEmail" element={<VerifyEmail />} />
-              <Route path="/RestrictedRoute" element={<RestrictedRoute />} />
-
-            </>
-          )}
-        </Routes>
-      </Router>
-    </UserProvider>
-  );
+							{/* Restricted Route */}
+							<Route path="/RestrictedRoute" element={<RestrictedRoute />} />
+						</>
+					) : (
+						<>
+							<Route path="/" element={<Navigate to="/LandingPage" />} />
+							<Route path="/LandingPage" element={<LandingPage />} />
+							<Route path="/SignIn" element={<SignIn />} />
+							<Route path="/SignUp" element={<SignUp />} />
+							<Route path="/ForgotPassword" element={<ForgotPassword />} />
+							<Route path="/VerifyEmail" element={<VerifyEmail />} />
+							<Route path="/RestrictedRoute" element={<RestrictedRoute />} />
+						</>
+					)}
+				</Routes>
+			</Router>
+		</UserProvider>
+	);
 }

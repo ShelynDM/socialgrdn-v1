@@ -49,7 +49,7 @@ router.get('/', (req, res) => {
 		}
 
 		if (results.length === 0) {
-			return res.status(404).send('No earnings found for the user');
+			return res.status(200).json({ message: 'You have no earnings' }); // Return a message instead of a 404
 		}
 
 		return res.status(200).json(results);
