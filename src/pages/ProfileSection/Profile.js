@@ -2,7 +2,7 @@
  * Profile.js
  * Description: Page for viewing your own profile page
  * FrontEnd: Lilian Huh
- *BackEnd: 
+ *BackEnd: Donald Uy
  * Date: 2024-10-23
  */
 

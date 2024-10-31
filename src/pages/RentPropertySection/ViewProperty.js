@@ -9,12 +9,17 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import InAppLogo from "../../components/Logo/inAppLogo";
-import BackButton from "../../components/Buttons/backButton";
 import NavBar from "../../components/Navbar/navbar";
 import { FaLocationDot } from "react-icons/fa6";
 import Sprout from "../../assets/navbarAssets/sprout.png";
 import MonthRangePicker from '../../components/Calendar/MonthYearPicker';
 import LongButton from '../../components/Buttons/longButton';
+import { IoArrowBackSharp } from "react-icons/io5";
+
+// Component to reuse search components
+import usePropertyResult from "../../components/SearchComponents/propertyResult";
+import SearchBar from "../../components/SearchComponents/search";
+
 
 const ViewProperty = () => {
   const [property, setProperty] = useState(null);
@@ -23,6 +28,65 @@ const ViewProperty = () => {
   const [rentDuration, setRentDuration] = useState(null); // New state for rent duration
   const { id } = useParams();
   const navigate = useNavigate();
+
+  // ------------------- Imported Function to handle search query ------------------- //
+  // Hooks that are used to get the search functionality
+  const propertyResult = usePropertyResult();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+
+  // Main search query handler with fallback to default results logic
+  const handleSearchQueryChange = (event) => {
+    const query = event.target.value.toLowerCase();
+    setSearchQuery(query);
+
+    if (query.trim() === "") {
+      setSuggestions([]);
+      navigate("/Search");
+    } else {
+      // Collect individual words from relevant fields of all properties
+      const wordSet = new Set(); // Use Set to avoid duplicates
+
+      propertyResult.forEach((result) => {
+        Object.values(result).forEach((value) => {
+          if (typeof value === "string") {
+            // Split strings into individual words and store them in the Set
+            value.split(/\s+/).forEach((word) => {
+              if (word.toLowerCase().startsWith(query)) {
+                wordSet.add(word);
+              }
+            });
+          }
+        });
+      });
+
+      // Convert the Set to an array and limit the suggestions to 10 words
+      setSuggestions(Array.from(wordSet).slice(0, 10));
+    }
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" && searchQuery.trim()) {
+      navigate(`/Search?query=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
+  // Handle suggestion click
+  const handleSuggestionClick = (query) => {
+    setSearchQuery(query); // Set the clicked suggestion as the search query
+    setSuggestions([]); // Clear suggestions
+    navigate(`/Search?query=${encodeURIComponent(query)}`);
+  };
+
+  // Handle Search Icon Click
+  const handleSearchIconClick = () => {
+    const query = searchQuery.trim();
+    navigate(`/Search?query=${encodeURIComponent(query)}`);
+  };
+
+
+  // ------------------- End of Imported Function to handle search query ------------------- //
+
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -101,7 +165,6 @@ const ViewProperty = () => {
       );
     }
 
-
     return (
       <div className="relative mb-4">
         <img
@@ -156,12 +219,38 @@ const ViewProperty = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <InAppLogo />
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
-        <div className="fixed">
-          <BackButton onClick={() => navigate(-1)} className="mb-6" />
+      <div className="flex flex-col items-center justify-center gap-2 min-h-screen mx-2 pb-20 bg-main-background">
+        <div className='p-2 fixed top-0  w-full bg-main-background z-50'>
+          <InAppLogo />
         </div>
-        <div className="bg-white rounded-xl shadow-sm p-6">
+
+        {/* Search Bar Section */}
+        <div className='pl-3 pr-6 fixed top-12 flex w-full justify-between bg-main-background z-50'>
+          <div className='my-2 bg-main-background'>
+            <IoArrowBackSharp onClick={() => navigate(-1)} className='text-lg' />
+          </div>
+          <div className="flex-grow w-auto">
+            <SearchBar value={searchQuery} onChange={handleSearchQueryChange} onKeyDown={handleKeyDown} onClickSearchIcon={handleSearchIconClick} />
+          </div>
+        </div>
+        {/* Drop Down Suggestions Section */}
+        {suggestions.length > 0 && (
+          <div className="fixed top-20 w-full z-50">
+            <div className="shadow-lg">
+              {suggestions.map((suggestion, index) => (
+                <div
+                  key={index}
+                  className="w-full hover:bg-gray-100 cursor-pointer rounded-lg"
+                  onClick={() => handleSuggestionClick(suggestion)}
+                >
+                  <p className="bg-white text-base border-b mx-2 px-2">{suggestion}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="bg-white rounded-xl shadow-sm p-6 mt-24">
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h1 className="text-2xl font-semibold text-gray-900">{property.property_name}</h1>
@@ -175,6 +264,9 @@ const ViewProperty = () => {
                 images={[property.primaryImage, ...(property.otherImages || [])].filter(Boolean)}
               />
             </div>
+
+
+
             <div className="flex items-center text-gray-600">
               <FaLocationDot className="text-xl flex-shrink-0" />
               <p className="ml-2">
@@ -265,7 +357,7 @@ const ViewProperty = () => {
           </div>
         </div>
       </div>
-      <NavBar ProfileColor={"#00B761"} SproutPath={Sprout} />
+      <NavBar SearchColor={"#00B761"} SproutPath={Sprout} />
     </div>
   );
 };

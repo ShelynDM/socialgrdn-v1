@@ -1,9 +1,16 @@
+/**
+ * EditProfileAPI.js
+ * Description: API to Edit User Profile
+ * Author: Donald Jans Uy
+ * Date: 2024-10-20
+ */
+
 const express = require('express');
 const router = express.Router();
 
 // Update user profile based on userID
 router.patch('/', (req, res) => {
-  const { userID } = req.query; // Get userID from query parameters
+  const { userID } = req.query;
   const { first_name, last_name, username, address_line1, phone_number, profession } = req.body;
 
   // Check if userID is provided
