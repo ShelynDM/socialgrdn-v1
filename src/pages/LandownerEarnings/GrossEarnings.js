@@ -11,7 +11,7 @@ import React, { useState, useEffect } from 'react';
 import { useUser } from '../../UserContext';
 import InAppLogo from '../../components/Logo/inAppLogo';
 import NavBar from '../../components/Navbar/navbar';
-import GreenSprout from '../../assets/navbarAssets/sproutGreen.png';
+import Sprout from '../../assets/navbarAssets/sprout.png';
 import BackMoreButton from '../../components/Buttons/backMoreButton';
 import { SlArrowRight } from 'react-icons/sl';
 import { IoCloseOutline } from 'react-icons/io5';
@@ -174,7 +174,7 @@ export default function GrossEarnings() {
 				</div>
 			</div>
 
-			<NavBar SproutPath={GreenSprout} />
+            <NavBar ProfileColor={"#00B761"} SproutPath={Sprout} />
 
 			{/* Modal for detailed earnings */}
 			{selectedMonth && (

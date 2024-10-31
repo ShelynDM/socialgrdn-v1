@@ -7,7 +7,7 @@
  */
 
 // Import necessary libraries
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InAppLogo from '../../components/Logo/inAppLogo';
 import NavBar from '../../components/Navbar/navbar';
@@ -19,8 +19,6 @@ import BackMoreButton from '../../components/Buttons/backMoreButton';
 export default function ViewMyListings() {
 	// Initialize state variables
 	const [listings, setListings] = useState([]);
-
-	const sideNavRef = useRef(null);
 	const { userId } = useUser(); // Get user ID from UserContext
 	const navigate = useNavigate();
 
@@ -59,16 +57,16 @@ export default function ViewMyListings() {
 
 	return (
 		<div className="bg-main-background relative">
-			<div className="flex flex-col items-center justify-center gap-2 min-h-screen mx-4 pb-6 bg-main-background">
-				<div className="px-2 fixed top-0 left-0 w-auto sm:w-2/4 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-main-background">
+			<div className="flex flex-col items-center justify-center gap-2 min-h-screen mx-4 pb-6 bg-main-background ">
+				<div className="px-2 fixed top-0 left-0 w-auto sm:w-2/4 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-main-background z-10">
 					<InAppLogo />
 				</div>
-				<div className="fixed top-10 flex w-full justify-between bg-main-background">
+				<div className="fixed top-10 flex w-full justify-between bg-main-background z-10">
 					<div className="flex-grow w-full">
-						<BackMoreButton />
+						<BackMoreButton/>
 					</div>
 				</div>
-				<div className="px-4 w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 mb-32 mt-14">
+				<div className="px-4 w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 mb-32 mt-24">
 					<LongButton
 						buttonName="+ Add New Listing"
 						className="w-full rounded shadow-lg bg-green-500 text-black font-semibold mb-6 mt-4"

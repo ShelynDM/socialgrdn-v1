@@ -10,10 +10,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import InAppLogo from '../../components/Logo/inAppLogo';
-import BackButton from '../../components/Buttons/backButton';
 import NavBar from '../../components/Navbar/navbar';
 import Sprout from '../../assets/navbarAssets/sprout.png';
 import { FaLocationDot } from 'react-icons/fa6';
+import { IoArrowBackSharp } from "react-icons/io5";
+
+// Component to reuse search components
+import usePropertyResult from "../../components/SearchComponents/propertyResult";
+import SearchBar from "../../components/SearchComponents/search";
 
 export default function ViewMyProperty() {
 	// State variables
@@ -23,6 +27,64 @@ export default function ViewMyProperty() {
 	const [error, setError] = useState(null);
 	const { id } = useParams();
 	const navigate = useNavigate();
+
+	  // ------------------- Imported Function to handle search query ------------------- //
+	// Hooks that are used to get the search functionality
+	const propertyResult = usePropertyResult();
+	const [searchQuery, setSearchQuery] = useState("");
+	const [suggestions, setSuggestions] = useState([]);
+
+	// Main search query handler with fallback to default results logic
+	const handleSearchQueryChange = (event) => {
+		const query = event.target.value.toLowerCase();
+		setSearchQuery(query);
+
+		if (query.trim() === "") {
+		setSuggestions([]);
+		navigate("/Search");
+		} else {
+		// Collect individual words from relevant fields of all properties
+		const wordSet = new Set(); // Use Set to avoid duplicates
+
+		propertyResult.forEach((result) => {
+			Object.values(result).forEach((value) => {
+			if (typeof value === "string") {
+				// Split strings into individual words and store them in the Set
+				value.split(/\s+/).forEach((word) => {
+				if (word.toLowerCase().startsWith(query)) {
+					wordSet.add(word);
+				}
+				});
+			}
+			});
+		});
+
+		// Convert the Set to an array and limit the suggestions to 10 words
+		setSuggestions(Array.from(wordSet).slice(0, 10));
+		}
+	};
+
+	const handleKeyDown = (event) => {
+		if (event.key === "Enter" && searchQuery.trim()) {
+		navigate(`/Search?query=${encodeURIComponent(searchQuery.trim())}`);
+		}
+	};
+
+	// Handle suggestion click
+	const handleSuggestionClick = (query) => {
+		setSearchQuery(query); // Set the clicked suggestion as the search query
+		setSuggestions([]); // Clear suggestions
+		navigate(`/Search?query=${encodeURIComponent(query)}`);
+	};
+
+	// Handle Search Icon Click
+	const handleSearchIconClick = () => {
+		const query = searchQuery.trim();
+		navigate(`/Search?query=${encodeURIComponent(query)}`);
+	};
+
+
+  	// ------------------- End of Imported Function to handle search query ------------------- //
 
 	useEffect(() => {
 		const fetchProperty = async () => {
@@ -226,15 +288,37 @@ export default function ViewMyProperty() {
 		<div className="bg-main-background min-h-screen relative">
 			<InAppLogo />
 			<div className="flex flex-col items-center justify-center min-h-screen pb-20">
-				<div className="absolute top-4 left-4 z-10">
-					<BackButton onClick={() => navigate(-1)} />
+			{/* Search Bar Section */}
+			<div className='pl-3 pr-6 fixed top-12 flex w-full justify-between bg-main-background z-50'>
+				<div className='my-2 bg-main-background'>
+					<IoArrowBackSharp onClick={() => navigate(-1)} className='text-lg' />
 				</div>
-
-				<div className="px-4 w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3">
-					<div className="bg-white rounded-lg shadow-md p-6 mt-6">
-						{property && <PropertyDetails property={property} />}
+				<div className="flex-grow w-auto">
+					<SearchBar value={searchQuery} onChange={handleSearchQueryChange} onKeyDown={handleKeyDown} onClickSearchIcon={handleSearchIconClick} />
+				</div>
+			</div>
+			{/* Drop Down Suggestions Section */}
+			{suggestions.length > 0 && (
+			<div className="fixed top-20 w-full z-50">
+				<div className="shadow-lg">
+				{suggestions.map((suggestion, index) => (
+					<div
+					key={index}
+					className="w-full hover:bg-gray-100 cursor-pointer rounded-lg"
+					onClick={() => handleSuggestionClick(suggestion)}
+					>
+					<p className="bg-white text-base border-b mx-2 px-2">{suggestion}</p>
 					</div>
+				))}
 				</div>
+			</div>
+			)}
+
+			<div className="px-4 w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 mt-10">
+				<div className="bg-white rounded-lg shadow-md p-6 mt-6">
+					{property && <PropertyDetails property={property} />}
+				</div>
+			</div>
 			</div>
 			<NavBar ProfileColor={'#00B761'} SproutPath={Sprout} />
 		</div>

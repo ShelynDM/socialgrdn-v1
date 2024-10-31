@@ -10,7 +10,7 @@ import { useUser } from "../../UserContext";
 import { SlArrowRight } from "react-icons/sl";
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
-import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
+import Sprout from "../../assets/navbarAssets/sprout.png";
 import { IoCloseOutline } from "react-icons/io5";
 import BackMoreButton from "../../components/Buttons/backMoreButton";
 
@@ -132,7 +132,7 @@ export default function Payouts() {
 
 
 
-            <NavBar SproutPath={GreenSprout} />
+            <NavBar ProfileColor={"#00B761"} SproutPath={Sprout} />
             {/* Modal for detailed payouts */}
             {
                 selectedPayout && (

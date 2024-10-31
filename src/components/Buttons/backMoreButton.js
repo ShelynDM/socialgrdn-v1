@@ -27,7 +27,7 @@ export default function BackMoreButton() {
 				{/* Back Button */}
 				<button
 					onClick={() => navigate(-1)}
-					className="text-gray-500 hover:text-black focus:outline-none"
+					className="text-gray-500 hover:text-black focus:outline-none text-xl"
 				>
 					<IoArrowBackSharp />
 				</button>
@@ -35,7 +35,7 @@ export default function BackMoreButton() {
 				{/* More Options Button */}
 				<button
 					onClick={toggleSidebar}
-					className="text-gray-500 hover:text-black focus:outline-none"
+					className="text-gray-500 hover:text-black focus:outline-none text-xl"
 				>
 					<CgDetailsMore />
 				</button>

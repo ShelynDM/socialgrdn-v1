@@ -231,7 +231,7 @@ export default function ModeratorViewAllUsers() {
                                 <p className="mb-4 text-gray-600">{selectedUser.renterOrOwner}</p>
 
                                 {/* User Details Section */}
-                                <div className="grid grid-cols-2 gap-x-2 gap-y-2 text-sm">
+                                <div className="grid grid-cols-2 gap-y-2 text-sm">
                                     <p className="font-bold">Username:</p>
                                     <p>{selectedUser.username}</p>
 

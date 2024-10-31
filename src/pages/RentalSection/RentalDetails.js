@@ -14,10 +14,14 @@ import { useParams } from 'react-router-dom';
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
-import BackButton from "../../components/Buttons/backButton";
 import { FaLocationDot } from "react-icons/fa6";
 import zoneColor from "../../components/ZoneColor/zoneColor";
 import { differenceInMonths, differenceInDays, parseISO } from 'date-fns';
+import { IoArrowBackSharp } from "react-icons/io5";
+
+// Component to reuse search components
+import usePropertyResult from "../../components/SearchComponents/propertyResult";
+import SearchBar from "../../components/SearchComponents/search";
 
 
 export default function RentalDetails() {
@@ -31,6 +35,63 @@ export default function RentalDetails() {
     const [durationMonths, setDurationMonths] = useState(null);   // need to finalize issues with duration rules and pricing
     const [durationDays, setDurationDays] = useState(null);       //need to finalize issues with duration rules and pricing
 
+    // ------------------- Imported Function to handle search query ------------------- //
+    // Hooks that are used to get the search functionality
+    const propertyResult = usePropertyResult();
+    const [searchQuery, setSearchQuery] = useState("");
+    const [suggestions, setSuggestions] = useState([]);
+
+    // Main search query handler with fallback to default results logic
+    const handleSearchQueryChange = (event) => {
+        const query = event.target.value.toLowerCase();
+        setSearchQuery(query);
+
+        if (query.trim() === "") {
+        setSuggestions([]);
+        navigate("/Search");
+        } else {
+        // Collect individual words from relevant fields of all properties
+        const wordSet = new Set(); // Use Set to avoid duplicates
+
+        propertyResult.forEach((result) => {
+            Object.values(result).forEach((value) => {
+            if (typeof value === "string") {
+                // Split strings into individual words and store them in the Set
+                value.split(/\s+/).forEach((word) => {
+                if (word.toLowerCase().startsWith(query)) {
+                    wordSet.add(word);
+                }
+                });
+            }
+            });
+        });
+
+        // Convert the Set to an array and limit the suggestions to 10 words
+        setSuggestions(Array.from(wordSet).slice(0, 10));
+        }
+    };
+
+    const handleKeyDown = (event) => {
+        if (event.key === "Enter" && searchQuery.trim()) {
+        navigate(`/Search?query=${encodeURIComponent(searchQuery.trim())}`);
+        }
+    };
+
+    // Handle suggestion click
+    const handleSuggestionClick = (query) => {
+        setSearchQuery(query); // Set the clicked suggestion as the search query
+        setSuggestions([]); // Clear suggestions
+        navigate(`/Search?query=${encodeURIComponent(query)}`);
+    };
+
+    // Handle Search Icon Click
+    const handleSearchIconClick = () => {
+        const query = searchQuery.trim();
+        navigate(`/Search?query=${encodeURIComponent(query)}`);
+    };
+
+
+    // ------------------- End of Imported Function to handle search query ------------------- //
 
     useEffect(() => {
         const fetchRentals = async () => {
@@ -149,15 +210,34 @@ export default function RentalDetails() {
                 <div className='p-2 fixed top-0 left-0 w-auto sm:w-2/4 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-main-background'>
                     <InAppLogo />
                 </div>
-                {/* BackButton Section */}
-                <div className='mx-2 px-2 fixed top-12 flex w-full justify-between bg-main-background'>
-                    <div className="flex-grow w-full">
-                        <BackButton />
+                {/* Search Bar Section */}
+                <div className='pl-3 pr-6 fixed top-12 flex w-full justify-between bg-main-background z-50'>
+                    <div className='my-2 bg-main-background'>
+                        <IoArrowBackSharp onClick={() => navigate(-1)} className='text-lg' />
+                    </div>
+                    <div className="flex-grow w-auto">
+                        <SearchBar value={searchQuery} onChange={handleSearchQueryChange} onKeyDown={handleKeyDown} onClickSearchIcon={handleSearchIconClick} />
                     </div>
                 </div>
+                {/* Drop Down Suggestions Section */}
+                {suggestions.length > 0 && (
+                <div className="fixed top-20 w-full z-50">
+                    <div className="shadow-lg">
+                    {suggestions.map((suggestion, index) => (
+                        <div
+                        key={index}
+                        className="w-full hover:bg-gray-100 cursor-pointer rounded-lg"
+                        onClick={() => handleSuggestionClick(suggestion)}
+                        >
+                        <p className="bg-white text-base border-b mx-2 px-2">{suggestion}</p>
+                        </div>
+                    ))}
+                    </div>
+                </div>
+                )}
 
                 {/* Reservation Details */}
-                <section className="mb-3 mt-5 rounded-lg border-2 py-1 border-gray-200 bg-main-background">
+                <section className="mb-3 mt-12 rounded-lg border-2 py-1 border-gray-200 bg-main-background">
                     <img src={rental.image_url} alt="Listing" className="w-full h-auto max-w-full max-h-full" />
                     <div className="p-3">
                         <div className="flex items-center justify-between">
