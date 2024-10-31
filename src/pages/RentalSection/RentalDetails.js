@@ -197,7 +197,7 @@ export default function RentalDetails() {
                     <div className="p-3 text-sm">
                         <h2 className="font-bold">Payment details</h2>
                         <div className="flex text-sm">
-                            <table className=" w-full">
+                            <table className=" w-full"><tbody>
                                 <tr>
                                     <td className="w-2/3"><p>{rental.property_name} x {durationMonths} month/s</p></td>
                                     <td className="w-1/3"><p>CAD {rental.rent_base_price}</p></td>
@@ -210,12 +210,12 @@ export default function RentalDetails() {
                                     <td className="w-1/3"><p>Taxes</p></td>
                                     <td className="w-1/3"><p>CAD {rental.tax_amount}</p></td>
                                 </tr>
-                            </table>
+                            </tbody></table>
                         </div>
                         <div className="p-3 flex border-b-2 border-slate-600">
                         </div>
                         <div className="p-3 flex text-sm font-bold">
-                            <table className=" w-full">
+                            <table className=" w-full"><tbody>
                                 <tr>
                                     <td className="w-2/3"><p>Total</p></td>
                                     <td className="w-1/3"><p>CAD {(parseFloat(rental.rent_base_price) +
@@ -226,14 +226,14 @@ export default function RentalDetails() {
                                         })}
                                     </p></td>
                                 </tr>
-                            </table>
+                            </tbody></table>
                         </div>
                     </div>
 
                     <div className="p-3 text-sm">
                         <h2 className="font-bold">Property Details</h2>
                         <div className="flex text-sm">
-                            <table className=" w-full">
+                            <table className=" w-full"><tbody>
                                 <tr>
                                     <td className="w-2/3"><p>Dimensions</p></td>
                                     <td className="w-1/3"><p>
@@ -256,7 +256,7 @@ export default function RentalDetails() {
                                     <td className="w-1/3"><p>Possible Crops</p></td>
                                     <td className="w-1/3"><p>{rental.crop_name}</p></td>
                                 </tr>
-                            </table>
+                            </tbody></table>
                         </div>
 
                     </div>
