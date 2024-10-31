@@ -94,9 +94,7 @@ const AddProperty = () => {
 
 	// Handle address selection
 	const handleAddressSelect = (addressData) => {
-
 		if (addressData.province === 'Alberta') {
-
 			setAddressLine1(addressData.addressLine1);
 			setCity(addressData.city);
 			setProvince(addressData.province);
@@ -184,7 +182,6 @@ const AddProperty = () => {
 		if (!addressLine1) {
 			setAddressErrorMsg('Please select an address in Alberta');
 			isValid = false;
-
 		} else {
 			setAddressErrorMsg('');
 		}
@@ -362,7 +359,7 @@ const AddProperty = () => {
 	// Return the JSX for the AddProperty component
 	return (
 		<div className="bg-main-background relative">
-			<div className="flex flex-col items-center justify-center gap-2 min-h-screen mx-2 pb-6 mt-14 bg-main-background ">
+			<div className="flex flex-col items-center justify-center gap-2 min-h-screen mx-2 pb-20 mt-14 bg-main-background ">
 				<div className="px-2 fixed top-0 left-0 w-auto sm:w-2/4 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-main-background ">
 					<InAppLogo />
 				</div>
