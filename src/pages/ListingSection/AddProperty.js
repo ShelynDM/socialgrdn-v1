@@ -285,13 +285,11 @@ const AddProperty = () => {
             const result = await response.json();
             console.log(result);
 
-            alert('Property added successfully!');
             return true;
 
             // Redirect or perform any other action after successful submission
         } catch (error) {
             console.error('Error adding property: ', error);
-            alert('An error occurred while adding the property.');
             return false;
         }
     };
@@ -342,8 +340,9 @@ const AddProperty = () => {
     return (
         <div className="bg-main-background relative">
             <InAppLogo />
+            <div className="flex flex-col mt-12 items-center justify-center gap-2 min-h-screen pb-20">
             <BackButton />
-            <div className="flex flex-col items-center justify-center gap-2 min-h-screen pb-20">
+
                 <div className="px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3">
                     <form className="flex flex-col flex-grow w-full gap-4 mb-8" onSubmit={handleSubmit}>
                         {/* Primary Image Upload */}
