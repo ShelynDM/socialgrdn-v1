@@ -51,12 +51,15 @@ export default function GrossEarnings() {
 				// Fetch gross earnings API route
 				const response = await fetch(`/api/getEarnings?userID=${userId}`);
 				if (!response.ok) {
-					throw new Error('Failed to fetch gross earnings');
+					throw new Error('Error fetching gross earnings:', error);
 				}
 
 				const data = await response.json();
-
-				if (Array.isArray(data)) {
+				// Check if data is an object and has a message property
+				if (data.message) {
+					setEarnings([]); // Clear any existing earnings
+					setError(data.message); // Set the error message from the response
+				} else if (Array.isArray(data)) {
 					setEarnings(data);
 				} else {
 					setEarnings([]);
@@ -92,6 +95,7 @@ export default function GrossEarnings() {
 		setSelectedMonth({ year, month }); // Set the selected month for the modal
 		setModalLoading(true);
 		try {
+			// Fetch detailed earnings API route
 			const response = await fetch(
 				`/api/GetEarnings/details?userID=${userId}&year=${year}&month=${monthNumber}`
 			);
@@ -129,9 +133,7 @@ export default function GrossEarnings() {
 						<p className="text-2xl font-bold text-center">Gross Earnings</p>
 					</div>
 					{error ? (
-						<p className="text-lg text-red-500 text-center">{error}</p>
-					) : earnings.length === 0 ? (
-						<p className="text-lg text-center">No earnings available.</p>
+						<p className="text-xl text-center">{error}</p>
 					) : (
 						<div className="overflow-x-auto">
 							{Object.keys(groupedEarnings).map((year) => (
@@ -174,7 +176,7 @@ export default function GrossEarnings() {
 				</div>
 			</div>
 
-            <NavBar ProfileColor={"#00B761"} SproutPath={Sprout} />
+			<NavBar ProfileColor={'#00B761'} SproutPath={Sprout} />
 
 			{/* Modal for detailed earnings */}
 			{selectedMonth && (
