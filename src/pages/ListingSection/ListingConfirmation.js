@@ -1,19 +1,20 @@
 /**
  * ListingConfirmation.js
  * Description: Page displays a confirmation message for a property listing and fetches the listing status from the API.
- * Author: Lilian Huh
+ * Front End Author: Lilian Huh
+ * Back End Author: Lilian Huh
  * Date: 2024-10-23
  */
 
+// Import statements
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../UserContext";
-
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import Sprout from "../../assets/navbarAssets/sprout.png";
-import BackMoreButton from "../../components/Buttons/backMoreButton";
 
+// Function to display the ListingConfirmation page
 export default function ListingConfirmation() {
     const navigate = useNavigate();
     const { userID } = useUser();
@@ -63,7 +64,7 @@ export default function ListingConfirmation() {
     return (
         <div className="bg-main-background min-h-screen flex flex-col justify-between">
             <InAppLogo />
-            <BackMoreButton />
+
             <div className="flex flex-col items-center justify-center gap-4 flex-grow pb-20">
                 <div className="px-4 w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 mb-28">
                     <div className="mb-6 text-center">
