@@ -94,25 +94,31 @@ const AddProperty = () => {
 
 	// Handle address selection
 	const handleAddressSelect = (addressData) => {
-		setAddressLine1(addressData.addressLine1);
-		setCity(addressData.city);
-		setProvince(addressData.province);
-		setPostalCode(addressData.postalCode);
-		setCountry(addressData.country);
-		setLatitude(addressData.latitude.toString());
-		setLongitude(addressData.longitude.toString());
 
-		// Auto-select zone based on city
-		const cityEntry = Object.entries(cityZoneData).find(
-			([, data]) => data.name.toLowerCase() === addressData.city.toLowerCase()
-		);
+		if (addressData.province === 'Alberta') {
 
-		if (cityEntry) {
-			const [, cityData] = cityEntry;
-			setSelectedZone({
-				value: cityData.code,
-				color: zoneColor(cityData.code),
-			});
+			setAddressLine1(addressData.addressLine1);
+			setCity(addressData.city);
+			setProvince(addressData.province);
+			setPostalCode(addressData.postalCode);
+			setCountry(addressData.country);
+			setLatitude(addressData.latitude.toString());
+			setLongitude(addressData.longitude.toString());
+
+			// Auto-select zone based on city
+			const cityEntry = Object.entries(cityZoneData).find(
+				([, data]) => data.name.toLowerCase() === addressData.city.toLowerCase()
+			);
+
+			if (cityEntry) {
+				const [, cityData] = cityEntry;
+				setSelectedZone({
+					value: cityData.code,
+					color: zoneColor(cityData.code),
+				});
+			}
+		} else {
+			setAddressErrorMsg('Please select an address in Alberta');
 		}
 	};
 
@@ -152,15 +158,13 @@ const AddProperty = () => {
 			);
 		});
 	};
-
-	// Error message states
-	const [imageErrorMsg, setImageErrorMsg] = useState(''); // Initially empty
-	const [propertyNameErrorMsg, setPropertyNameErrorMsg] = useState(''); // Initially empty
-	const [propertyPriceErrorMsg, setPropertyPriceErrorMsg] = useState(''); // Initial message
-	const [addressErrorMsg, setAddressErrorMsg] = useState(''); // Initial message
-	const [dimensionErrorMsg, setDimensionErrorMsg] = useState(''); // Initial message
-	const [soilTypeErrorMsg, setSoilTypeErrorMsg] = useState(''); // Initial message
-	const [possibleCropsErrorMsg, setPossibleCropsErrorMsg] = useState(''); // Initial message
+	const [imageErrorMsg, setImageErrorMsg] = useState('');
+	const [propertyNameErrorMsg, setPropertyNameErrorMsg] = useState('');
+	const [propertyPriceErrorMsg, setPropertyPriceErrorMsg] = useState('');
+	const [addressErrorMsg, setAddressErrorMsg] = useState('');
+	const [dimensionErrorMsg, setDimensionErrorMsg] = useState('');
+	const [soilTypeErrorMsg, setSoilTypeErrorMsg] = useState('');
+	const [possibleCropsErrorMsg, setPossibleCropsErrorMsg] = useState('');
 
 	// Form validation function
 	const formValidation = () => {
@@ -178,8 +182,9 @@ const AddProperty = () => {
 			setPropertyNameErrorMsg('');
 		}
 		if (!addressLine1) {
-			setAddressErrorMsg('Address is required');
+			setAddressErrorMsg('Please select an address in Alberta');
 			isValid = false;
+
 		} else {
 			setAddressErrorMsg('');
 		}

@@ -29,7 +29,7 @@ const SideNavBar = React.forwardRef(({ isOpen }, ref) => {
             <div className="p-4">
 
                 <p className="block py-4 px-8 hover:font-bold border-b-2 border-slate-600" onClick={handleNavToMyEarnings}>
-                    Gross Earnings
+                    Past Earnings
                 </p>
                 <p className="block py-4 px-8 hover:font-bold" onClick={handleNavToPayouts}>
                     Payouts
