@@ -17,7 +17,6 @@ import NavBar from '../../components/Navbar/navbar';
 import GreenSprout from '../../assets/navbarAssets/sproutGreen.png';
 import { IoArrowBackSharp } from 'react-icons/io5';
 import SearchBar from '../../components/SearchComponents/search';
-import ExampleImage from '../../assets/exampleAssets/imgExample.jpg';
 import AgreeAndPay from '../../components/Buttons/longButton';
 import { LuMapPin } from 'react-icons/lu';
 import zoneColor from '../../components/ZoneColor/zoneColor';
@@ -269,7 +268,7 @@ export default function RentProperty() {
 					<div className="w-auto h-52 flex justify-center items-center mx-4 p-1">
 						<img
 							className="w-full h-full rounded-lg border-2 border-gray-200"
-							src={ExampleImage}
+							src={property.primaryImage}
 							alt="Garden"
 						/>
 					</div>
