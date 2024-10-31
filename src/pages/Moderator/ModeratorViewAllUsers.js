@@ -89,21 +89,6 @@ export default function ModeratorViewAllUsers() {
         }
     };
 
-    // Handle the Enter key press
-    const handleKeyDown = (event) => {
-        if (event.key === 'Enter' && suggestions.length > 0) {
-            handleSuggestionClick(suggestions[0].username);
-        };
-    };
-
-    // Handle the user suggestion click. It passes the username to the search bar and navigates to the search page
-    const handleSuggestionClick = (username) => {
-        setSearchQuery(username);
-        filterUsers(users, username);
-        navigate(`/ModeratorViewAllUsers?query=${encodeURIComponent(username)}`);
-        setSuggestions([]);
-    };
-
     // Handle the user status change (block/unblock)
     const handleUserStatus = async (userID, status) => {
         const newStatus = status === '1' ? '0' : '1';
@@ -124,6 +109,22 @@ export default function ModeratorViewAllUsers() {
             console.error('Error updating user status:', error);
         }
     };
+    
+    // Handle the Enter key press
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter' && suggestions.length > 0) {
+            handleSuggestionClick(suggestions[0].username);
+        };
+    };
+
+    // Handle the user suggestion click. It passes the username to the search bar and navigates to the search page
+    const handleSuggestionClick = (username) => {
+        setSearchQuery(username);
+        filterUsers(users, username);
+        navigate(`/ModeratorViewAllUsers?query=${encodeURIComponent(username)}`);
+        setSuggestions([]);
+    };
+
 
     // Handle the popup open/close (For viewing more user details)
     const handlePopup = (user = null) => {
@@ -171,7 +172,6 @@ export default function ModeratorViewAllUsers() {
                     <div className="flex w-full justify-start pt-2 items-start">
                         {searchQuery ? <p className="text-start hidden"></p> : <p className="text-start font-bold text-xl">Users</p>}
                     </div>
-
                     {filteredUsers.length > 0 ? (
                         filteredUsers.map((user, index) => (
                             <div

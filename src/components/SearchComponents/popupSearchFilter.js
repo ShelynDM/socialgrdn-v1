@@ -30,6 +30,8 @@ export default function PopupSearchFilter({ isOpen, onClose, onApplyFilters }) {
         onClose();
     };
 
+
+    // Reset filters when popup is closed
     useEffect(() => {
         if (!isOpen) {
             setPriceRange([0, 10000]);
@@ -223,6 +225,7 @@ export default function PopupSearchFilter({ isOpen, onClose, onApplyFilters }) {
                         </div>
                     </div>
 
+                    {/* Apply Button for the filter*/}
                     <button type="submit" className="bg-green-500 text-white px-4 py-2 mt-4 rounded-lg">
                         Apply
                     </button>

@@ -28,7 +28,7 @@ export default function PropertyResult() {
         }
     };
 
-
+    // Fetch property data when the component mounts
     useEffect(() => {
         fetchPropertyResults();
     }, []);

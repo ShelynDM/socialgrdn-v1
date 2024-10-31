@@ -1,7 +1,7 @@
 /**
  * SignIn.js
  * Description: Page for users to sign in to their account
- * Author: Shelyn DelMundo
+ * Author: Shelyn Del Mundo
  * Date: 2024-10-23
  */
 
@@ -32,13 +32,14 @@ export default function SignIn() {
         const status = data.status;
 
         setUserId(userId);
+
         console.log("User ID retrieved and set:", userId); // Console log for verification
         console.log("User role retrieved and set:", role); // Console log for verification
         
         // Check if user is blocked or not (status = 1 is active, status = 0 is blocked)
         if (status === '1') {
           // Redirect to the appropriate page based on user role
-          if (role === '0') { // Compare with string '0'
+          if (role === '0') {
               console.log("Administrator detected. Redirecting to Moderator profile...");
               navigate('/ModeratorViewProfile');
           } else {
@@ -59,6 +60,7 @@ export default function SignIn() {
     }
   };
 
+  // Function to handle sign in using Firebase
   const handleSignIn = async (event) => {
     event.preventDefault();
 
@@ -82,6 +84,7 @@ export default function SignIn() {
     }
   };
 
+  // Function to handle reset password
   const handleReset = () => {
     navigate('/ForgotPassword');
   };
@@ -93,6 +96,7 @@ export default function SignIn() {
         <div className='m-4'>
           <h1 className='text-4xl font-bold'>Welcome back!</h1>
         </div>
+        {/* Sign in form */}
         <div className='px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3'>
           <form className="flex flex-col flex-grow w-full gap-4" onSubmit={handleSignIn}>
             <input
@@ -111,6 +115,7 @@ export default function SignIn() {
               onChange={(e) => setPassword(e.target.value)}
               className='p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500'
             />
+            {/* Sign in button */}
             <LongButton 
               buttonName='Sign In' 
               type='submit'
@@ -118,6 +123,8 @@ export default function SignIn() {
             />
             {error && <p className="text-red-500">{error}</p>}
           </form>
+
+          {/* Forgot password button */}
           <div className='flex justify-end '>
             <button className="text-red-500 text-base font-bold" onClick={handleReset}>Forgot Password?</button>
           </div>
@@ -126,6 +133,8 @@ export default function SignIn() {
         <div className='my-3'>
           <p>Don't have an account?</p>
         </div>
+        
+        {/* Sign up button */}
         <div className='px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3'>
           <LongButton buttonName='Sign up' 
             className='p-2 w-full rounded shadow-lg bg-green-200 font-bold'

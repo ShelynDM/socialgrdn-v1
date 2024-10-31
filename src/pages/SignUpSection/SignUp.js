@@ -1,6 +1,6 @@
 /**
- * SearchBar.js
- * Description: Component that displays a search bar with a search icon.
+ * SignUp.js
+ * Description: This page is where users can sign up and create an account
  * Frontend Author: Shelyn Del Mundo
  * Backend Author: Shelyn Del Mundo
  *                  Donald Jans Uy
@@ -29,11 +29,11 @@ export default function SignUp() {
         userProvince: '',
         userPostalCode: '',
     });
-
     const [errors, setErrors] = useState({});
     const [emailMessage, setEmailMessage] = useState('');
     const navigate = useNavigate();
 
+    // Handle form input changes and update the form data
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prevState => ({
@@ -42,6 +42,7 @@ export default function SignUp() {
         }));
     };
 
+    // Handle address selection from the autocomplete component
     const handleAddressSelect = (addressData) => {
         setFormData(prevState => ({
             ...prevState,
@@ -52,26 +53,32 @@ export default function SignUp() {
         }));
     };
 
+    // Validate the form data before submitting to the server
     const validateForm = () => {
         const newErrors = {};
         const { email, password, firstname, lastname, username, profession, phoneNumber } = formData;
 
+        // Check if the email is valid which should contain '@' and '.'
         if (!email.includes('@') || !email.includes('.')) {
             newErrors.email = 'Please enter a valid email address.';
         }
+        // Check if the password is at least 6 characters long and contains a number
         if (password.length < 6 || !/\d/.test(password)) {
             newErrors.password = 'Password must be at least 6 characters long and contain a number.';
         }
+        // Check if the first name and last name only contain letters and spaces
         if (!firstname.match(/^[a-zA-Z\s]+$/)) {
             newErrors.firstname = 'First name is required and should only contain letters.';
         }
+        // Check if the last name only contain letters and spaces
         if (!lastname.match(/^[a-zA-Z\s]+$/)) {
             newErrors.lastname = 'Last name is required should only contain letters.';
         }
+        // Check if the username only contains letters, numbers, and underscores
         if (!username.match(/^\w+$/)) {
             newErrors.username = 'Username is required and should only contain letters, numbers, and underscores.';
         }
-
+        // Check if the phone number is valid.
         if (
             phoneNumber &&
             (!/^[\d+\-()\s]+$/.test(phoneNumber) || 
@@ -80,18 +87,18 @@ export default function SignUp() {
             newErrors.phoneNumber = 'Invalid phone number.';
         }
 
+        // This checks if the phone number is valid and formats it to (123) 456-7890
         if (phoneNumber) {
             const cleanedPhoneNumber = phoneNumber.replace(/\D/g, '');
         
             // Check if the cleaned phone number has exactly 10 digits
             if (cleanedPhoneNumber.length === 10) {
-                // Format the phone number to (123) 456-7890
                 formData.phoneNumber = formatPhoneNumber(phoneNumber);
             } else {
                 newErrors.phoneNumber = 'Invalid phone number. Must contain exactly 10 digits.';
             }
         }
-
+        // Check if the profession only contains letters, numbers, and spaces
         if (profession && !profession.match(/^[a-zA-Z0-9\s]+$/)) {
             newErrors.profession = 'Profession should only contain letters, numbers, and spaces.';
         }
@@ -100,6 +107,7 @@ export default function SignUp() {
         return Object.keys(newErrors).length === 0;
     };
 
+    // This is a helper function that formats the phone number to (123) 456-7890
     const formatPhoneNumber = (number) => {
         // Extract only digits from the phone number
         const cleaned = number.replace(/\D/g, '');
@@ -113,17 +121,22 @@ export default function SignUp() {
         return number;
     };
 
+    // Handle the sign up form submission
     const handleSignUp = async (event) => {
         event.preventDefault();
 
+        // Validate the form data before submitting to the server and return if there are errors
         if (!validateForm()) {
             return;
         };
 
+        // Send the form data to the server to create a new user
         try {
             const { email, password } = formData;
 
             console.log('Data being sent to the server:', formData);
+
+            // This is the POST request to add the user data to the database
             const response = await fetch('/api/users/register', {
                 method: 'POST',
                 credentials: 'include',
@@ -131,6 +144,7 @@ export default function SignUp() {
                 body: JSON.stringify(formData),
             });
 
+            // If the response is successful, it create a new user in Firebase and send a verification email else it will display an error message
             if (response.ok) {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
@@ -157,6 +171,7 @@ export default function SignUp() {
                     <p className='font-bold'>Sign up to get started</p>
                 </div>
 
+                {/* Sign up form */}
                 <form className="flex flex-col gap-4 px-4 w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3" onSubmit={handleSignUp}>
                     {!errors.email ? (
                         <input
@@ -291,6 +306,7 @@ export default function SignUp() {
 
                     {errors.phoneNumber && <p className="text-red-500 text-sm">{errors.phoneNumber}</p>}
 
+                    {/* Sign up button */}
                     <LongButton
                         buttonName='Sign up'
                         type='submit'
@@ -301,6 +317,7 @@ export default function SignUp() {
                 </form>
 
                 <p>By signing up, you agree to the <strong>Terms, Conditions</strong> and <strong>Privacy Policy</strong>.</p>
+                {/* Already a member button */}
                 <LongButton buttonName='Already a member?' pagePath="/SignIn" className='w-full bg-green-200' />
             </div>
         </div>
