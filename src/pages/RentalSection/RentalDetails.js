@@ -158,7 +158,7 @@ export default function RentalDetails() {
 
                 {/* Reservation Details */}
                 <section className="mb-3 mt-5 rounded-lg border-2 py-1 border-gray-200 bg-main-background">
-                    <img src={rental.image_url} alt="Listing" className="w-full h-auto" />
+                    <img src={rental.image_url} alt="Listing" className="w-full h-auto max-w-full max-h-full" />
                     <div className="p-3">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center">

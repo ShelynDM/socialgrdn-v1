@@ -118,7 +118,7 @@ export default function RentFailed() {
                             </div>
                             {/* Listing Image */}
                             <div className="w-auto h-52 flex justify-center items-center mx-4 p-1">
-                                <img className="w-full h-full rounded-lg border-2 border-gray-200" src={rental.image_url} alt="Garden" />
+                                <img className="w-full h-auto max-w-full max-h-full rounded-lg border-2 border-gray-200" src={rental.image_url} alt="Garden" />
                             </div>
                         </div>
                     </div>

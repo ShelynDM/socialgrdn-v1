@@ -12,6 +12,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from 'react-router-dom';
 import { format, parse, endOfMonth } from 'date-fns';
 
+
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
@@ -19,7 +20,6 @@ import BackButton from "../../components/Buttons/backButton";
 import AgreeAndPay from "../../components/Buttons/longButton";
 import { LuMapPin } from "react-icons/lu";
 import zoneColor from "../../components/ZoneColor/zoneColor";
-
 import { useUser } from "../../UserContext";
 
 export default function RentProperty() {
@@ -224,6 +224,7 @@ export default function RentProperty() {
         }
     };
 
+
     return (
         <div className='bg-main-background'>
             {/* Main Content */}
@@ -242,10 +243,16 @@ export default function RentProperty() {
                 {/* Rent Information */}
                 <div className="w-96 rounded-lg border-2 py-1 border-gray-200 bg-main-background">
                     <div className="px-6 pt-2">
-                        {/* Listing Title */}
-                        <div className="flex flex-row justify-between mb-2">
+
+                        <div className="flex flex-row items-center justify-between mb-2">
+                            {/* Listing Title */}
                             <div>
                                 <h1 className="font-bold text-lg ">{property.property_name}</h1>
+                            </div>
+                            {/* Farming Zone */}
+                            <div className="flex flex-row gap-1">
+                                <div className="w-4 h-4 border-1 border-gray-400" style={{ backgroundColor: zoneColor(property.growth_zone) }}></div>
+                                <p className="text-xs text-gray-500">Zone {property.growth_zone}</p>
                             </div>
                         </div>
                         {/* Listing Description */}
@@ -256,17 +263,12 @@ export default function RentProperty() {
                                 <LuMapPin />
                                 <p className="text-xs">{property.address_line1 + ', ' + property.city + ', ' + property.province}</p>
                             </div>
-                            {/* Farming Zone */}
-                            <div className="flex flex-row gap-1">
-                                <div className="w-4 h-4 border-1 border-gray-400" style={{ backgroundColor: zoneColor(property.growth_zone) }}></div>
-                                <p className="text-xs text-gray-500">Zone {property.growth_zone}</p>
-                            </div>
                         </div>
                     </div>
 
                     {/* Listing Image */}
                     <div className="w-auto h-52 flex justify-center items-center mx-4 p-1">
-                        <img className="w-full h-full rounded-lg border-2 border-gray-200" src={property.image_url} alt="Garden" />
+                        <img className="w-full h-auto max-w-full max-h-full rounded-lg border-2 border-gray-200" src={property.primaryImage} alt="Garden" />
                     </div>
 
                     {/* Listing Duration */}
