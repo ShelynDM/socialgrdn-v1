@@ -34,8 +34,10 @@ router.get('/', (req, res) => {
     }
 
 // Check if any properties are found for the user
+
     if (results.length === 0) {
-      return res.status(404).send('No properties found for the user');
+      // Return an empty array if no listing
+      return res.status(200).json([]);
     }
 
     return res.status(200).json(results);

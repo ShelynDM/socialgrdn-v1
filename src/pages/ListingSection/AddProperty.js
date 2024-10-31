@@ -97,11 +97,11 @@ const AddProperty = () => {
 
         // Auto-select zone based on city
         const cityEntry = Object.entries(cityZoneData).find(
-            ([_, data]) => data.name.toLowerCase() === addressData.city.toLowerCase()
+            ([, data]) => data.name.toLowerCase() === addressData.city.toLowerCase()
         );
 
         if (cityEntry) {
-            const [_, cityData] = cityEntry;
+            const [, cityData] = cityEntry;
             setSelectedZone({
                 value: cityData.code,
                 color: zoneColor(cityData.code)
@@ -284,7 +284,6 @@ const AddProperty = () => {
 
             const result = await response.json();
             console.log(result);
-
             return true;
 
             // Redirect or perform any other action after successful submission
@@ -564,11 +563,12 @@ const AddProperty = () => {
 
                                 <select
                                     id="soilType"
+                                    value={soilType}
                                     onChange={(e) => setSoilType(e.target.value)}
                                     className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
                                     required
                                 >
-                                    <option value="" disabled selected>Select soil type</option>
+                                    <option value="" disabled>Select soil type</option>
                                     <option value="Loamy">Loamy</option>
                                     <option value="Clay">Clay</option>
                                     <option value="Sandy">Sandy</option>
@@ -651,7 +651,7 @@ const AddProperty = () => {
                             <label className="text-lg font-semibold" htmlFor="amenities">Amenities(optional):</label>
                             <textarea
                                 id="restrictions"
-                                value={restrictions}
+                                value={amenities}
                                 onChange={(e) => setAmenities(e.target.value)}
                                 placeholder="e.g. Shed, Electricity, Fencing"
                                 className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
