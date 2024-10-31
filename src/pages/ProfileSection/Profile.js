@@ -6,7 +6,6 @@
  * Date: 2024-10-23
  */
 
-"use client"
 import React, { useState, useEffect } from "react";
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
@@ -17,11 +16,9 @@ import { FaLocationDot, FaRegEnvelope } from "react-icons/fa6";
 import { IoRibbonOutline } from "react-icons/io5";
 import { GrMapLocation } from "react-icons/gr";
 import LongButton from "../../components/Buttons/longButton";
-//import BackButton from "../../components/Buttons/backButton";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../_utils/firebase";
-//import { PiFolder } from "react-icons/pi";
 import { useUser } from "../../UserContext";
 
 export default function Profile() {
