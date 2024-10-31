@@ -1,7 +1,8 @@
 /**
  * ReservationDetails.js
  * Description: Page for displaying the details of a rental
- * Author: Tiana Bautista
+ * Frontend Author: Tiana Bautista
+ * Backend Author: Tiana Bautista
  * Date: 2024-10-23
  */
 
@@ -142,13 +143,22 @@ export default function RentalDetails() {
 
     return (
         <div className='bg-main-background relative'>
-            <InAppLogo />
-            <div className="flex flex-col items-center justify-center gap-2 min-h-screen pb-20 pt-10">
-                <BackButton />
+
+            <div className="flex flex-col items-center justify-center gap-2 min-h-screen pb-20 pt-10 ">
+                {/* Logo Section */}
+                <div className='p-2 fixed top-0 left-0 w-auto sm:w-2/4 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-main-background'>
+                    <InAppLogo />
+                </div>
+                {/* BackButton Section */}
+                <div className='mx-2 px-2 fixed top-12 flex w-full justify-between bg-main-background'>
+                    <div className="flex-grow w-full">
+                        <BackButton />
+                    </div>
+                </div>
 
                 {/* Reservation Details */}
                 <section className="mb-3 mt-5 rounded-lg border-2 py-1 border-gray-200 bg-main-background">
-                    <img src={rental.image_url} alt="Listing" className="w-full h-auto" />
+                    <img src={rental.image_url} alt="Listing" className="w-full h-auto max-w-full max-h-full" />
                     <div className="p-3">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center">
@@ -187,7 +197,7 @@ export default function RentalDetails() {
                     <div className="p-3 text-sm">
                         <h2 className="font-bold">Payment details</h2>
                         <div className="flex text-sm">
-                            <table className=" w-full">
+                            <table className=" w-full"><tbody>
                                 <tr>
                                     <td className="w-2/3"><p>{rental.property_name} x {durationMonths} month/s</p></td>
                                     <td className="w-1/3"><p>CAD {rental.rent_base_price}</p></td>
@@ -200,12 +210,12 @@ export default function RentalDetails() {
                                     <td className="w-1/3"><p>Taxes</p></td>
                                     <td className="w-1/3"><p>CAD {rental.tax_amount}</p></td>
                                 </tr>
-                            </table>
+                            </tbody></table>
                         </div>
                         <div className="p-3 flex border-b-2 border-slate-600">
                         </div>
                         <div className="p-3 flex text-sm font-bold">
-                            <table className=" w-full">
+                            <table className=" w-full"><tbody>
                                 <tr>
                                     <td className="w-2/3"><p>Total</p></td>
                                     <td className="w-1/3"><p>CAD {(parseFloat(rental.rent_base_price) +
@@ -216,14 +226,14 @@ export default function RentalDetails() {
                                         })}
                                     </p></td>
                                 </tr>
-                            </table>
+                            </tbody></table>
                         </div>
                     </div>
 
                     <div className="p-3 text-sm">
                         <h2 className="font-bold">Property Details</h2>
                         <div className="flex text-sm">
-                            <table className=" w-full">
+                            <table className=" w-full"><tbody>
                                 <tr>
                                     <td className="w-2/3"><p>Dimensions</p></td>
                                     <td className="w-1/3"><p>
@@ -246,7 +256,7 @@ export default function RentalDetails() {
                                     <td className="w-1/3"><p>Possible Crops</p></td>
                                     <td className="w-1/3"><p>{rental.crop_name}</p></td>
                                 </tr>
-                            </table>
+                            </tbody></table>
                         </div>
 
                     </div>

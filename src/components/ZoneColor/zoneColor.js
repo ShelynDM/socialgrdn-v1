@@ -24,7 +24,4 @@ export default function zoneColor(zone) {
         return '#f4d03f';
     };
 
-
-
-
 }

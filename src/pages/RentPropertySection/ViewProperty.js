@@ -37,51 +37,51 @@ const ViewProperty = () => {
 
   // Main search query handler with fallback to default results logic
   const handleSearchQueryChange = (event) => {
-      const query = event.target.value.toLowerCase();
-      setSearchQuery(query);
+    const query = event.target.value.toLowerCase();
+    setSearchQuery(query);
 
-      if (query.trim() === "") {
-          setSuggestions([]);
-          navigate("/Search");
-      } else {
-          // Collect individual words from relevant fields of all properties
-          const wordSet = new Set(); // Use Set to avoid duplicates
+    if (query.trim() === "") {
+      setSuggestions([]);
+      navigate("/Search");
+    } else {
+      // Collect individual words from relevant fields of all properties
+      const wordSet = new Set(); // Use Set to avoid duplicates
 
-          propertyResult.forEach((result) => {
-              Object.values(result).forEach((value) => {
-                  if (typeof value === "string") {
-                      // Split strings into individual words and store them in the Set
-                      value.split(/\s+/).forEach((word) => {
-                          if (word.toLowerCase().startsWith(query)) {
-                              wordSet.add(word);
-                          }
-                      });
-                  }
-              });
-          });
+      propertyResult.forEach((result) => {
+        Object.values(result).forEach((value) => {
+          if (typeof value === "string") {
+            // Split strings into individual words and store them in the Set
+            value.split(/\s+/).forEach((word) => {
+              if (word.toLowerCase().startsWith(query)) {
+                wordSet.add(word);
+              }
+            });
+          }
+        });
+      });
 
-          // Convert the Set to an array and limit the suggestions to 10 words
-          setSuggestions(Array.from(wordSet).slice(0, 10));
-      }
+      // Convert the Set to an array and limit the suggestions to 10 words
+      setSuggestions(Array.from(wordSet).slice(0, 10));
+    }
   };
 
   const handleKeyDown = (event) => {
-      if (event.key === "Enter" && searchQuery.trim()) {
-          navigate(`/Search?query=${encodeURIComponent(searchQuery.trim())}`);
-      }
+    if (event.key === "Enter" && searchQuery.trim()) {
+      navigate(`/Search?query=${encodeURIComponent(searchQuery.trim())}`);
+    }
   };
 
   // Handle suggestion click
   const handleSuggestionClick = (query) => {
-      setSearchQuery(query); // Set the clicked suggestion as the search query
-      setSuggestions([]); // Clear suggestions
-      navigate(`/Search?query=${encodeURIComponent(query)}`);
+    setSearchQuery(query); // Set the clicked suggestion as the search query
+    setSuggestions([]); // Clear suggestions
+    navigate(`/Search?query=${encodeURIComponent(query)}`);
   };
 
   // Handle Search Icon Click
   const handleSearchIconClick = () => {
-      const query = searchQuery.trim();
-      navigate(`/Search?query=${encodeURIComponent(query)}`);
+    const query = searchQuery.trim();
+    navigate(`/Search?query=${encodeURIComponent(query)}`);
   };
 
 
@@ -220,35 +220,35 @@ const ViewProperty = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="flex flex-col items-center justify-center gap-2 min-h-screen mx-2 pb-20 bg-main-background">
-          <div className='p-2 fixed top-0  w-full bg-main-background z-50'>
-              <InAppLogo />
-          </div>
+        <div className='p-2 fixed top-0  w-full bg-main-background z-50'>
+          <InAppLogo />
+        </div>
 
-          {/* Search Bar Section */}
-          <div className='pl-3 pr-6 fixed top-12 flex w-full justify-between bg-main-background z-50'>
-              <div className='my-2 bg-main-background'>
-                  <IoArrowBackSharp onClick={() => navigate(-1)} className='text-lg'/>
-              </div>
-              <div className="flex-grow w-auto">
-                  <SearchBar value={searchQuery} onChange={handleSearchQueryChange} onKeyDown={handleKeyDown} onClickSearchIcon={handleSearchIconClick}/>
-              </div>
+        {/* Search Bar Section */}
+        <div className='pl-3 pr-6 fixed top-12 flex w-full justify-between bg-main-background z-50'>
+          <div className='my-2 bg-main-background'>
+            <IoArrowBackSharp onClick={() => navigate(-1)} className='text-lg' />
           </div>
-          {/* Drop Down Suggestions Section */}
-          {suggestions.length > 0 && (
-              <div className="fixed top-20 w-full z-50">
-                  <div className="shadow-lg">
-                      {suggestions.map((suggestion, index) => (
-                          <div
-                              key={index}
-                              className="w-full hover:bg-gray-100 cursor-pointer rounded-lg"
-                              onClick={() => handleSuggestionClick(suggestion)}
-                          >
-                              <p className="bg-white text-base border-b mx-2 px-2">{suggestion}</p>
-                          </div>
-                      ))}
-                  </div>
-              </div>
-          )}
+          <div className="flex-grow w-auto">
+            <SearchBar value={searchQuery} onChange={handleSearchQueryChange} onKeyDown={handleKeyDown} onClickSearchIcon={handleSearchIconClick} />
+          </div>
+        </div>
+        {/* Drop Down Suggestions Section */}
+        {suggestions.length > 0 && (
+          <div className="fixed top-20 w-full z-50">
+            <div className="shadow-lg">
+              {suggestions.map((suggestion, index) => (
+                <div
+                  key={index}
+                  className="w-full hover:bg-gray-100 cursor-pointer rounded-lg"
+                  onClick={() => handleSuggestionClick(suggestion)}
+                >
+                  <p className="bg-white text-base border-b mx-2 px-2">{suggestion}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="bg-white rounded-xl shadow-sm p-6 mt-24">
           <div className="space-y-6">
@@ -259,7 +259,6 @@ const ViewProperty = () => {
                 triggerText="Select Rent Duration"
               />
             </div>
-
             <div>
               <ImageCarousel
                 images={[property.primaryImage, ...(property.otherImages || [])].filter(Boolean)}
@@ -342,8 +341,8 @@ const ViewProperty = () => {
                   <LongButton
                     buttonName="Rent Property"
                     className={`w-full ${rentDuration
-                        ? "bg-green-600 text-white hover:bg-green-700"
-                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      ? "bg-green-600 text-white hover:bg-green-700"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
                       } transition-colors`}
                     onClick={rentDuration ? handleRentProperty : undefined}
                   />
@@ -358,8 +357,8 @@ const ViewProperty = () => {
           </div>
         </div>
       </div>
-      <NavBar SearchColor={"#00B761"} SproutPath={Sprout}/>
-      </div>
+      <NavBar SearchColor={"#00B761"} SproutPath={Sprout} />
+    </div>
   );
 };
 
