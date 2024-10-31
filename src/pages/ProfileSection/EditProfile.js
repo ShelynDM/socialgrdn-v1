@@ -30,6 +30,9 @@ export default function EditProfile() {
     const [lastname, setLastName] = useState('');
     const [username, setUsername] = useState('');
     const [userAddress, setUserAddress] = useState('');
+    const [city, setCity] = useState('');
+    const [province, setProvince] = useState('');
+    const [postalCode, setPostalCode] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [profession, setProfession] = useState('');
     const [isLoading, setIsLoading] = useState(true);
@@ -61,6 +64,9 @@ export default function EditProfile() {
                 setLastName(userData.last_name || '');
                 setUsername(userData.username || '');
                 setUserAddress(userData.address_line1 || '');
+                setCity(userData.city || '');
+                setProvince(userData.province || '');
+                setPostalCode(userData.postal_code || '');
                 setPhoneNumber(userData.phone_number || '');
                 setProfession(userData.profession || '');
                 setIsLoading(false);
@@ -88,10 +94,26 @@ export default function EditProfile() {
         }
 
         // Check if the phone number is valid.
-        const cleanedPhoneNumber = phoneNumber.replace(/\D/g, '');
-        if (phoneNumber && (!/^[\d+\-()\s]+$/.test(phoneNumber) || cleanedPhoneNumber.length !== 10)) {
-            errors.phoneNumber = 'Phone number must contain exactly 10 digits.';
+        if (
+            phoneNumber &&
+            (!/^[\d+\-()\s]+$/.test(phoneNumber) || 
+            phoneNumber.replace(/\D/g, '').length !== 10) 
+        ) {
+            errors.phoneNumber = 'Invalid phone number.';
         }
+
+        // This checks if the phone number is valid and formats it to (123) 456-7890
+        if (phoneNumber) {
+            const cleanedPhoneNumber = phoneNumber.replace(/\D/g, '');
+        
+            // Check if the cleaned phone number has exactly 10 digits
+            if (cleanedPhoneNumber.length === 10) {
+                formatPhoneNumber(phoneNumber);
+            } else {
+                errors.phoneNumber = 'Invalid phone number. Must contain exactly 10 digits.';
+            }
+        }
+
 
         // Check if the profession only contains letters, numbers, and spaces
         if (profession && !profession.match(/^[a-zA-Z0-9\s]+$/)) {
@@ -102,25 +124,26 @@ export default function EditProfile() {
         return Object.keys(errors).length === 0;
     };
 
-    // // This is a helper function that formats the phone number to (123) 456-7890
+    // Helper function that formats the phone number to (123) 456-7890
     const formatPhoneNumber = (number) => {
-        // Extract only digits from the phone number
         const cleaned = number.replace(/\D/g, '');
-    
+
         // Format as (123) 456-7890 if it's 10 digits
         if (cleaned.length === 10) {
             return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
         }
-    
+
         // Return the original number if it can't be formatted
         return number;
     };
-
 
     // Handle address selection from the autocomplete component
     const handleAddressSelect = (addressData) => {
         // Extract the address line 1 from the selected address
         setUserAddress(addressData.addressLine1);
+        setCity(addressData.city);
+        setProvince(addressData.province);
+        setPostalCode(addressData.postalCode);
     };
 
     const handleSaveChanges = async () => {
@@ -136,6 +159,9 @@ export default function EditProfile() {
             last_name: lastname,
             username,
             address_line1: userAddress,
+            city: city,
+            province: province,
+            postal_code: postalCode,
             phone_number: formatPhoneNumber(phoneNumber),
             profession
         };
@@ -197,7 +223,7 @@ export default function EditProfile() {
                         <BackButton />
                     </div>
                 </div>
-                <FaUserCircle className="text-green-500 text-9xl w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 mb-2" />
+                <FaUserCircle className="text-green-500 text-9xl w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 mb-2 mt-20" />
                 <div className="px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3">
 
                     <form className="flex flex-col flex-grow w-full gap-4 mb-8">
@@ -248,6 +274,7 @@ export default function EditProfile() {
                             onChange={(e) => setPhoneNumber(e.target.value)}
                             placeholder="Enter Phone Number"
                         />
+                        {error.phoneNumber && <p className="text-red-500 text-sm">{error.phoneNumber}</p>}
 
                         {/* Address field */}
                         <AddressAutocomplete onAddressSelect={handleAddressSelect} countryCodes={['ca']} />
@@ -258,7 +285,27 @@ export default function EditProfile() {
                             placeholder="Address Line 1"
                             className="p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
                         />
-
+                        <input
+                            type="text"
+                            value={city || ''}
+                            readOnly
+                            placeholder="City"
+                            className="p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
+                        />
+                        <input
+                            type="text"
+                            value={province || ''}
+                            readOnly
+                            placeholder="Province"
+                            className="p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
+                        />
+                        <input
+                            type="text"
+                            value={postalCode || ''}
+                            readOnly
+                            placeholder="Postal Code"
+                            className="p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
+                        />
 
                         {/* Save Changes Button */}
                         <LongButton
