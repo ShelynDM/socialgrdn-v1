@@ -48,20 +48,20 @@ export default function BackMoreButton() {
 				} w-44`}
 			>
 				<div className="p-4">
-					<h2 className="text-xl font-bold mb-4">Report</h2>
+					<h2 className="text-xl font-bold mb-4">Reports</h2>
 					{/* Gross earnings */}
 					<button
 						onClick={() => navigate('/grossEarnings')}
 						className="block w-full text-left py-2 px-4 mb-2 text-gray-700 hover:bg-gray-200"
 					>
-						Gross Earnings
+						Past Earnings
 					</button>
 					{/* Payouts */}
 					<button
 						onClick={() => navigate('/payouts')}
 						className="block w-full text-left py-2 px-4 text-gray-700 hover:bg-gray-200"
 					>
-						Payouts
+						Future Payouts
 					</button>
 				</div>
 			</div>
