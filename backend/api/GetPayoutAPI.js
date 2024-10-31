@@ -56,8 +56,6 @@ router.get('/', (req, res) => {
     return res.status(200).json(formattedResults);
   });
 
-//     return res.status(200).json(results);
-//   });
 });
 
 
