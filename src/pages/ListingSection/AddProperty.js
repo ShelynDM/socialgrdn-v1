@@ -2,7 +2,7 @@
  * AddProperty.js
  * Description: Page for users to add a property listing
  * FrontEnd: Lilian Huh
- *BackEnd: Donald Jans Uy
+ * BackEnd: Donald Jans Uy
  * Date: 2024-10-23
  */
 
@@ -54,7 +54,7 @@ const AddProperty = () => {
             const randomNum = Math.floor(Math.random() * 100000);
             return `${randomNum}`;
         };
-        
+
         setPropertyId(generatePropertyId());
         console.log('Current User ID:', userId);
 
@@ -94,7 +94,7 @@ const AddProperty = () => {
         setCountry(addressData.country);
         setLatitude(addressData.latitude.toString());
         setLongitude(addressData.longitude.toString());
-        
+
         // Auto-select zone based on city
         const cityEntry = Object.entries(cityZoneData).find(
             ([_, data]) => data.name.toLowerCase() === addressData.city.toLowerCase()
@@ -141,22 +141,81 @@ const AddProperty = () => {
             );
         });
     };
+    const [imageErrorMsg, setImageErrorMsg] = useState(""); // Initially empty
+    const [propertyNameErrorMsg, setPropertyNameErrorMsg] = useState(""); // Initially empty
+    const [propertyPriceErrorMsg, setPropertyPriceErrorMsg] = useState(""); // Initial message
+    const [addressErrorMsg, setAddressErrorMsg] = useState(""); // Initial message
+    const [dimensionErrorMsg, setDimensionErrorMsg] = useState(""); // Initial message
+    const [soilTypeErrorMsg, setSoilTypeErrorMsg] = useState(""); // Initial message
+    const [possibleCropsErrorMsg, setPossibleCropsErrorMsg] = useState(""); // Initial message
+
+
+    const formValidation = () => {
+        let isValid = true;
+        if (!primaryImage) {
+            setImageErrorMsg("Primary image is required");
+            isValid = false;
+        } else {
+            setImageErrorMsg("");
+        }
+        if (!propertyName) {
+            setPropertyNameErrorMsg("Property name is required");
+            isValid = false;
+        } else {
+            setPropertyNameErrorMsg("");
+        }
+        if (!addressLine1) {
+            setAddressErrorMsg("Address is required");
+            isValid = false;
+        } else {
+            setAddressErrorMsg("");
+        }
+        if (!length || !width || !height) {
+            setDimensionErrorMsg("Dimensions are required");
+            isValid = false;
+        } else {
+            setDimensionErrorMsg("");
+        }
+        if (!soilType) {
+            setSoilTypeErrorMsg("Soil type is required");
+            isValid = false;
+        } else {
+            setSoilTypeErrorMsg("");
+        }
+        if (possibleCrops.length === 0) {
+            setPossibleCropsErrorMsg("Possible crops are required");
+            isValid = false;
+        } else {
+            setPossibleCropsErrorMsg("");
+        }
+        if (!price) {
+            setPropertyPriceErrorMsg("Price is required");
+            isValid = false;
+        } else {
+            setPropertyPriceErrorMsg("");
+        }
+        return isValid;
+    };
+
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-    
+        let isValid = formValidation();
+        if (!isValid) {
+            return false;
+        }
         try {
 
-           // Debugging logs
+            // Debugging logs
             console.log('UserId:', userId);
             console.log('Primary Image:', primaryImage);
             console.log('Other Images:', otherImages);
-            console.log('Selected Zone:', selectedZone);
             console.log('Property ID:', propertyId);
-            console.log('Latitude:', latitude, 'Longitude:', longitude);
             console.log('Property Name:', propertyName);
             console.log('Address Line 1:', addressLine1);
             console.log('City:', city, 'Province:', province, 'Postal Code:', postalCode, 'Country:', country);
+            console.log('Latitude:', latitude, 'Longitude:', longitude);
+            console.log('Selected Zone:', selectedZone);
             console.log('Description:', description);
             console.log('Dimensions - Length:', length, 'Width:', width, 'Height:', height);
             console.log('Soil Type:', soilType);
@@ -164,21 +223,24 @@ const AddProperty = () => {
             console.log('Possible Crops:', possibleCrops);
             console.log('Restrictions:', restrictions);
             console.log('Price:', price);
+
             if (!primaryImage) {
-                throw new Error('Primary image is required');
+                //throw new Error('Primary image is required');
+                console.log('Primary image is required');
+
             }
 
             // Upload primary image
             const primaryImageUrl = await uploadImage(primaryImage, `property-images/${propertyId}/PrimaryPhoto/primary-${primaryImage.name}`);
-    
+
             // Upload other images
             const otherImageUrls = await Promise.all(
-                otherImages.map((image, index) => 
+                otherImages.map((image, index) =>
                     uploadImage(image, `property-images/${propertyId}/OtherImages/other-${image.name}`)
                 )
             );
-    
-            
+
+
             // Collect form data
             const formData = {
                 userId: parseInt(userId), // Ensure userId is a number
@@ -206,7 +268,7 @@ const AddProperty = () => {
             };
 
             console.log('Form Data:', formData);
-    
+
             // Send all data in a single request
             const response = await fetch('/api/addPropertyListing', {
                 method: 'POST',
@@ -215,14 +277,14 @@ const AddProperty = () => {
                 },
                 body: JSON.stringify(formData),
             });
-    
+
             if (!response.ok) {
                 throw new Error('Failed to save property details');
             }
-    
+
             const result = await response.json();
             console.log(result);
-    
+
             alert('Property added successfully!');
             return true;
 
@@ -234,48 +296,48 @@ const AddProperty = () => {
         }
     };
 
-        // Modified Zone selection section in your form
-        const renderZoneSection = () => (
-            <div className="flex items-center gap-4">
-                <label className="text-lg font-semibold" htmlFor="zone">Growth Zone:</label>
-                <div className="flex-grow relative">
-                    <div className="w-full"> {/* Added wrapper div with w-full */}
-                        {selectedZone.value ? (
-                            <div 
-                                className="w-full p-2 border border-gray-400 rounded-lg shadow-lg" // Added w-full
-                                style={{ 
-                                    backgroundColor: selectedZone.color,
-                                    color: '#000000'
-                                }}
-                            >
-                                {selectedZone.value}
-                            </div>
-                        ) : (
-                            <select
-                                id="growth_zone"
-                                name="growth_zone"
-                                className="w-full p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
-                                onChange={handleZoneChange}
-                                value={selectedZone.value}
-                                style={{ backgroundColor: selectedZone.color, color: '#000000' }}
-                                required
-                            >
-                                <option value="">Select a zone</option>
-                                {zoneOptions.map((zone) => (
-                                    <option 
-                                        key={zone} 
-                                        value={zone} 
-                                        style={{ backgroundColor: zoneColor(zone) }}
-                                    >
-                                        {zone}
-                                    </option>
-                                ))}
-                            </select>
-                        )}
-                    </div>
+    // Modified Zone selection section in your form
+    const renderZoneSection = () => (
+        <div className="flex items-center gap-4">
+            <label className="text-lg font-semibold" htmlFor="zone">Growth Zone:</label>
+            <div className="flex-grow relative">
+                <div className="w-full"> {/* Added wrapper div with w-full */}
+                    {selectedZone.value ? (
+                        <div
+                            className="w-full p-2 border border-gray-400 rounded-lg shadow-lg" // Added w-full
+                            style={{
+                                backgroundColor: selectedZone.color,
+                                color: '#000000'
+                            }}
+                        >
+                            {selectedZone.value}
+                        </div>
+                    ) : (
+                        <select
+                            id="growth_zone"
+                            name="growth_zone"
+                            className="w-full p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
+                            onChange={handleZoneChange}
+                            value={selectedZone.value}
+                            style={{ backgroundColor: selectedZone.color, color: '#000000' }}
+                            required
+                        >
+                            <option value="">Select a zone</option>
+                            {zoneOptions.map((zone) => (
+                                <option
+                                    key={zone}
+                                    value={zone}
+                                    style={{ backgroundColor: zoneColor(zone) }}
+                                >
+                                    {zone}
+                                </option>
+                            ))}
+                        </select>
+                    )}
                 </div>
             </div>
-        );
+        </div>
+    );
 
     return (
         <div className="bg-main-background relative">
@@ -285,6 +347,7 @@ const AddProperty = () => {
                 <div className="px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3">
                     <form className="flex flex-col flex-grow w-full gap-4 mb-8" onSubmit={handleSubmit}>
                         {/* Primary Image Upload */}
+                        <div><p className="text-sm text-red-600">{imageErrorMsg}</p></div>
                         <div className="flex flex-col gap-4">
                             <label className="text-lg font-semibold">Primary Image:</label>
                             <input
@@ -294,10 +357,12 @@ const AddProperty = () => {
                                 className="p-2 border border-gray-400 rounded-lg"
                                 required
                             />
+
                             {primaryImage && (
                                 <img src={URL.createObjectURL(primaryImage)} alt="Primary" className="w-full h-40 object-cover rounded-lg" />
                             )}
                         </div>
+
 
                         {/* Other Images Upload */}
                         <div className="flex flex-col gap-4">
@@ -325,83 +390,113 @@ const AddProperty = () => {
                                 className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
                             />
                         </div>
-                        
+
                         {/* Property Name */}
-                        <div className="flex items-center gap-4">
-                            <label className="text-lg font-semibold">Property Name:</label>
-                            <input
-                                type="text"
-                                name="propertyName"
-                                value={propertyName}
-                                onChange={(e) => setPropertyName(e.target.value)}
-                                placeholder="Property Name"
-                                className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
-                                required
-                            />
+                        <div>
+                            <div className="flex items-center gap-4">
+                                <label className="text-lg font-semibold">Property Name:</label>
+                                <input
+                                    type="text"
+                                    name="propertyName"
+                                    value={propertyName}
+                                    onChange={(e) => setPropertyName(e.target.value)}
+                                    placeholder="Property Name"
+                                    className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                    required
+                                />
+                            </div>
+                            <div className="pl-36">
+                                <p className="text-sm text-red-600">{propertyNameErrorMsg}</p>
+                            </div>
+                        </div>
+
+                        {/* Property Price */}
+                        <div>
+                            <div className="flex items-center gap-4">
+
+                                <label className="text-lg font-semibold" htmlFor="price">Price:</label>
+                                <h1 className="text-lg font-semibold  ">$</h1>
+                                <input
+                                    type="number"
+                                    placeholder="CAD"
+                                    value={price}
+                                    onChange={(e) => setPrice(e.target.value)}
+                                    id="price"
+                                    className="flex-grow  p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                    required
+                                />
+                                <h1 className="text-lg font-semibold">/month</h1>
+                            </div>
+                            <div className="pl-24">
+                                <p className="text-sm text-red-600">{propertyPriceErrorMsg}</p>
+                            </div>
                         </div>
 
                         {/* Property Location */}
                         <div className="flex flex-col gap-4">
                             <label htmlFor="address" className="text-lg font-semibold">Property Location:</label>
-
-                            <AddressAutocomplete 
+                            <div className="flex items-center gap-4">
+                                <label className="text-sm font-semibold">Address Line 1</label>
+                                <p className="text-sm text-red-600">{addressErrorMsg}</p>
+                            </div>
+                            <AddressAutocomplete
                                 onAddressSelect={handleAddressSelect}
                                 resultLimit={20}
                                 countryCodes={['ca']}  // Canada only
                             />
-
+                            <label className="text-sm font-semibold">Street</label>
                             <input
-                            type="text"
-                            value={addressLine1}
-                            readOnly
-                            placeholder="Address Line 1"
-                            className="p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
+                                type="text"
+                                value={addressLine1}
+                                readOnly
+                                placeholder="Address Line 1"
+                                className="p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
+                            />
+                            <label className="text-sm font-semibold">City</label>
+                            <input
+                                type="text"
+                                value={city}
+                                readOnly
+                                placeholder="City"
+                                className="p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
+                            />
+                            <label className="text-sm font-semibold">Province</label>
+                            <input
+                                type="text"
+                                value={province}
+                                readOnly
+                                placeholder="Province"
+                                className="p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
+                            />
+                            <label className="text-sm font-semibold">Postal Code</label>
+                            <input
+                                type="text"
+                                value={postalCode}
+                                readOnly
+                                placeholder="Postal Code"
+                                className="p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
+                            />
+                            <label className="text-sm font-semibold">Country</label>
+                            <input
+                                type="text"
+                                value={country}
+                                readOnly
+                                placeholder="Country"
+                                className="p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
                             />
 
                             <input
-                            type="text"
-                            value={city}
-                            readOnly
-                            placeholder="City"
-                            className="p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
+                                type="hidden"
+                                value={latitude}
+                                required
+                                step="any"
                             />
 
                             <input
-                            type="text"
-                            value={province}
-                            readOnly
-                            placeholder="Province"
-                            className="p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
-                            />
-
-                            <input
-                            type="text"
-                            value={postalCode}
-                            readOnly
-                            placeholder="Postal Code"
-                            className="p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
-                            />
-
-                            <input
-                            type="text"
-                            value={country}
-                            readOnly
-                            placeholder="Country"
-                            className="p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
-                            />
-
-                            <input
-                            type="hidden"
-                            value={latitude}
-                            required
-                            step="any"
-                            />
-
-                            <input
-                            type="hidden"
-                            value={longitude}
-                            required
-                            step="any"
+                                type="hidden"
+                                value={longitude}
+                                required
+                                step="any"
                             />
                         </div>
 
@@ -412,7 +507,7 @@ const AddProperty = () => {
 
                         {/* Description */}
                         <div className="flex flex-col gap-4">
-                            <label className="text-lg font-semibold">Description:</label>
+                            <label className="text-lg font-semibold">Description(optional):</label>
                             <textarea
                                 name="description"
                                 value={description}
@@ -426,79 +521,79 @@ const AddProperty = () => {
 
                         {/* Dimensions Fields */}
                         <div className="flex flex-col gap-4">
-                            <label className="text-lg font-semibold" htmlFor="dimensions">Dimensions:</label>
+                            <div className="flex items-center gap-4">
+                                <label className="text-lg font-semibold" htmlFor="dimensions">Dimensions:</label>
+                                <p className="text-sm text-red-600">{dimensionErrorMsg}</p>
+                            </div>
                             <div className="flex items-center gap-2">
-                                <input 
-                                    type="number" 
+                                <input
+                                    type="number"
                                     name="length"
                                     value={length}
                                     onChange={(e) => setLength(e.target.value)}
-                                    placeholder="Length" 
-                                    className="w-1/3 p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                    placeholder="Length"
+                                    className="w-1/3 p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
                                     required
                                 />
                                 <span className="text-lg font-semibold">x</span>
-                                <input 
-                                    type="number" 
+                                <input
+                                    type="number"
                                     name="width"
                                     value={width}
                                     onChange={(e) => setWidth(e.target.value)}
-                                    placeholder="Width" 
-                                    className="w-1/3 p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                    placeholder="Width"
+                                    className="w-1/3 p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
                                     required
                                 />
                                 <span className="text-lg font-semibold">x</span>
-                                <input 
-                                    type="number" 
+                                <input
+                                    type="number"
                                     name="height"
                                     value={height}
                                     onChange={(e) => setHeight(e.target.value)}
-                                    placeholder="Height" 
-                                    className="w-1/3 p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                    placeholder="Height"
+                                    className="w-1/3 p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
                                     required
                                 />
                                 <span className="text-lg font-semibold">ft</span>
                             </div>
                         </div>
-                        
-                        <div className="flex items-center gap-4">
-                            <label className="text-lg font-semibold" htmlFor="soilType">Type of Soil:</label>
-                            <select
-                                id="soilType"
-                                onChange={(e) => setSoilType(e.target.value)}
-                                className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
-                                required
+                        {/* Soil Type */}
+                        <div>
+                            <div className="flex items-center gap-4">
+                                <label className="text-lg font-semibold" htmlFor="soilType">Type of Soil:</label>
+
+                                <select
+                                    id="soilType"
+                                    onChange={(e) => setSoilType(e.target.value)}
+                                    className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                    required
                                 >
-                                <option value="" disabled selected>Select soil type</option>
-                                <option value="Loamy">Loamy</option>
-                                <option value="Clay">Clay</option>
-                                <option value="Sandy">Sandy</option>
-                                <option value="Silty">Silty</option>
-                                <option value="Chalk">Chalk</option>
-                                <option value="Peat">Peat</option>
+                                    <option value="" disabled selected>Select soil type</option>
+                                    <option value="Loamy">Loamy</option>
+                                    <option value="Clay">Clay</option>
+                                    <option value="Sandy">Sandy</option>
+                                    <option value="Silty">Silty</option>
+                                    <option value="Chalk">Chalk</option>
+                                    <option value="Peat">Peat</option>
                                 </select>
+                            </div>
+                            <div className="pl-28">
+                                <p className="text-sm text-red-600">{soilTypeErrorMsg}</p>
+                            </div>
+
                         </div>
-                        
-                        <div className="flex items-center gap-4">
-                            <label className="text-lg font-semibold" htmlFor="amenities">Amenities:</label>
-                            <input 
-                                type="text" 
-                                value={amenities}
-                                onChange={(e) => setAmenities(e.target.value)}
-                                placeholder="e.g. Shed, Electricity, Fencing" 
-                                id="amenities" 
-                                className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-                            />
-                        </div>
-                        
+
                         <div className="flex flex-col gap-4">
-                            <label className="text-lg font-semibold" htmlFor="possibleCrops">
-                                Possible Crops:
-                            </label>
+                            <div className="flex items-center gap-4">
+                                <label className="text-lg font-semibold" htmlFor="possibleCrops">Possible Crops:</label>
+                                <p className="text-sm text-red-600">{possibleCropsErrorMsg}</p>
+                            </div>
+
                             <div className="space-y-4">
                                 <div className="flex items-center gap-4">
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         value={cropInput}
                                         onChange={(e) => setCropInput(e.target.value)}
                                         onKeyPress={(e) => {
@@ -510,9 +605,9 @@ const AddProperty = () => {
                                                 }
                                             }
                                         }}
-                                        placeholder="e.g. Carrot, Barley, Corn" 
-                                        id="possibleCrops" 
-                                        className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                                        placeholder="e.g. Carrot, Barley, Corn"
+                                        id="possibleCrops"
+                                        className="flex-grow p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
                                     />
                                 </div>
 
@@ -552,34 +647,32 @@ const AddProperty = () => {
                                 </div>
                             </div>
                         </div>
-                        
+                        {/* Amenities */}
                         <div className="flex flex-col gap-4">
-                        <label className="text-lg font-semibold" htmlFor="restrictions">Restrictions:</label>
-                        <textarea
-                            id="restrictions"
-                            value={restrictions}
-                            onChange={(e) => setRestrictions(e.target.value)}
-                            placeholder="e.g. No pets, No smoking, No planting marijuana" 
-                            className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
-                            rows="3"
-                        />
+                            <label className="text-lg font-semibold" htmlFor="amenities">Amenities(optional):</label>
+                            <textarea
+                                id="restrictions"
+                                value={restrictions}
+                                onChange={(e) => setAmenities(e.target.value)}
+                                placeholder="e.g. Shed, Electricity, Fencing"
+                                className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                rows="2"
+                            />
+                        </div>
+                        {/* Restrictions */}
+                        <div className="flex flex-col gap-4">
+                            <label className="text-lg font-semibold" htmlFor="restrictions">Restrictions(optional):</label>
+                            <textarea
+                                id="restrictions"
+                                value={restrictions}
+                                onChange={(e) => setRestrictions(e.target.value)}
+                                placeholder="e.g. No pets, No smoking, No planting marijuana"
+                                className="p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
+                                rows="3"
+                            />
                         </div>
 
-                        <div className="flex items-center gap-4">
-                            <label className="text-lg font-semibold" htmlFor="price">Price:</label>
 
-                                <h1 className="text-lg font-semibold  ">$</h1>
-                                    <input 
-                                    type="number" 
-                                    placeholder="CAD" 
-                                    value={price}
-                                    onChange={(e) => setPrice(e.target.value)}
-                                    id="price" 
-                                    className="flex-grow  p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500" 
-                                />
-                                <h1 className="text-lg font-semibold">/month</h1>
-
-                        </div>
 
                         <h1 className="text-lg font-normal">By publishing your listing, you agree to the <strong>Terms, Conditions and Privacy Policy</strong>.</h1>
                         <LongButton
@@ -596,9 +689,9 @@ const AddProperty = () => {
                         />
                     </form>
                 </div>
-            </div>
+            </div >
             <NavBar ProfileColor="#00B761" SproutPath={Sprout} />
-        </div>
+        </div >
     );
 };
 

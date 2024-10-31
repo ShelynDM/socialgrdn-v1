@@ -12,16 +12,14 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from 'react-router-dom';
 import { format, parse, endOfMonth } from 'date-fns';
 
+
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
 import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
-import { IoArrowBackSharp } from "react-icons/io5";
-import SearchBar from "../../components/SearchComponents/search";
-import ExampleImage from "../../assets/exampleAssets/imgExample.jpg";
+import BackButton from "../../components/Buttons/backButton";
 import AgreeAndPay from "../../components/Buttons/longButton";
 import { LuMapPin } from "react-icons/lu";
 import zoneColor from "../../components/ZoneColor/zoneColor";
-
 import { useUser } from "../../UserContext";
 
 export default function RentProperty() {
@@ -184,8 +182,19 @@ export default function RentProperty() {
             tax_amount: tax_amount,
             transaction_fee: transaction_fee
         };
-        console.log('API start rentalData:', rentalData);
 
+        // Check if any property in rentalData is missing a value
+        const hasEmptyValue = Object.values(rentalData).some(value =>
+            value === null || value === undefined || value === ''
+        );
+
+        if (hasEmptyValue) {
+            console.log("One or more fields in rentalData are missing values.");
+            return null;
+        } else {
+            console.log("All fields in rentalData have values.");
+            console.log('API start rentalData:', rentalData);
+        }
 
         try {
             //API call to register rental details
@@ -215,6 +224,7 @@ export default function RentProperty() {
         }
     };
 
+
     return (
         <div className='bg-main-background'>
             {/* Main Content */}
@@ -224,23 +234,25 @@ export default function RentProperty() {
                     <InAppLogo />
                 </div>
 
-                {/* Top Bar Section (Back Button, Search, Filter) */}
-                <div className="flex items-center justify-between fixed top-0 left-0 right-0 mt-10 px-4 bg-main-background">
-                    <button>
-                        <IoArrowBackSharp size={25} />
-                    </button>
-                    <div className="flex-grow w-full">
-                        <SearchBar className="w-full" />
-                    </div>
+                {/* Back Button*/}
+                <div className="flex items-center justify-between fixed top-0 left-0 right-0 mt-10 bg-main-background">
+                    <BackButton />
+
                 </div>
 
                 {/* Rent Information */}
                 <div className="w-96 rounded-lg border-2 py-1 border-gray-200 bg-main-background">
                     <div className="px-6 pt-2">
-                        {/* Listing Title */}
-                        <div className="flex flex-row justify-between mb-2">
+
+                        <div className="flex flex-row items-center justify-between mb-2">
+                            {/* Listing Title */}
                             <div>
                                 <h1 className="font-bold text-lg ">{property.property_name}</h1>
+                            </div>
+                            {/* Farming Zone */}
+                            <div className="flex flex-row gap-1">
+                                <div className="w-4 h-4 border-1 border-gray-400" style={{ backgroundColor: zoneColor(property.growth_zone) }}></div>
+                                <p className="text-xs text-gray-500">Zone {property.growth_zone}</p>
                             </div>
                         </div>
                         {/* Listing Description */}
@@ -251,17 +263,12 @@ export default function RentProperty() {
                                 <LuMapPin />
                                 <p className="text-xs">{property.address_line1 + ', ' + property.city + ', ' + property.province}</p>
                             </div>
-                            {/* Farming Zone */}
-                            <div className="flex flex-row gap-1">
-                                <div className="w-4 h-4 border-1 border-gray-400" style={{ backgroundColor: zoneColor(property.growth_zone) }}></div>
-                                <p className="text-xs text-gray-500">Zone {property.growth_zone}</p>
-                            </div>
                         </div>
                     </div>
 
                     {/* Listing Image */}
                     <div className="w-auto h-52 flex justify-center items-center mx-4 p-1">
-                        <img className="w-full h-full rounded-lg border-2 border-gray-200" src={ExampleImage} alt="Garden" />
+                        <img className="w-full h-auto max-w-full max-h-full rounded-lg border-2 border-gray-200" src={property.primaryImage} alt="Garden" />
                     </div>
 
                     {/* Listing Duration */}
