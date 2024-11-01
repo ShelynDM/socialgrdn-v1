@@ -18,8 +18,6 @@ import logo from '../../assets/logo/SocialGrdnLogo.png';
 import LongButton from '../../components/Buttons/longButton';
 import AddressAutocomplete from '../../components/AutoComplete/AddressAutoComplete';
 import BackButton from '../../components/Buttons/backButton';
-import { IoArrowBackSharp } from "react-icons/io5";
-
 
 export default function SignUp() {
 	const [formData, setFormData] = useState({
