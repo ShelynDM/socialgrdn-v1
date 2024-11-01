@@ -16,6 +16,7 @@ import Sprout from '../../assets/navbarAssets/sprout.png';
 import MonthRangePicker from '../../components/Calendar/MonthYearPicker';
 import LongButton from '../../components/Buttons/longButton';
 import { IoArrowBackSharp } from 'react-icons/io5';
+import logo from '../../assets/logo/SocialGrdnLogo.png';
 
 // Component to reuse search components
 import usePropertyResult from "../../components/SearchComponents/propertyResult";
@@ -214,9 +215,9 @@ const ViewProperty = () => {
 	// Return the view property page
 	if (isLoading) {
 		return (
-			<div className="min-h-screen bg-gray-50 flex items-center justify-center">
-				<div className="animate-pulse text-gray-600">
-					Loading property details...
+			<div className='bg-main-background'>
+				<div className="flex flex-col items-center justify-center min-h-screen m-2 pb-20">
+					<img src={logo} alt="Social Grdn Logo" className="w-auto h-auto m-4 opacity-15" />
 				</div>
 			</div>
 		);

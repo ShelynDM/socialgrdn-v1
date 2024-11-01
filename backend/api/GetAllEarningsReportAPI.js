@@ -7,14 +7,12 @@ router.get('/', (req, res) => {
     SELECT 
       YEAR(p.payout_date) AS YEAR, 
       MONTH(p.payout_date) AS MONTH, 
-      pl.userID,
       SUM(r.rent_base_price) AS total_rent
     FROM rental r
     JOIN payment p ON r.rental_id = p.rental_id
     JOIN propertylisting pl ON r.property_id = pl.property_id
-    WHERE p.status = 'P'
-    GROUP BY YEAR(p.payout_date), MONTH(p.payout_date), pl.userID
-    ORDER BY YEAR, MONTH, pl.userID;
+    GROUP BY YEAR(p.payout_date), MONTH(p.payout_date)
+    ORDER BY YEAR, MONTH;
   `;
 
   // Execute the query
