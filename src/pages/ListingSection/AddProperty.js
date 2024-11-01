@@ -49,6 +49,17 @@ const AddProperty = () => {
 	const [price, setPrice] = useState('');
 	const [cityZoneData, setCityZoneData] = useState({});
 
+	const handlePriceChange = (e) => {
+		const value = e.target.value;
+		if (value.length > 7) {
+			setPropertyPriceErrorMsg('Price cannot exceed 7 digits');
+			setPrice(value.slice(0, 7));
+		} else {
+			setPropertyPriceErrorMsg('');
+			setPrice(value);
+		}
+	};
+
 	// Combine both effects into one organized effect
 	useEffect(() => {
 		// Property ID generation
@@ -116,17 +127,20 @@ const AddProperty = () => {
 				});
 			}
 		} else {
-			setAddressErrorMsg('Please select an address in Alberta');
+			// set it to blank if its error
+			setAddressLine1('');
+			setCity('');
+			setProvince('');
+			setPostalCode('');
+			setCountry('');
+			setLatitude('');
+			setLongitude('');
+			setSelectedZone({
+				value: '',
+				color: '',
+			});
+			setAddressErrorMsg('ERROR: Please select an address in Alberta');
 		}
-	};
-
-	// Handle zone change
-	const handleZoneChange = (event) => {
-		const value = event.target.value;
-		setSelectedZone({
-			value,
-			color: zoneColor(value),
-		});
 	};
 
 	// Image upload function
@@ -462,7 +476,7 @@ const AddProperty = () => {
 									type="number"
 									placeholder="CAD"
 									value={price}
-									onChange={(e) => setPrice(e.target.value)}
+									onChange={handlePriceChange}
 									id="price"
 									className="flex-grow  p-2 border border-gray-400 rounded-lg shadow-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
 									required
@@ -480,7 +494,7 @@ const AddProperty = () => {
 								Property Location:
 							</label>
 							<div className="flex items-center gap-4">
-								<label className="text-sm font-semibold">Address Line 1</label>
+								<label className="text-sm font-semibold">Enter Address</label>
 								<p className="text-sm text-red-600">{addressErrorMsg}</p>
 							</div>
 							<AddressAutocomplete
@@ -488,7 +502,7 @@ const AddProperty = () => {
 								resultLimit={20}
 								countryCodes={['ca']} // Canada only
 							/>
-							<label className="text-sm font-semibold">Street</label>
+							<label className="text-sm font-semibold">Address Line 1</label>
 							<input
 								type="text"
 								value={addressLine1}

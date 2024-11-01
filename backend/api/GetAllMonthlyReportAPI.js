@@ -1,7 +1,7 @@
 /**
  * GetMonthlyReportAPI.js
  * Description: API to fetch monthly report data including number of bookings, total booking amount, and total revenue
- * Author: Lilian Huh
+ * Author: Doniyor
  * Date: 2024-10-30
  */
 
@@ -10,14 +10,14 @@ const router = express.Router();
 
 // Route for fetching monthly report data
 router.get('/', (req, res) => {
-  const { year, month } = req.query;
+	const { year, month } = req.query;
 
-  // Check if year and month are provided
-  if (!year || !month) {
-    return res.status(400).send('Year and month are required');
-  }
+	// Check if year and month are provided
+	if (!year || !month) {
+		return res.status(400).send('Year and month are required');
+	}
 
-  const query = `
+	const query = `
     SELECT 
       COUNT(r.rental_id) AS number_of_bookings,
       SUM(r.rent_base_price) AS total_booking_amount,
@@ -29,22 +29,22 @@ router.get('/', (req, res) => {
       AND MONTH(p.payout_date) = ?
   `;
 
-  // Execute the query
-  db.query(query, [year, month], (err, results) => {
-    if (err) {
-      console.error('Database error:', err);
-      return res.status(500).send(err);
-    }
+	// Execute the query
+	db.query(query, [year, month], (err, results) => {
+		if (err) {
+			console.error('Database error:', err);
+			return res.status(500).send(err);
+		}
 
-    if (results.length === 0) {
-      return res.status(404).send('No bookings found for the specified month');
-    }
+		if (results.length === 0) {
+			return res.status(404).send('No bookings found for the specified month');
+		}
 
-    const reportData = results[0];
-    reportData.total_revenue = parseFloat(reportData.total_revenue).toFixed(2); // Format revenue to 2 decimal places
+		const reportData = results[0];
+		reportData.total_revenue = parseFloat(reportData.total_revenue).toFixed(2); // Format revenue to 2 decimal places
 
-    return res.status(200).json(reportData);
-  });
+		return res.status(200).json(reportData);
+	});
 });
 
 module.exports = router;

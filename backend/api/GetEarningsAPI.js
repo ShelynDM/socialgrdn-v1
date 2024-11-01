@@ -43,15 +43,16 @@ router.get('/', (req, res) => {
 
 	// Execute the query
 	db.query(query, [userID], (err, results) => {
+		// Check for errors
 		if (err) {
 			console.error('Database error:', err);
 			return res.status(500).send(err);
 		}
-
+		// Check if there are no results
 		if (results.length === 0) {
 			return res.status(200).json({ message: 'You have no earnings' }); // Return a message instead of a 404
 		}
-
+		// Return the results
 		return res.status(200).json(results);
 	});
 });
@@ -59,7 +60,7 @@ router.get('/', (req, res) => {
 // New route for fetching detailed earnings by day
 router.get('/details', (req, res) => {
 	const { userID, year, month } = req.query;
-
+	// Check if userID, year, and month are provided
 	if (!userID || !year || !month) {
 		return res.status(400).send('userID, year, and month are required');
 	}
@@ -90,11 +91,12 @@ router.get('/details', (req, res) => {
 
 	// Execute the query
 	db.query(query, [userID, year, month], (err, results) => {
+		// Check for errors
 		if (err) {
 			console.error('Database error:', err);
 			return res.status(500).send(err);
 		}
-
+		// Check if there are no results
 		if (results.length === 0) {
 			return res
 				.status(404)
