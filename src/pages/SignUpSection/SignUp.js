@@ -18,6 +18,8 @@ import logo from '../../assets/logo/SocialGrdnLogo.png';
 import LongButton from '../../components/Buttons/longButton';
 import AddressAutocomplete from '../../components/AutoComplete/AddressAutoComplete';
 import BackButton from '../../components/Buttons/backButton';
+import { IoArrowBackSharp } from "react-icons/io5";
+
 
 export default function SignUp() {
 	const [formData, setFormData] = useState({
@@ -186,12 +188,10 @@ export default function SignUp() {
 
 	return (
 		<div className="bg-main-background relative">
-			<div className="flex flex-col items-center justify-center gap-2 min-h-screen mx-2 mt-14 bg-main-background ">
-				<div className="mt-8 px-2 fixed top-0 left-0 w-auto sm:w-2/4 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-main-background ">
-					<BackButton />
-				</div>
-
+			<div className="flex flex-col items-center justify-center gap-2 min-h-screen mx-2 pt-8 bg-main-background ">
+				<BackButton />
 				<div className="flex flex-col items-center justify-center gap-2 min-h-screen m-2 pb-20 bg-main-background">
+
 					<strong className="text-3xl">Welcome!</strong>
 					<img src={logo} alt="Social Grdn Logo" className="w-auto h-auto" />
 
