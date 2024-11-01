@@ -9,6 +9,7 @@ import React, { useEffect, useState } from 'react';
 import { auth } from '../_utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { Navigate } from 'react-router-dom';
+import logo from '../assets/logo/SocialGrdnLogo.png';
 
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const [loading, setLoading] = useState(true);
@@ -50,9 +51,14 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     return () => unsubscribe();
   }, []);
 
-  // If the authentication or role fetching is still loading, display a loading indicator
+  // If the authentication or role fetching is still loading, display a loading screen with the logo
   if (loading) {
-    return <div>Loading...</div>;
+    return     <div className='bg-main-background'>
+    <div className="flex flex-col items-center justify-center min-h-screen m-2 pb-20">
+      <img src={logo} alt="Social Grdn Logo" className="w-auto h-auto m-4 opacity-15" />
+    </div>
+  </div>
+;
   }
 
   // If the user is not verified, redirect them to the VerifyEmail page
