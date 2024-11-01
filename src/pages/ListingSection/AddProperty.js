@@ -50,15 +50,15 @@ const AddProperty = () => {
 	const [cityZoneData, setCityZoneData] = useState({});
 
 	const handlePriceChange = (e) => {
-        const value = e.target.value;
-        if (value.length > 7) {
-            setPropertyPriceErrorMsg('Price cannot exceed 7 digits');
-            setPrice(value.slice(0, 7));
-        } else {
-            setPropertyPriceErrorMsg('');
-            setPrice(value);
-        }
-    };
+		const value = e.target.value;
+		if (value.length > 7) {
+			setPropertyPriceErrorMsg('Price cannot exceed 7 digits');
+			setPrice(value.slice(0, 7));
+		} else {
+			setPropertyPriceErrorMsg('');
+			setPrice(value);
+		}
+	};
 
 	// Combine both effects into one organized effect
 	useEffect(() => {
@@ -113,12 +113,12 @@ const AddProperty = () => {
 			setCountry(addressData.country);
 			setLatitude(addressData.latitude.toString());
 			setLongitude(addressData.longitude.toString());
-	
+
 			// Auto-select zone based on city
 			const cityEntry = Object.entries(cityZoneData).find(
 				([, data]) => data.name.toLowerCase() === addressData.city.toLowerCase()
 			);
-	
+
 			if (cityEntry) {
 				const [, cityData] = cityEntry;
 				setSelectedZone({
@@ -135,9 +135,9 @@ const AddProperty = () => {
 			setCountry('');
 			setLatitude('');
 			setLongitude('');
-			setSelectedZone({   
+			setSelectedZone({
 				value: '',
-				color: ''
+				color: '',
 			});
 			setAddressErrorMsg('ERROR: Please select an address in Alberta');
 		}
