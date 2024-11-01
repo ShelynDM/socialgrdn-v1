@@ -16,9 +16,13 @@ import Sprout from '../../assets/navbarAssets/sprout.png';
 
 // Function to display the ListingConfirmation page
 export default function ListingConfirmation() {
+	// Use the useNavigate hook to navigate to a different page
 	const navigate = useNavigate();
-	const { propertyId } = useParams(); // Get property ID from URL
+	// Use the useParams hook to get the property ID from the URL
+	const { propertyId } = useParams();
+	// Use the useUser hook to get the user ID
 	const { userID } = useUser();
+	// Use the useState hook to set the message and property name
 	const [message, setMessage] = useState(null);
 	const [property_name, setPropertyName] = useState(null);
 
@@ -29,17 +33,17 @@ export default function ListingConfirmation() {
 
 	// Fetch the property status once the component mounts
 	useEffect(() => {
+		// Function to fetch the property status from the API
 		const fetchStatus = async () => {
 			try {
 				console.log('Fetching property status for property ID:', propertyId); // Log the request initiation
-
 				const response = await fetch(
 					`/api/getPropStatus?property_id=${propertyId}`
 				);
+				// Log the API response
 				const data = await response.json();
-
 				console.log('Response data:', data); // Log the API response data
-
+				// Check if the response is OK
 				if (response.ok) {
 					// Check the property status and set the message accordingly
 					if (data.status === '1') {
@@ -60,6 +64,7 @@ export default function ListingConfirmation() {
 			}
 		};
 
+		// Call the fetchStatus function
 		fetchStatus();
 	}, [propertyId]);
 
