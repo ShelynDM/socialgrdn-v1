@@ -18,9 +18,6 @@ import { LuMapPin } from "react-icons/lu";
 import LongButton from "../../components/Buttons/longButton";
 import zoneFormat from "../../components/ZoneColor/zoneColor";
 
-import ExampleImage from "../../assets/exampleAssets/imgExample.jpg";   //to be deleted
-
-
 export default function RentFailed() {
     const navigate = useNavigate();
 
@@ -121,7 +118,7 @@ export default function RentFailed() {
                             </div>
                             {/* Listing Image */}
                             <div className="w-auto h-52 flex justify-center items-center mx-4 p-1">
-                                <img className="w-full h-full rounded-lg border-2 border-gray-200" src={ExampleImage} alt="Garden" />
+                                <img className="w-full h-auto max-w-full max-h-full rounded-lg border-2 border-gray-200" src={rental.image_url} alt="Garden" />
                             </div>
                         </div>
                     </div>

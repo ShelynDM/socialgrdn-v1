@@ -10,8 +10,8 @@ import { useUser } from "../../UserContext";
 import { SlArrowRight } from "react-icons/sl";
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
-import GreenSprout from "../../assets/navbarAssets/sproutGreen.png";
-
+import Sprout from "../../assets/navbarAssets/sprout.png";
+import { IoCloseOutline } from "react-icons/io5";
 import BackMoreButton from "../../components/Buttons/backMoreButton";
 
 export default function Payouts() {
@@ -30,7 +30,7 @@ export default function Payouts() {
                 console.log("No payouts found for the user");
                 setRenterPayouts([]);
             } else {
-            setRenterPayouts(data);
+                setRenterPayouts(data);
             }
         } catch (error) {
             console.error("Error fetching payouts:", error);
@@ -84,91 +84,102 @@ export default function Payouts() {
             <div className="mt-8"> {/* Reduced margin-top for BackMoreButton */}
                 <BackMoreButton />
             </div>
+            <div className="flex flex-col items-center justify-start gap-2"> {/* Removed min-h-screen and adjusted justify-content */}
+                <div className="px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3">
+                    <div className="pb-2"> {/* Reduced padding-bottom */}
+                        <p className="text-2xl font-bold text-center">Payouts</p>
+                    </div>
+                    <table className="min-w-full bg-white align-middle ">
+                        <thead>
+                            <tr>
+                                <th className="py-2 px-4 w-1/4 border-b text-left">Year</th>
+                                <th className="py-2 px-4 w-1/4 border-b text-left">Month</th>
+                                <th className="py-2 px-4 w-1/4 border-b text-right">Total (CAD)</th>
+                                <th className="py-2 px-4 w-1/4 border-b text-center">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {renterPayouts.map((payout, index) => {
+                                const showYear = payout.year !== lastYear;
+                                lastYear = payout.year;
 
-            <div className="flex flex-col gap-2 min-h-screen pb-20 pt-10">
-                <div className="pb-5">
-                    <p className="text-2xl font-bold text-center">Payouts</p>
+                                return (
+
+                                    <tr key={index}>
+                                        <td className="py-2 px-4 border-b">
+                                            {showYear ? payout.year : ""}
+                                        </td>
+                                        <td className="py-2 px-4 border-b">{payout.month}</td>
+                                        <td className="py-2 px-4 border-b text-right font-bold">
+                                            {payout.amount}
+                                        </td>
+                                        <td className="py-2 px-4 border-b text-center">
+                                            <button
+                                                onClick={() => openDetails(payout.month, payout.year)}
+                                            >
+                                                <SlArrowRight className="text-gray-700" />
+                                            </button>
+                                        </td>
+
+                                    </tr>
+
+                                );
+                            })}
+                        </tbody>
+                    </table>
                 </div>
-
-                <table className="min-w-full bg-white">
-                    <thead>
-                        <tr>
-                            <th className="py-2 px-4 border-b text-left">Year</th>
-                            <th className="py-2 px-4 border-b text-left">Month</th>
-                            <th className="py-2 px-4 border-b text-right">Total (CAD)</th>
-                            <th className="py-2 px-4 border-b text-center">Details</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {renterPayouts.map((payout, index) => {
-                            const showYear = payout.year !== lastYear;
-                            lastYear = payout.year;
-
-                            return (
-                                <tr key={index}>
-                                    <td className="py-2 px-4 border-b">
-                                        {showYear ? payout.year : ""}
-                                    </td>
-                                    <td className="py-2 px-4 border-b">{payout.month}</td>
-                                    <td className="py-2 px-4 border-b text-right font-bold">
-                                        {payout.amount}
-                                    </td>
-                                    <td className="py-2 px-4 border-b text-center">
-                                        <button
-                                            className="text-blue-500"
-                                            onClick={() => openDetails(payout.month, payout.year)}
-                                        >
-                                            <SlArrowRight className="text-gray-700" />
-                                        </button>
-                                    </td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
             </div>
 
-            {selectedPayout && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-                    <div className="w-96 bg-white p-6 rounded-lg shadow-lg">
-                        <h2 className="text-xl font-bold mb-4">
-                            {selectedPayout.month}, {selectedPayout.year}
-                        </h2>
 
-                        <div className="mb-4">
-                            {selectedPayout.details.map((detail, index) => (
-                                <div key={index} className="flex justify-between py-2">
-                                    <span>
-                                        {new Date(
-                                            `${selectedPayout.year}-${selectedPayout.month}-${detail.day}`
-                                        ).toLocaleString("default", {
-                                            month: "short",
-                                            day: "numeric",
-                                        })}
-                                    </span>
-                                    <span>${detail.amount}</span>
-                                </div>
-                            ))}
-                        </div>
 
-                        <div className="flex justify-between font-bold text-lg mt-4">
-                            <span>Total</span>
-                            <span>${selectedPayout.total}</span>
-                        </div>
+            <NavBar ProfileColor={"#00B761"} SproutPath={Sprout} />
+            {/* Modal for detailed payouts */}
+            {
+                selectedPayout && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                        <div className="w-96 bg-white p-6 rounded-lg shadow-lg">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-xl font-bold">
+                                    {selectedPayout.month} {selectedPayout.year}
+                                </h3>
+                                <button
+                                    onClick={closeDetails}
+                                    className="text-gray-600 hover:text-gray-900 p-2 rounded"
+                                >
+                                    <IoCloseOutline />
+                                </button>
+                            </div>
 
-                        <div className="mt-6 flex justify-end">
-                            <button
-                                className="bg-red-500 text-white px-4 py-2 rounded"
-                                onClick={closeDetails}
-                            >
-                                Close
-                            </button>
+                            <table className="min-w-full bg-white align-middle">
+                                <thead>
+                                    <tr>
+                                        <th className="py-2 px-4 border-b text-left">Day</th>
+                                        <th className="py-2 px-4 border-b text-right">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {selectedPayout.details.map((detail, index) => (
+                                        <tr key={detail.day}>
+                                            <td className="py-2 px-4">{detail.day}</td>
+                                            <td className="py-2 px-4 text-right font-bold">
+                                                CAD {Number(detail.amount).toFixed(2)}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+
+
+                            <div className="flex justify-between font-bold text-lg mt-4">
+                                <span>Total</span>
+                                <span>${selectedPayout.total}</span>
+                            </div>
+
+
                         </div>
                     </div>
-                </div>
-            )}
-
-            <NavBar SproutPath={GreenSprout} />
-        </div>
+                )
+            }
+        </div >
     );
 }

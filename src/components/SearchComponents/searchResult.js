@@ -27,6 +27,8 @@ export default function SearchResult({propertyName, addressLine1, city, province
                         <h1 className="font-bold text-lg ">{propertyName}</h1>
                         <p className="text-gray-700 text-sm">{addressLine1} {city} {province}</p>
                     </div>
+
+                    {/* View button to view the respective property */}
                     <div>
                         <button
                             onClick={handleButtonClick}

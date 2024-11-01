@@ -6,7 +6,6 @@
  * Date: 2024-10-23
  */
 
-"use client"
 import React, { useState, useEffect } from "react";
 import InAppLogo from "../../components/Logo/inAppLogo";
 import NavBar from "../../components/Navbar/navbar";
@@ -17,11 +16,9 @@ import { FaLocationDot, FaRegEnvelope } from "react-icons/fa6";
 import { IoRibbonOutline } from "react-icons/io5";
 import { GrMapLocation } from "react-icons/gr";
 import LongButton from "../../components/Buttons/longButton";
-//import BackButton from "../../components/Buttons/backButton";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../_utils/firebase";
-//import { PiFolder } from "react-icons/pi";
 import { useUser } from "../../UserContext";
 
 export default function Profile() {
@@ -29,6 +26,9 @@ export default function Profile() {
     const [lastname, setLastName] = useState('');
     const [username, setUsername] = useState('');
     const [userAddress, setUserAddress] = useState('');
+    const [userCity, setUserCity] = useState('');
+    const [userProvince, setUserProvince] = useState('');
+    const [userPostalCode, setUserPostalCode] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [profession, setProfession] = useState('');
     const [createdAt, setCreatedAt] = useState('');
@@ -54,6 +54,9 @@ export default function Profile() {
                 setLastName(userData.last_name);
                 setUsername(userData.username);
                 setUserAddress(userData.address_line1);
+                setUserCity(userData.city);
+                setUserProvince(userData.province);
+                setUserPostalCode(userData.postal_code);
                 setPhoneNumber(userData.phone_number);
                 setProfession(userData.profession);
     
@@ -106,7 +109,7 @@ export default function Profile() {
                     <div className="flex items-center space-x-4 p-3">
                         <FaLocationDot className="text-1" />
                         {userAddress ?
-                            <h1 className="text-lg">{userAddress}</h1> :
+                            <h1 className="text-lg">{userAddress}, {userCity}, {userProvince} <p className="hidden">{userPostalCode}</p></h1> :
                             <h1 className="text-lg text-slate-600">Address</h1>
                         }
                     </div>
