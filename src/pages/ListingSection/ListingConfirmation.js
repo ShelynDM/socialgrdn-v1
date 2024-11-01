@@ -9,7 +9,6 @@
 // Import statements
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'; // Import useParams
-import { useUser } from '../../UserContext';
 import InAppLogo from '../../components/Logo/inAppLogo';
 import NavBar from '../../components/Navbar/navbar';
 import Sprout from '../../assets/navbarAssets/sprout.png';
@@ -20,8 +19,6 @@ export default function ListingConfirmation() {
 	const navigate = useNavigate();
 	// Use the useParams hook to get the property ID from the URL
 	const { propertyId } = useParams();
-	// Use the useUser hook to get the user ID
-	const { userID } = useUser();
 	// Use the useState hook to set the message and property name
 	const [message, setMessage] = useState(null);
 	const [property_name, setPropertyName] = useState(null);

@@ -127,6 +127,9 @@ export default function Payouts() {
                             })}
                         </tbody>
                     </table>
+                    {!renterPayouts.length ? (
+                        <p className="italic text-lg text-center text-gray-400">No payouts to display</p>
+                    ) : null}
                 </div>
             </div>
 

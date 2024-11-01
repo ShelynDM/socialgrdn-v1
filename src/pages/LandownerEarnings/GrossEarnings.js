@@ -74,7 +74,7 @@ export default function GrossEarnings() {
 		if (userId) {
 			fetchGrossEarnings();
 		}
-	}, [userId]);
+	}, [userId, error]);
 
 	// Group earnings by year
 	const groupedEarnings = earnings.reduce((acc, earning) => {
@@ -137,6 +137,11 @@ export default function GrossEarnings() {
 					<div className="pb-6">
 						<p className="text-2xl font-bold text-center">Past Earnings</p>
 					</div>
+					{!earnings.length && !error ? (
+						<p className="italic text-lg text-center text-gray-400">No earnings to display</p>
+					) : (
+						null
+					)}
 					{error ? (
 						<p className="text-xl text-center">{error}</p>
 					) : (
