@@ -28,6 +28,7 @@ export default function Profile() {
     const [userAddress, setUserAddress] = useState('');
     const [userCity, setUserCity] = useState('');
     const [userProvince, setUserProvince] = useState('');
+    const [userPostalCode, setUserPostalCode] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [profession, setProfession] = useState('');
     const [createdAt, setCreatedAt] = useState('');
@@ -55,6 +56,7 @@ export default function Profile() {
                 setUserAddress(userData.address_line1);
                 setUserCity(userData.city);
                 setUserProvince(userData.province);
+                setUserPostalCode(userData.postal_code);
                 setPhoneNumber(userData.phone_number);
                 setProfession(userData.profession);
     
@@ -107,7 +109,7 @@ export default function Profile() {
                     <div className="flex items-center space-x-4 p-3">
                         <FaLocationDot className="text-1" />
                         {userAddress ?
-                            <h1 className="text-lg">{userAddress}, {userCity}, {userProvince}</h1> :
+                            <h1 className="text-lg">{userAddress}, {userCity}, {userProvince} <p className="hidden">{userPostalCode}</p></h1> :
                             <h1 className="text-lg text-slate-600">Address</h1>
                         }
                     </div>

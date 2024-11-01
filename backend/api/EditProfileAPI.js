@@ -11,7 +11,7 @@ const router = express.Router();
 // Update user profile based on userID
 router.patch('/', (req, res) => {
   const { userID } = req.query;
-  const { first_name, last_name, username, address_line1, phone_number, profession } = req.body;
+  const { first_name, last_name, username, address_line1, city, province, postal_code, phone_number, profession } = req.body;
 
   // Check if userID is provided
   if (!userID) {
@@ -21,11 +21,11 @@ router.patch('/', (req, res) => {
   // SQL query to update the user profile with the given fields
   const query = `
     UPDATE UserProfile 
-    SET first_name = ?, last_name = ?, username = ?, address_line1 = ?, phone_number = ?, profession = ?
+    SET first_name = ?, last_name = ?, username = ?, address_line1 = ?, city = ?, province = ?, postal_code = ?,  phone_number = ?, profession = ?
     WHERE userID = ?
   `;
 
-  const values = [first_name, last_name, username, address_line1, phone_number, profession, userID];
+  const values = [first_name, last_name, username, address_line1, city, province, postal_code, phone_number, profession, userID];
 
   // Execute the SQL query
   db.query(query, values, (err, result) => {
