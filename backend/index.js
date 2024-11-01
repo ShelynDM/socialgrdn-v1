@@ -43,6 +43,13 @@ const getUserRoleRoutes = require('./api/GetUserRoleAPI');
 const getAllUsersRoutes = require('./api/GetAllUsersAPI');
 const HandleUserStatusAPI = require('./api/HandleUserStatusAPI');
 
+const getAllEarningsReportAPI = require('./api/GetAllEarningsReportAPI');
+const getAllMonthlyReportAPI = require('./api/GetAllMonthlyReportAPI');
+ 
+ 
+
+ 
+
 const app = express();
 const port = 3000;
 
@@ -82,7 +89,8 @@ app.use('/api/getUserRole', getUserRoleRoutes);
 app.use('/api/getAllUsers', getAllUsersRoutes);
 app.use('/api/handleUserStatus', HandleUserStatusAPI);
 
-
+app.use('/api/getAllEarningsReport', getAllEarningsReportAPI);
+app.use('/api/getAllMonthlyReport', getAllMonthlyReportAPI);
 // The "catchall" handler
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../build/index.html'));
