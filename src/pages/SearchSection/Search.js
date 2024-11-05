@@ -209,7 +209,6 @@ export default function Search() {
 
 
 
-
     // ------------------- Display Property Results Based on Randomly and Based on user Location ------------------- //
 
     // Filter results based on user's location or display random properties if location is not available

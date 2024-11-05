@@ -20,7 +20,7 @@ router.get('/', (req, res) => {
   //sql query for getting the property details
   const query = `
   SELECT 
-      p.property_id, p.property_name, p.description, p.growth_zone,
+      p.property_id, p.property_name, p.description, p.growth_zone, p.userID,
       CONCAT(p.dimensions_length, ' L x ', p.dimensions_width, ' W x ', p.dimensions_height, ' H') AS dimension, 
       p.soil_type, p.amenities, p.restrictions, p.rent_base_price,
       l.address_line1, l.city, l.province, l.postal_code, l.country,
