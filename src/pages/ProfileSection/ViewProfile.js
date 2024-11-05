@@ -7,7 +7,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { FaUser, FaUserCircle, FaUserTie } from 'react-icons/fa';
+import { FaUser, FaUserCircle, FaUserTie, FaRegEnvelope } from 'react-icons/fa';
 import { IoRibbonOutline } from 'react-icons/io5';
 import InAppLogo from '../../components/Logo/inAppLogo';
 import NavBar from '../../components/Navbar/navbar';
@@ -17,12 +17,14 @@ import usePropertyResult from '../../components/SearchComponents/propertyResult'
 import SearchBar from '../../components/SearchComponents/search';
 import { IoArrowBackSharp } from 'react-icons/io5';
 import { useNavigate, useParams } from 'react-router-dom';
+
 import logo from '../../assets/logo/SocialGrdnLogo.png';
 
 export default function ViewProfile() {
 	const [first_name, setFirstName] = useState("");
 	const [last_name, setLastName] = useState("");
 	const [username, setUsername] = useState("");
+	const [email, setEmail] = useState("");
 	const [city, setCity] = useState("");
 	const [province, setProvince] = useState("");
 	const [profession, setProfession] = useState("");
@@ -114,6 +116,7 @@ export default function ViewProfile() {
                 setUsername(userData.username);
                 setCity(userData.city);
                 setProvince(userData.province);
+				setEmail(userData.email);
                 //setPhoneNumber(userData.phone_number);
                 setProfession(userData.profession);
     
@@ -206,23 +209,27 @@ export default function ViewProfile() {
 				<div className="w-full px-4 sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 mb-24">
 					<div className="flex justify-center">
 						<div className="flex flex-col items-start justify-start">
-							<div className="flex items-center space-x-4 p-3">
+							<div className="flex items-center space-x-4 py-2 px-3">
 								<FaUser className="text-2xl" />
 								<h1 className="text-lg">{first_name} {last_name}</h1>
 							</div>
-							<div className="flex items-center space-x-4 p-3">
+							<div className="flex items-center space-x-4  py-2 px-3">
 								<FaUserCircle className="text-2xl" />
 								<h1 className="text-lg">{username}</h1>
 							</div>
-							<div className="flex items-center space-x-4 p-3">
+							<div className="flex items-center space-x-4  py-2 px-3">
+								<FaRegEnvelope className="text-2xl" />
+								<h1 className="text-lg">{email}</h1>
+                    		</div>
+							<div className="flex items-center space-x-4  py-2 px-3">
 								<FaLocationDot className="text-2xl" />
 								<h1 className="text-lg">{city}, {province}</h1>
 							</div>
-							<div className="flex items-center space-x-4 p-3">
+							<div className="flex items-center space-x-4  py-2 px-3">
 								<FaUserTie className="text-2xl" />
 								<h1 className="text-lg">{profession}</h1>
 							</div>
-							<div className="flex items-center space-x-4 p-3">
+							<div className="flex items-center space-x-4 py-2 px-3">
 								<IoRibbonOutline className="text-2xl" />
 								<h1 className="text-lg">{date_joined}</h1>
 							</div>
@@ -231,11 +238,14 @@ export default function ViewProfile() {
 					<div className="mt-8">
 						<h1 className="text-xl font-bold">{first_name}'s Listings</h1>
 					</div>
+
+					<div>
 					<div className="flex overflow-x-scroll space-x-4 mt-4">
 						{propertyPerUser.map((listing, index) => (
 							<div
 								key={index}
 								className="w-64 flex-shrink-0 bg-white rounded-lg shadow-lg p-4 relative"
+								onClick={() => handlePropertyClick(listing.property_id)}
 							>
 								<div className="flex justify-between items-center mb-2">
 									<h2 className="text-lg font-semibold">{listing.property_name}</h2>
@@ -260,6 +270,8 @@ export default function ViewProfile() {
 								</div>
 							</div>
 						))}
+					</div>
+
 					</div>
 				</div>
 			</div>
