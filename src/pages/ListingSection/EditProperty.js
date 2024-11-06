@@ -134,10 +134,10 @@ const EditProperty = () => {
             setHeight(height);
             
             setSoilType(propertyData.soil_type);
-            setAmenities(propertyData.amenities?.join(', ') || '');
+            setAmenities(propertyData.amenities);
             // Set possible crops from the crops array
             setPossibleCrops(propertyData.crops || []);
-            setRestrictions(propertyData.restrictions?.join(', ') || '');
+            setRestrictions(propertyData.restrictions);
             setPrice(propertyData.rent_base_price?.toString() || '');
             setPrimaryImageUrl(propertyData.primaryImage || '');
             setOtherImageUrls(propertyData.otherImages || []);
@@ -198,6 +198,7 @@ const EditProperty = () => {
             setCountry(addressData.country);
             setLatitude(addressData.latitude.toString());
             setLongitude(addressData.longitude.toString());
+            setAddressErrorMsg('');
 
             const cityEntry = Object.entries(cityZoneData).find(
                 ([, data]) => data.name.toLowerCase() === addressData.city.toLowerCase()
@@ -211,6 +212,18 @@ const EditProperty = () => {
                 });
             }
         } else {
+            			// set it to blank if its error
+			setAddressLine1('');
+			setCity('');
+			setProvince('');
+			setPostalCode('');
+			setCountry('');
+			setLatitude('');
+			setLongitude('');
+			setSelectedZone({
+				value: '',
+				color: '',
+			});
             setAddressErrorMsg('ERROR: Please select an address in Alberta');
         }
     };
