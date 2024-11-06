@@ -31,63 +31,64 @@ const ViewProperty = () => {
 	const { id } = useParams();
 	const navigate = useNavigate();
 
-	  // ------------------- Imported Function to handle search query ------------------- //
-  // Hooks that are used to get the search functionality
-  const propertyResult = usePropertyResult();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
 
-  // Main search query handler with fallback to default results logic
-  const handleSearchQueryChange = (event) => {
-    const query = event.target.value.toLowerCase();
-    setSearchQuery(query);
+	// ------------------- Imported Function to handle search query ------------------- //
+	// Hooks that are used to get the search functionality
+	const propertyResult = usePropertyResult();
+	const [searchQuery, setSearchQuery] = useState("");
+	const [suggestions, setSuggestions] = useState([]);
 
-    if (query.trim() === "") {
-      setSuggestions([]);
-      navigate("/Search");
-    } else {
-      // Collect individual words from relevant fields of all properties
-      const wordSet = new Set(); // Use Set to avoid duplicates
+	// Main search query handler with fallback to default results logic
+	const handleSearchQueryChange = (event) => {
+		const query = event.target.value.toLowerCase();
+		setSearchQuery(query);
 
-      propertyResult.forEach((result) => {
-        Object.values(result).forEach((value) => {
-          if (typeof value === "string") {
-            // Split strings into individual words and store them in the Set
-            value.split(/\s+/).forEach((word) => {
-              if (word.toLowerCase().startsWith(query)) {
-                wordSet.add(word);
-              }
-            });
-          }
-        });
-      });
+		if (query.trim() === "") {
+		setSuggestions([]);
+		navigate("/Search");
+		} else {
+		// Collect individual words from relevant fields of all properties
+		const wordSet = new Set(); // Use Set to avoid duplicates
 
-      // Convert the Set to an array and limit the suggestions to 10 words
-      setSuggestions(Array.from(wordSet).slice(0, 10));
-    }
-  };
+		propertyResult.forEach((result) => {
+			Object.values(result).forEach((value) => {
+			if (typeof value === "string") {
+				// Split strings into individual words and store them in the Set
+				value.split(/\s+/).forEach((word) => {
+				if (word.toLowerCase().startsWith(query)) {
+					wordSet.add(word);
+				}
+				});
+			}
+			});
+		});
 
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter" && searchQuery.trim()) {
-      navigate(`/Search?query=${encodeURIComponent(searchQuery.trim())}`);
-    }
-  };
+		// Convert the Set to an array and limit the suggestions to 10 words
+		setSuggestions(Array.from(wordSet).slice(0, 10));
+		}
+	};
 
-  // Handle suggestion click
-  const handleSuggestionClick = (query) => {
-    setSearchQuery(query); // Set the clicked suggestion as the search query
-    setSuggestions([]); // Clear suggestions
-    navigate(`/Search?query=${encodeURIComponent(query)}`);
-  };
+	const handleKeyDown = (event) => {
+		if (event.key === "Enter" && searchQuery.trim()) {
+		navigate(`/Search?query=${encodeURIComponent(searchQuery.trim())}`);
+		}
+	};
 
-  // Handle Search Icon Click
-  const handleSearchIconClick = () => {
-    const query = searchQuery.trim();
-    navigate(`/Search?query=${encodeURIComponent(query)}`);
-  };
+	// Handle suggestion click
+	const handleSuggestionClick = (query) => {
+		setSearchQuery(query); // Set the clicked suggestion as the search query
+		setSuggestions([]); // Clear suggestions
+		navigate(`/Search?query=${encodeURIComponent(query)}`);
+	};
+
+	// Handle Search Icon Click
+	const handleSearchIconClick = () => {
+		const query = searchQuery.trim();
+		navigate(`/Search?query=${encodeURIComponent(query)}`);
+	};
 
 
-  // ------------------- End of Imported Function to handle search query ------------------- //
+  	// ------------------- End of Imported Function to handle search query ------------------- //
 
 	// Fetch property details
 	useEffect(() => {
@@ -117,6 +118,11 @@ const ViewProperty = () => {
 		};
 		fetchProperty();
 	}, [id]);
+
+	// Handle Other User Profile Click
+	const handleOtherUserProfileClick = (otherUserId) => {
+		navigate(`/ViewProfile/${otherUserId}`);
+	};
 
 	// Handle date range selection
 	const handleDateRangeSelect = ({ startDate, endDate, monthsDiff }) => {
@@ -333,11 +339,14 @@ const ViewProperty = () => {
 								</div>
 								<div>
 									<h3 className="font-medium text-gray-900">Owner</h3>
-									<p className="text-gray-600">
+									<div className='flex'>
+										<p className="text-green-600" 
+										onClick={() => handleOtherUserProfileClick(property.userID)}>
 										{property.owner?.firstName && property.owner?.lastName
 											? `${property.owner.firstName} ${property.owner.lastName}`
 											: 'Not specified'}
-									</p>
+										</p>
+									</div>
 								</div>
 							</section>
 

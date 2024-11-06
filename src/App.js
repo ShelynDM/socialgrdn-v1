@@ -136,7 +136,7 @@ export default function App() {
 								}
 							/>
 							<Route
-								path="/ViewProfile"
+								path="/ViewProfile/:id"
 								element={
 									<ProtectedRoute allowedRoles={[1, 2]}>
 										<ViewProfile />

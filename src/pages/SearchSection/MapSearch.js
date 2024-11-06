@@ -6,7 +6,7 @@ import InAppLogo from '../../components/Logo/inAppLogo'; // Import custom logo c
 import NavBar from '../../components/Navbar/navbar'; // Import custom navigation bar component
 import Sprout from '../../assets/navbarAssets/sprout.png'; // Import image asset for the navigation bar
 import SearchResult from '../../components/SearchComponents/searchResult'; // Import search result component
-import { FaMapMarkerAlt, FaMapPin } from 'react-icons/fa'; // Import icons for recenter button and markers
+import { FaMapMarkerAlt } from 'react-icons/fa'; // Import icons for recenter button and markers
 
 // Define the libraries required for Google Maps (places API for autocomplete)
 const libraries = ['places'];
@@ -46,18 +46,6 @@ const handleStyle = {
   borderRadius: '5px', // Rounded corners for the handle
   cursor: 'pointer', // Pointer cursor to indicate interactivity
   zIndex: 1000, // High z-index to ensure it's above other elements
-};
-
-// Function to generate Material Symbols as a marker icon
-const getMarkerIcon = (color) => {
-  return {
-    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48" fill="${color}" stroke="black" stroke-width="2">
-        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/>
-      </svg>
-    `),
-    scaledSize: new window.google.maps.Size(40, 40), // Adjust size if needed
-  };
 };
 
 // Custom hook to fetch search results from the backend
