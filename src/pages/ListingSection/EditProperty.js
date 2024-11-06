@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import { ref as databaseRef, onValue } from 'firebase/database';
 import { storage, realtimeDb } from '../../_utils/firebase';
 import InAppLogo from '../../components/Logo/inAppLogo';
@@ -23,6 +23,8 @@ const EditProperty = () => {
     // Initialize image arrays as empty arrays to avoid undefined issues
     const [otherImages, setOtherImages] = useState([]); // Array of image files
     const [otherImageUrls, setOtherImageUrls] = useState([]); // Array of URLs for the other images
+
+    const [imagesToDelete, setImagesToDelete] = useState([]);
     
     // Initialize selected zone with empty values to maintain consistent structure
     const [selectedZone, setSelectedZone] = useState({ value: '', color: '' }); // Zone with value and color
@@ -66,6 +68,29 @@ const EditProperty = () => {
     const [possibleCropsErrorMsg, setPossibleCropsErrorMsg] = useState('');
     
 
+    const deleteImageFromStorage = async (imageUrl) => {
+        try {
+            // Extract the path from the Firebase Storage URL
+            const imageRef = ref(storage, imageUrl);
+            await deleteObject(imageRef);
+            console.log('Image deleted successfully from storage');
+        } catch (error) {
+            console.error('Error deleting image from storage:', error);
+        }
+    };
+
+    const handleDeleteExistingImage = (urlToDelete, index) => {
+        // Add URL to images to be deleted on submit
+        setImagesToDelete(prev => [...prev, urlToDelete]);
+        // Remove from UI immediately
+        setOtherImageUrls(prev => prev.filter((_, i) => i !== index));
+    };
+
+    // Function to handle deletion of newly added images
+    const handleDeleteNewImage = (index) => {
+        setOtherImages(prev => prev.filter((_, i) => i !== index));
+    };
+    
     // Fetch existing property data
     useEffect(() => {
         const fetchPropertyData = async () => {
@@ -270,10 +295,17 @@ const EditProperty = () => {
         }
 
         try {
+            // Delete all images marked for deletion
+            await Promise.all(imagesToDelete.map(imageUrl => deleteImageFromStorage(imageUrl)));
+
             let updatedPrimaryImageUrl = primaryImageUrl;
             let updatedOtherImageUrls = [...otherImageUrls];
 
             if (primaryImage) {
+                
+                if (primaryImageUrl) {
+                    await deleteImageFromStorage(primaryImageUrl);
+                }
                 updatedPrimaryImageUrl = await uploadImage(
                     primaryImage,
                     `property-images/${id}/PrimaryPhoto/primary-${primaryImage.name}`
@@ -427,20 +459,36 @@ const EditProperty = () => {
                             />
                             <div className="flex flex-wrap gap-2">
                                 {otherImages.map((image, index) => (
-                                    <img
-                                        key={`new-${index}`}
-                                        src={URL.createObjectURL(image)}
-                                        alt={`Other ${index + 1}`}
-                                        className="w-20 h-20 object-cover rounded-lg"
-                                    />
+                                    <div key={`new-${index}`} className="relative">
+                                        <img
+                                            src={URL.createObjectURL(image)}
+                                            alt={`Other ${index + 1}`}
+                                            className="w-20 h-20 object-cover rounded-lg"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => handleDeleteNewImage(index)}
+                                            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full text-white flex items-center justify-center hover:bg-red-600 focus:outline-none"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
                                 ))}
                                 {otherImageUrls.map((url, index) => (
-                                    <img
-                                        key={`existing-${index}`}
-                                        src={url}
-                                        alt={`Other ${index + 1}`}
-                                        className="w-20 h-20 object-cover rounded-lg"
-                                    />
+                                    <div key={`existing-${index}`} className="relative">
+                                        <img
+                                            src={url}
+                                            alt={`Other ${index + 1}`}
+                                            className="w-20 h-20 object-cover rounded-lg"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => handleDeleteExistingImage(url, index)}
+                                            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full text-white flex items-center justify-center hover:bg-red-600 focus:outline-none"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
                                 ))}
                             </div>
                         </div>
