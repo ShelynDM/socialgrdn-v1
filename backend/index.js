@@ -45,10 +45,6 @@ const HandleUserStatusAPI = require('./api/HandleUserStatusAPI');
 
 const getAllEarningsReportAPI = require('./api/GetAllEarningsReportAPI');
 const getAllMonthlyReportAPI = require('./api/GetAllMonthlyReportAPI');
- 
- 
-
- 
 
 const app = express();
 const port = 3000;

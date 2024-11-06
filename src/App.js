@@ -194,7 +194,7 @@ export default function App() {
 								}
 							/>
 							<Route
-								path="/EditProperty"
+								path="/EditProperty/:id"
 								element={
 									<ProtectedRoute allowedRoles={[0, 1, 2]}>
 										<EditProperty />

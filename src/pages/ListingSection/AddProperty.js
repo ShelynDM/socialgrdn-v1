@@ -48,7 +48,8 @@ const AddProperty = () => {
 	const [restrictions, setRestrictions] = useState('');
 	const [price, setPrice] = useState('');
 	const [cityZoneData, setCityZoneData] = useState({});
-
+	
+//Function to handle the check condition for number of digits
 	const handlePriceChange = (e) => {
 		const value = e.target.value;
 		if (value.length > 7) {
@@ -362,7 +363,7 @@ const AddProperty = () => {
 						</div>
 					) : (
 						<div className="w-full p-2 border border-gray-400 rounded-lg shadow-lg text-gray-500">
-							Set automatically
+							Zone
 						</div>
 					)}
 				</div>
@@ -487,6 +488,8 @@ const AddProperty = () => {
 								<p className="text-sm text-red-600">{propertyPriceErrorMsg}</p>
 							</div>
 						</div>
+
+						
 
 						{/* Property Location */}
 						<div className="flex flex-col gap-4">

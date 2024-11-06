@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
-// patch method for updating a property listing
 router.patch('/:propertyId', async (req, res) => {
   const { propertyId } = req.params;
-  const userId = req.body.userId; // Assuming user ID is passed in the body
-  const propertyData = req.body;
+  const { userId, ...propertyData } = req.body;
+
+  // Input validation
+  if (!propertyId || !userId) {
+    return res.status(400).json({ message: 'Missing required data' });
+  }
 
   // Start a transaction
   db.beginTransaction((err) => {
@@ -19,6 +22,7 @@ router.patch('/:propertyId', async (req, res) => {
       SELECT * FROM PropertyListing 
       WHERE property_id = ? AND userID = ?
     `;
+
     db.query(verifyQuery, [propertyId, userId], (err, result) => {
       if (err) {
         return db.rollback(() => {
@@ -33,20 +37,43 @@ router.patch('/:propertyId', async (req, res) => {
         });
       }
 
-      // Update the property details
+      // Prepare the update queries with proper data validation
       const updateListingQuery = `
-        UPDATE PropertyListing SET 
-          property_name = ?, growth_zone = ?, description = ?, dimensions_length = ?, 
-          dimensions_width = ?, dimensions_height = ?, soil_type = ?, amenities = ?, 
-          restrictions = ?, rent_base_price = ?
+        UPDATE PropertyListing 
+        SET 
+          userID = ?, 
+          property_name = ?, 
+          location_id = ?, 
+          growth_zone = ?, 
+          description = ?,
+          dimensions_length = ?, 
+          dimensions_width = ?, 
+          dimensions_height = ?,
+          soil_type = ?, 
+          amenities = ?, 
+          restrictions = ?, 
+          rent_base_price = ?
         WHERE property_id = ?
       `;
-      db.query(updateListingQuery, [
-        propertyData.propertyName, propertyData.growthzone, propertyData.description,
-        propertyData.dimensions_length, propertyData.dimensions_width, propertyData.dimensions_height,
-        propertyData.soilType, JSON.stringify(propertyData.amenities),
-        JSON.stringify(propertyData.restrictions), propertyData.price, propertyId
-      ], (err) => {
+
+      // Prepare values, matching the front-end data structure
+      const listingValues = [
+        userId,
+        propertyData.propertyName,
+        propertyData.location_id || result[0].location_id,
+        propertyData.growthzone,
+        propertyData.description || '',
+        propertyData.length,
+        propertyData.width,
+        propertyData.height,
+        propertyData.soilType,
+        JSON.stringify(propertyData.amenities || []),
+        JSON.stringify(propertyData.restrictions || []),
+        propertyData.price,
+        propertyId
+      ];
+
+      db.query(updateListingQuery, listingValues, (err) => {
         if (err) {
           return db.rollback(() => {
             console.error('Listing update error:', err);
@@ -54,18 +81,33 @@ router.patch('/:propertyId', async (req, res) => {
           });
         }
 
-        // Update the location details
+        // Update location
         const updateLocationQuery = `
           UPDATE PropertyLocation SET 
-            address_line1 = ?, city = ?, province = ?, postal_code = ?, country = ?, 
-            latitude = ?, longitude = ?
-          WHERE location_id = (SELECT location_id FROM PropertyListing WHERE property_id = ?)
+            address_line1 = ?,
+            city = ?,
+            province = ?,
+            postal_code = ?,
+            country = ?,
+            latitude = ?,
+            longitude = ?
+          WHERE location_id = (
+            SELECT location_id FROM PropertyListing WHERE property_id = ?
+          )
         `;
-        db.query(updateLocationQuery, [
-          propertyData.addressLine1, propertyData.city, propertyData.province, 
-          propertyData.postalCode, propertyData.country, propertyData.latitude, 
-          propertyData.longitude, propertyId
-        ], (err) => {
+
+        const locationValues = [
+          propertyData.addressLine1,
+          propertyData.city,
+          propertyData.province,
+          propertyData.postalCode,
+          propertyData.country,
+          propertyData.latitude,
+          propertyData.longitude,
+          propertyId
+        ];
+
+        db.query(updateLocationQuery, locationValues, (err) => {
           if (err) {
             return db.rollback(() => {
               console.error('Location update error:', err);
@@ -73,57 +115,105 @@ router.patch('/:propertyId', async (req, res) => {
             });
           }
 
-          // Delete existing property images
-          const deleteImagesQuery = `
-            DELETE FROM PropertyOtherImages WHERE property_id = ?
-          `;
-          db.query(deleteImagesQuery, [propertyId], (err) => {
-            if (err) {
-              return db.rollback(() => {
-                console.error('Failed to delete existing images:', err);
-                res.status(500).json({ message: 'Failed to delete images', error: err.message });
-              });
-            }
-
-            // Insert new property images
-            const imageValues = propertyData.otherImageUrls.map((url) => [propertyId, url]);
-            const insertImagesQuery = `
-              INSERT INTO PropertyOtherImages (property_id, image_url) VALUES ?
-            `;
-            db.query(insertImagesQuery, [imageValues], (err) => {
+          // Update PropertyCrops table
+          const updateCropsPromise = new Promise((resolve, reject) => {
+            // First delete existing crops for this property
+            const deleteCropsQuery = `DELETE FROM PropertyCrops WHERE property_id = ?`;
+            
+            db.query(deleteCropsQuery, [propertyId], (err) => {
               if (err) {
-                return db.rollback(() => {
-                  console.error('Failed to insert new images:', err);
-                  res.status(500).json({ message: 'Failed to insert images', error: err.message });
-                });
+                reject(err);
+                return;
               }
 
-              // Update primary image
-              const updatePrimaryImageQuery = `
-                UPDATE PropertyPrimaryImages SET image_url = ? WHERE property_id = ?
-              `;
-              db.query(updatePrimaryImageQuery, [propertyData.primaryImageUrl, propertyId], (err) => {
-                if (err) {
-                  return db.rollback(() => {
-                    console.error('Failed to update primary image:', err);
-                    res.status(500).json({ message: 'Failed to update primary image', error: err.message });
-                  });
-                }
+              // If there are new crops to insert
+              if (propertyData.possibleCrops && propertyData.possibleCrops.length > 0) {
+                // Create values array for bulk insert
+                const cropValues = propertyData.possibleCrops.map(cropName => [propertyId, cropName]);
+                
+                // Insert new crops
+                const insertCropsQuery = `
+                  INSERT INTO PropertyCrops (property_id, crop_name) 
+                  VALUES ?
+                `;
 
-                // Commit the transaction
-                db.commit((err) => {
-                  if (err) {
-                    return db.rollback(() => {
-                      console.error('Commit error:', err);
-                      res.status(500).json({ message: 'Failed to commit transaction', error: err.message });
-                    });
-                  }
-
-                  res.status(200).json({ message: 'Property updated successfully', propertyId });
+                db.query(insertCropsQuery, [cropValues], (err) => {
+                  if (err) reject(err);
+                  else resolve();
                 });
-              });
+              } else {
+                resolve(); // Resolve if no new crops to insert
+              }
             });
           });
+
+          // Update images
+          const updateImagesPromises = [];
+
+          // Update primary image if provided
+          if (propertyData.primaryImageUrl) {
+            const updatePrimaryImageQuery = `
+              UPDATE PropertyPrimaryImages 
+              SET image_url = ?, updated_at = CURRENT_TIMESTAMP
+              WHERE property_id = ?
+            `;
+            updateImagesPromises.push(
+              new Promise((resolve, reject) => {
+                db.query(updatePrimaryImageQuery, [propertyData.primaryImageUrl, propertyId], (err) => {
+                  if (err) reject(err);
+                  else resolve();
+                });
+              })
+            );
+          }
+
+          // Update other images if provided
+          if (propertyData.otherImageUrls && propertyData.otherImageUrls.length > 0) {
+            const deleteOtherImagesQuery = `DELETE FROM PropertyOtherImages WHERE property_id = ?`;
+            const insertOtherImagesQuery = `
+              INSERT INTO PropertyOtherImages (property_id, image_url) 
+              VALUES ?
+            `;
+
+            updateImagesPromises.push(
+              new Promise((resolve, reject) => {
+                db.query(deleteOtherImagesQuery, [propertyId], (err) => {
+                  if (err) reject(err);
+                  else {
+                    const imageValues = propertyData.otherImageUrls.map(url => [propertyId, url]);
+                    db.query(insertOtherImagesQuery, [imageValues], (err) => {
+                      if (err) reject(err);
+                      else resolve();
+                    });
+                  }
+                });
+              })
+            );
+          }
+
+          // Execute all updates (crops and images)
+          Promise.all([updateCropsPromise, ...updateImagesPromises])
+            .then(() => {
+              // Commit transaction
+              db.commit((err) => {
+                if (err) {
+                  return db.rollback(() => {
+                    console.error('Commit error:', err);
+                    res.status(500).json({ message: 'Failed to commit transaction', error: err.message });
+                  });
+                }
+                res.status(200).json({ 
+                  message: 'Property updated successfully', 
+                  propertyId 
+                });
+              });
+            })
+            .catch(err => {
+              db.rollback(() => {
+                console.error('Update error:', err);
+                res.status(500).json({ message: 'Failed to update property data', error: err.message });
+              });
+            });
         });
       });
     });
