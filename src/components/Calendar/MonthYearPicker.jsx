@@ -1,13 +1,9 @@
-/**
- * MonthYearPicker.js
- * Description: A React component for selecting a range of months for rentals or bookings.
- * Author: Donald Jans Uy
- * Date: 2024-10-20
- */
-
-//imports
 import React, { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Swal from "sweetalert2";
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 const MonthRangePicker = ({ onSelect, triggerText = "Select Date Range" }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -64,21 +60,28 @@ const MonthRangePicker = ({ onSelect, triggerText = "Select Date Range" }) => {
     };
 
     if (selectingStart) {
-      setStartDate(selectedDate);
-      setSelectingStart(false);
+      // Check if the selected month is not in the past
+      const isNotInPast =
+        selectedDate.year > new Date().getFullYear() ||
+        (selectedDate.year === new Date().getFullYear() &&
+          selectedDate.month >= new Date().getMonth() + 1);
+
+      if (isNotInPast) {
+        setStartDate(selectedDate);
+        setSelectingStart(false);
+      } else {
+        handleErrorMessage();
+      }
     } else {
-      const newEndDate = selectedDate;
-      // Ensure end date is after start date
+      // Ensure end date is not earlier than start date
       if (
         startDate &&
-        (startDate.year > newEndDate.year ||
-          (startDate.year === newEndDate.year &&
-            startDate.month > newEndDate.month))
+        (selectedDate.year < startDate.year ||
+          (selectedDate.year === startDate.year && selectedDate.month < startDate.month))
       ) {
-        setStartDate(newEndDate);
-        setEndDate(startDate);
+        handleEndDateBeforeStartError();
       } else {
-        setEndDate(newEndDate);
+        setEndDate(selectedDate);
       }
     }
   };
@@ -90,12 +93,6 @@ const MonthRangePicker = ({ onSelect, triggerText = "Select Date Range" }) => {
   };
 
   const handleConfirm = () => {
-    if (!isValidDateRange()) {
-      alert(
-        "Minimum rental duration is 3 months. Please select a longer duration."
-      );
-      return;
-    }
     const monthsDiff = calculateMonthsBetween(startDate, endDate);
     onSelect({
       startDate,
@@ -106,21 +103,38 @@ const MonthRangePicker = ({ onSelect, triggerText = "Select Date Range" }) => {
     setSelectingStart(true);
   };
 
-  // Return button stays as "Select Rent Duration" unless dates are selected
-  if (!isOpen) {
-    return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="text-white  font-medium py-2 px-4  transition 
-        rounded shadow-lg bg-green-600  hover:bg-green-700  "
-      >
-        {triggerText}
-      </button>
-    );
-  }
+  const handleErrorMessage = () => {
+    MySwal.fire({
+      title: "Error",
+      text: "You cannot select a month in the past as the start date.",
+      icon: "error",
+      confirmButtonText: "OK",
+      customClass: {
+        container: 'p-6 rounded-lg shadow-lg',
+        title: 'text-lg font-medium',
+        content: 'text-gray-700',
+        confirmButton: 'bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition'
+      }
+    });
+  };
+
+  const handleEndDateBeforeStartError = () => {
+    MySwal.fire({
+      title: "Error",
+      text: "End date cannot be earlier than start date, please click the reset button below if you need to change start date.",
+      icon: "error",
+      confirmButtonText: "OK",
+      customClass: {
+        container: 'p-6 rounded-lg shadow-lg',
+        title: 'text-lg font-medium',
+        content: 'text-gray-700',
+        confirmButton: 'bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition'
+      }
+    });
+  };
 
   const isDateInRange = (monthIndex) => {
-    if (!startDate || !endDate) return false;
+    if (!startDate) return true; // Allow all months before start date
 
     const currentYearMonth = {
       year: currentDate.getFullYear(),
@@ -132,22 +146,17 @@ const MonthRangePicker = ({ onSelect, triggerText = "Select Date Range" }) => {
       month: startDate.month,
     };
 
-    const endYearMonth = {
-      year: endDate.year,
-      month: endDate.month,
-    };
-
-    const isAfterStart =
+    const isAfterOrCurrentMonth =
       currentYearMonth.year > startYearMonth.year ||
       (currentYearMonth.year === startYearMonth.year &&
         currentYearMonth.month >= startYearMonth.month);
 
-    const isBeforeEnd =
-      currentYearMonth.year < endYearMonth.year ||
-      (currentYearMonth.year === endYearMonth.year &&
-        currentYearMonth.month <= endYearMonth.month);
+    const isNotInPast =
+      currentYearMonth.year > new Date().getFullYear() ||
+      (currentYearMonth.year === new Date().getFullYear() &&
+        currentYearMonth.month >= new Date().getMonth() + 1);
 
-    return isAfterStart && isBeforeEnd;
+    return isAfterOrCurrentMonth && isNotInPast;
   };
 
   const getDaysBetweenText = () => {
@@ -177,7 +186,7 @@ const MonthRangePicker = ({ onSelect, triggerText = "Select Date Range" }) => {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="text-green-600 hover:text-green-700 font-medium py-2 px-4 rounded-lg transition"
+        className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg shadow-lg transition"
       >
         {startDate && endDate
           ? `${startDate.formatted} - ${endDate.formatted}`
@@ -200,16 +209,18 @@ const MonthRangePicker = ({ onSelect, triggerText = "Select Date Range" }) => {
               setStartDate(null);
               setEndDate(null);
             }}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-gray-500 hover:text-gray-700 font-medium"
           >
-            ×
+            Cancel
           </button>
         </div>
 
         <div className="p-4">
           {startDate && !selectingStart && (
             <div className="mb-4 text-center text-green-600">
-              Start: {startDate.formatted}
+              <div className="flex justify-center items-center">
+                <span>Start: {startDate.formatted}</span>
+              </div>
             </div>
           )}
 
@@ -269,17 +280,22 @@ const MonthRangePicker = ({ onSelect, triggerText = "Select Date Range" }) => {
           <div className="mt-6 flex justify-end space-x-3">
             <button
               onClick={() => {
-                setIsOpen(false);
-                setSelectingStart(true);
                 setStartDate(null);
                 setEndDate(null);
+                setSelectingStart(true);
               }}
-              className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition"
+              className="text-gray-600 hover:text-gray-700 font-medium"
             >
-              Cancel
+              Reset
             </button>
             <button
-              onClick={handleConfirm}
+              onClick={() => {
+                if (!isValidDateRange()) {
+                  handleErrorMessage();
+                  return;
+                }
+                handleConfirm();
+              }}
               disabled={!startDate || !endDate || !isValidDateRange()}
               className={`px-4 py-2 rounded-lg transition
                 ${

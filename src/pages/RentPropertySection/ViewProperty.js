@@ -384,7 +384,7 @@ const ViewProperty = () => {
 										)}
 									</div>
 								</div>
-								<div>
+									<div>
 									<MonthRangePicker
 										onSelect={handleDateRangeSelect}
 										triggerText="Check Calendar"
