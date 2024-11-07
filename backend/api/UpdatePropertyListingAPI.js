@@ -67,8 +67,8 @@ router.patch('/:propertyId', async (req, res) => {
         propertyData.width,
         propertyData.height,
         propertyData.soilType,
-        JSON.stringify(propertyData.amenities || []),
-        JSON.stringify(propertyData.restrictions || []),
+        propertyData.amenities && propertyData.amenities.length > 0 ? propertyData.amenities : "None Listed",
+        propertyData.restrictions && propertyData.restrictions.length > 0 ? propertyData.restrictions : "None Listed",
         propertyData.price,
         propertyId
       ];
