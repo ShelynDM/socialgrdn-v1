@@ -47,12 +47,12 @@ const EditProperty = () => {
     
     // Soil type, amenities, possible crops, and restrictions as empty strings or arrays
     const [soilType, setSoilType] = useState('');
-    const [amenities, setAmenities] = useState('');
+    const [amenities, setAmenities] = useState('None listed');
     const [cropInput, setCropInput] = useState('');
     
     // Possible crops initialized as an empty array for array-specific functions (e.g., `map`)
     const [possibleCrops, setPossibleCrops] = useState([]); // Array of crop names
-    const [restrictions, setRestrictions] = useState('');
+    const [restrictions, setRestrictions] = useState('None listed');
     const [price, setPrice] = useState(''); // Price as a string initially for easier input handling
     
     // City zone data initialized as an empty object for reliable structure during data fetching
@@ -354,9 +354,9 @@ const EditProperty = () => {
                 width: parseFloat(width),
                 height: parseFloat(height),
                 soilType,
-                amenities,
+                amenities: amenities === '' ? 'None listed' : amenities,
                 possibleCrops,
-                restrictions,
+                restrictions: restrictions === '' ? 'None listed' : restrictions,
                 price: parseFloat(price),
                 primaryImageUrl: updatedPrimaryImageUrl,
                 otherImageUrls: updatedOtherImageUrls,
