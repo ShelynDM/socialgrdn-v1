@@ -32,6 +32,10 @@ export default function Search() {
     const [cropData, setCropData] = useState([]);
     const { userId } = useUser();
 
+    // Filter variables
+    const [popupFilters, setPopupFilters] = useState({});    
+    // const [filterRemoved, setFilterRemoved] = useState(false);
+
     // Get property results from the database
     const propertyResult = usePropertyResult();
     const location = useLocation();
@@ -157,6 +161,10 @@ export default function Search() {
         console.log(filters.gardenSize);
         console.log(filters.soilType);
 
+        setPopupFilters(filters);
+
+        console.log("Popup Filters:", popupFilters);
+
 
         // Define the custom matchesCropType function to check if the crop belongs to the selected category
         const matchesCropType = (result) => {
@@ -186,23 +194,33 @@ export default function Search() {
                     return true;
             }
         };
-                
-        const filtered =  propertyResult.filter((result) => {
-            //Price Range Filter
-            const isWithinPriceRange = result.rent_base_price >= priceRange.min && result.rent_base_price <= priceRange.max;
 
-            //Garden Size Filter
-            const isWithinGardenSize = result.area >= gardenSize.min && result.area <= gardenSize.max;
-
-            //Soil Type Filter
+        const filtered = propertyResult.filter((result) => {
+            // Price Range Filter
+            const isWithinPriceRange = priceRange ? result.rent_base_price >= priceRange.min && result.rent_base_price <= priceRange.max : true;
+    
+            // Garden Size Filter
+            const isWithinGardenSize = gardenSize ? result.area >= gardenSize.min && result.area <= gardenSize.max : true;
+    
+            // Soil Type Filter
             const matchesSoilType = soilType ? result.soil_type === soilType : true;
-        
-            return isWithinPriceRange && matchesCropType(result) && isWithinGardenSize && matchesSoilType;
-        });
+    
+        return isWithinPriceRange && matchesCropType(result) && isWithinGardenSize && matchesSoilType;
+    });
 
         setFilteredResults(filtered);
         console.log("Modal Results:", filtered);
 
+
+    };
+
+    const handleFilterDelete = (filterType) => {
+        const updatedFilters = { ...popupFilters };
+        delete updatedFilters[filterType];
+        setPopupFilters(updatedFilters);
+    
+        // Reapply the filtering logic with the updated filters
+        handlePopupSearchFilter(updatedFilters);
     };
 
     // ------------------- End of Filter Button and Popup ------------------- //
@@ -353,7 +371,7 @@ export default function Search() {
                     <InAppLogo />
                 </div>
                 {/* Search Bar Section */}
-                <div className='mx-2 px-2 fixed top-12 flex w-full justify-between bg-main-background'>
+                <div className='mx-2 px-2 fixed top-12 flex w-full justify-between bg-main-background z-10'>
                     <div className="flex-grow w-full">
                         <SearchBar value={searchQuery} onChange={handleSearchQueryChange} onKeyDown={handleKeyDown} onClickSearchIcon={handleSearchIconClick}/>
                     </div>
@@ -381,12 +399,51 @@ export default function Search() {
                 <div className="w-auto">
                     <SearchFilter isOpen={isPopupOpen} onClose={closePopup} onApplyFilters={handlePopupSearchFilter} className="flex items-start"/>
                 </div>
+                <div className="mt-16 w-full flex">
+                    <div className="flex gap-1 fixed w-full bg-main-background pt-4 pb-2 text-xs">
+                        {/* Display the filter value under search bar with close */}
+                        {popupFilters.priceRange && (
+                            <div className="flex gap-1 px-2 rounded-2xl bg-green-200 border-0 border-green-900 ">
+                                <div className="flex items-center gap-1">
+                                    <p>{popupFilters.priceRange.min} - {popupFilters.priceRange.max} CAD</p>
+                                    {/* On click the x will remove the filter */}
+                                    <button onClick={() => handleFilterDelete('priceRange')}>X</button>
+                                </div>
+                            </div>
+                        )}
+                        {popupFilters.cropType && (
+                            <div className="flex gap-1 px-2 rounded-2xl bg-green-200 border-0 border-green-900 ">
+                                <div className="flex items-center gap-1">
+                                    <p>{popupFilters.cropType}</p>
+                                    <button onClick={() => handleFilterDelete('cropType')}>X</button>
+                                </div>
+                            </div>
+                        )}
+                        {popupFilters.gardenSize && (
+                            <div className="flex gap-1 px-2 rounded-2xl bg-green-200 border-0 border-green-900 ">
+                                <div className="flex items-center gap-1">
+                                    <p>{popupFilters.gardenSize.min} - {popupFilters.gardenSize.max} sqft</p>
+                                    <button onClick={() => handleFilterDelete('gardenSize')}>X</button>
+                                </div>
+                            </div>
+                        )}
+                        {popupFilters.soilType && (
+                            <div className="flex gap-1 px-2 rounded-2xl bg-green-200 border-0 border-green-900 ">
+                                <div className="flex items-center gap-1">
+                                    <p>{popupFilters.soilType}</p>
+                                    <button onClick={() => handleFilterDelete('soilType')}>X</button>
+                                </div>
+                            </div>
+                        )}                
+                    </div>
+                </div>
 
                 {/* Search Results Section */}
-                <div className="flex flex-col w-full justify-start items-center mt-20 gap-8">
-                    <div className="flex w-full justify-start pt-4 items-start">
+                <div className="flex flex-col w-full justify-start items-center gap-8">
+                    <div className="flex w-full justify-start pt-3 items-start">
                         {searchQuery ? <p className="text-start"></p> : <p className="text-start">Recommendations</p>}
                     </div>
+
                     {filteredResults.length > 0 ? (
                         filteredResults.map((result, index) => (
                             <SearchResult
@@ -395,6 +452,7 @@ export default function Search() {
                                 addressLine1={result.address_line1}
                                 city={result.city}
                                 province={result.province}
+                                rentBasePrice={result.rent_base_price}
                                 first_name={result.first_name}
                                 last_name={result.last_name}
                                 growthZone={result.growth_zone}

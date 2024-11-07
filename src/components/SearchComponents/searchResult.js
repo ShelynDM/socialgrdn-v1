@@ -13,7 +13,7 @@ import SoilIcon from "../../assets/listingAssets/Soil-icon.png";
 import ZoneColor from "../ZoneColor/zoneColor";
 
 
-export default function SearchResult({propertyName, addressLine1, city, province, first_name, last_name, growthZone, propertyImage ,propertyCrop, dimensionLength, dimensionWidth, dimensionHeight, soilType, onClick}) {
+export default function SearchResult({propertyName, addressLine1, city, province, rentBasePrice, first_name, last_name, growthZone, propertyImage ,propertyCrop, dimensionLength, dimensionWidth, dimensionHeight, soilType, onClick}) {
     const [isClicked, setIsClicked] = useState(false);
 
     const handleButtonClick = () => {
@@ -26,6 +26,7 @@ export default function SearchResult({propertyName, addressLine1, city, province
                     <div>
                         <h1 className="font-bold text-lg ">{propertyName}</h1>
                         <p className="text-gray-700 text-sm">{addressLine1} {city} {province}</p>
+                        <p className="text-gray-700 font-bold">{rentBasePrice}/month CAD</p>
                     </div>
 
                     {/* View button to view the respective property */}
