@@ -187,8 +187,10 @@ export default function SignUp() {
 	return (
 		<div className="bg-main-background relative">
 			<div className="flex flex-col items-center justify-center gap-2 min-h-screen mx-2 pt-8 bg-main-background ">
-				<BackButton />
-				<div className="flex flex-col items-center justify-center gap-2 min-h-screen m-2 pb-20 bg-main-background">
+				<div className='fixed pt-8 top-0 left-0 w-full bg-main-background'>
+					<BackButton />
+				</div>
+				<div className="flex flex-col items-center justify-center gap-2 min-h-screen m-2 pt-4 pb-20 bg-main-background">
 
 					<strong className="text-3xl">Welcome!</strong>
 					<img src={logo} alt="Social Grdn Logo" className="w-auto h-auto" />
@@ -372,6 +374,8 @@ export default function SignUp() {
 							pagePath="/SignIn"
 						/>
 					</div>
+				</div>
+				<div className="fixed bottom-0 h-12 bg-main-background w-full">
 				</div>
 			</div>
 		</div>

@@ -96,8 +96,8 @@ export default function SignIn() {
 	};
 
 	return (
-		<div className="bg-main-background">
-			<div className="flex flex-col items-center justify-center min-h-screen m-2 pb-20">
+		<div className="bg-main-background fixed w-full">
+			<div className="flex flex-col items-center justify-center min-h-screen pb-12">
 				<img src={logo} alt="Social Grdn Logo" className="w-auto h-auto m-4" />
 				<div className="m-4">
 					<h1 className="text-4xl font-bold">Welcome back!</h1>

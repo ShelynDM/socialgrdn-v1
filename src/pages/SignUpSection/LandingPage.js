@@ -12,7 +12,7 @@ import LongButton from '../../components/Buttons/longButton';
 
 export default function LandingPage() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen gap-32 bg-radial-green"> 
+    <div className="flex flex-col items-center justify-center min-h-screen gap-32 bg-radial-green fixed top-0 w-full"> 
       <img src={logo} alt="Social Grdn Logo" className="w-auto h-auto" />
       <div className="flex flex-col items-center justify-center gap-4 pb-6 w-full">
         <div className='px-4 block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3'>
