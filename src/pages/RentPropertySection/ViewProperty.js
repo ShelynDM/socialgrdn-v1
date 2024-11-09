@@ -338,6 +338,13 @@ const ViewProperty = () => {
 									</p>
 								</div>
 								<div>
+									<p className="text-sm font-semibold">Recommended Crops</p>
+									<p className="text-sm text-gray-700">
+										{property.crops?.join(', ') || 'None listed'}
+									</p>
+								</div>
+
+								<div>
 									<h3 className="font-medium text-gray-900">Owner</h3>
 									<div className='flex'>
 										<p className="text-green-600" 
