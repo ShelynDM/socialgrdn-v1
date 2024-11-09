@@ -63,7 +63,7 @@ export default function ViewMyListings() {
 				</div>
 				<div className="fixed top-10 flex w-full justify-between bg-main-background z-10">
 					<div className="flex-grow w-full">
-						<BackMoreButton/>
+						<BackMoreButton />
 					</div>
 				</div>
 				<div className="px-4 w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 mb-32 mt-24">

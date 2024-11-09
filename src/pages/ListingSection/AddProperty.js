@@ -48,8 +48,8 @@ const AddProperty = () => {
 	const [restrictions, setRestrictions] = useState('');
 	const [price, setPrice] = useState('');
 	const [cityZoneData, setCityZoneData] = useState({});
-	
-//Function to handle the check condition for number of digits
+
+	//Function to handle the check condition for number of digits
 	const handlePriceChange = (e) => {
 		const value = e.target.value;
 		if (value.length > 7) {
@@ -489,8 +489,6 @@ const AddProperty = () => {
 							</div>
 						</div>
 
-						
-
 						{/* Property Location */}
 						<div className="flex flex-col gap-4">
 							<label htmlFor="address" className="text-lg font-semibold">
@@ -751,7 +749,7 @@ const AddProperty = () => {
 						<LongButton
 							buttonName="Publish Listing"
 							className="w-full rounded shadow-lg bg-green-500 text-white font-bold"
-							type="button" // Change to button type
+							type="button"
 							onClick={async (e) => {
 								e.preventDefault();
 								const propertyId = await handleSubmit(e);
