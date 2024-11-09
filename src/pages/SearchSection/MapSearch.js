@@ -98,22 +98,29 @@ export default function MapSearch() {
 
   // useEffect to get user's location using browser geolocation
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
+    const fetchUserLocation = async () => {
+      if (navigator.geolocation) {
+        try {
+          const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject);
+          });
+          
           const location = {
             lat: position.coords.latitude, // Get latitude from geolocation
             lng: position.coords.longitude, // Get longitude from geolocation
           };
           setUserLocation(location); // Set user's location to state
-        },
-        (geoError) => {
+        } catch (geoError) {
           console.error('Geolocation failed:', geoError); // Log error if geolocation fails
         }
-      );
-    }
+      }
+    };
+  
+    fetchUserLocation(); // Call the async function to fetch user's location
   }, []); // Empty dependency array means this runs once when mounted
-
+  
+   
+  
   // Function to toggle map expansion/collapse
   const toggleMapExpansion = () => {
     const newMapHeight = isExpanded ? '40vh' : '85vh'; // Determine new height based on current state
@@ -129,8 +136,8 @@ export default function MapSearch() {
         const location = {
           lat: place.geometry.location.lat(), // Get latitude of selected place
           lng: place.geometry.location.lng(), // Get longitude of selected place
-        };
-        setUserLocation(location); // Update user's location
+       };
+       // setUserLocation(location); // Update user's location
         mapRef.current.panTo(location); // Pan map to new location
         mapRef.current.setZoom(15); // Zoom in on the selected place
 
