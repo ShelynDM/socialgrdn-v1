@@ -9,7 +9,7 @@
  */
 
 // Importing libraries and modules for server and database connection
-const credentials = require('./_credentials'); 
+const credentials = require('./_credentials');
 const express = require('express');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
@@ -55,8 +55,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors({ origin: 'http://localhost:3001' }));
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../build')
-));
+app.use(express.static(path.join(__dirname, '../build')));
 
 // Route files gonna use for the API endpoint
 app.use('/api/users', userRoutes);
@@ -74,7 +73,7 @@ app.use('/api/registerRentalDetails', registerRentalDetailsRoutes);
 app.use('/api/editRentalDetails', editRentalDetailsRoutes);
 
 app.use('/api/addPropertyListing', addPropertyListingRoutes);
-app.use('/api/updatePropertyListing', updatePropertyListingRoutes); 
+app.use('/api/updatePropertyListing', updatePropertyListingRoutes);
 app.use('/api/getPayouts', getPayoutsRoutes);
 app.use('/api/getEarnings', getEarningsRoutes);
 app.use('/api/getDetailedPayouts', getDetailedPayoutsRoutes);
@@ -89,29 +88,29 @@ app.use('/api/getAllEarningsReport', getAllEarningsReportAPI);
 app.use('/api/getAllMonthlyReport', getAllMonthlyReportAPI);
 // The "catchall" handler
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../build/index.html'));
+	res.sendFile(path.join(__dirname, '../build/index.html'));
 });
 
 // Server and database setup
 app.listen(port, (err) => {
-  if (err) {
-    console.error('Error starting the server:', err);
-  } else {
-    const db = mysql.createConnection({
-      host: credentials.host,
-      user: credentials.user,
-      password: credentials.password,
-      database: credentials.database
-    });
+	if (err) {
+		console.error('Error starting the server:', err);
+	} else {
+		const db = mysql.createConnection({
+			host: credentials.host,
+			user: credentials.user,
+			password: credentials.password,
+			database: credentials.database,
+		});
 
-    db.connect((err) => {
-      if (err) {
-        console.error('Error connecting to MySQL: ', err);
-        return;
-      }
-    });
+		db.connect((err) => {
+			if (err) {
+				console.error('Error connecting to MySQL: ', err);
+				return;
+			}
+		});
 
-    //
-    global.db = db;
-  }
+		//
+		global.db = db;
+	}
 });
