@@ -6,6 +6,7 @@ import InAppLogo from "../../components/Logo/inAppLogo"; // Importing a logo com
 import NavBarModerator from "../../components/Navbar/navbarmoderator"; // Importing the navigation bar for the moderator view
 import Users from "../../components/SearchComponents/userResults"; // Importing the Users component
 import SearchBar from "../../components/SearchComponents/search";
+import jsPDF from "jspdf"; // Importing jsPDF for generating PDFs
 
 // Array to hold month names for easier reference
 const monthNames = [
@@ -18,9 +19,7 @@ export default function ModeratorViewReport() {
     const [earnings, setEarnings] = useState([]); // State to store earnings data
     const [error, setError] = useState(null); // State to store any error messages
     const [selectedMonth, setSelectedMonth] = useState(null); // State to store the selected month for detailed view
-    const [numberOfBookings, setNumberOfBookings] = useState(0); // State to store the number of bookings for the selected month
-    const [totalBookingAmount, setTotalBookingAmount] = useState(0); // State to store the total booking amount for the selected month
-    const [totalRevenue, setTotalRevenue] = useState(0); // State to store the total revenue for the selected month
+    const [detailedData, setDetailedData] = useState({}); // State to store detailed earnings data
     const [modalLoading, setModalLoading] = useState(false); // State to manage the loading state for the modal
     // Fetching user data using the Users component
     const navigate = useNavigate();
@@ -103,9 +102,7 @@ export default function ModeratorViewReport() {
                 throw new Error("Failed to fetch detailed earnings"); // Throwing an error if the response is not ok
             }
             const data = await response.json(); // Parsing response data to JSON
-            setNumberOfBookings(data.number_of_bookings); // Setting the number of bookings
-            setTotalBookingAmount(data.total_booking_amount); // Setting the total booking amount
-            setTotalRevenue(data.total_revenue); // Setting the total revenue
+            setDetailedData(data); // Setting the detailed earnings data
         } catch (error) {
             console.error("Error fetching detailed earnings:", error); // Logging error to console
         } finally {
@@ -116,6 +113,29 @@ export default function ModeratorViewReport() {
     // Function to close the modal
     const closeModal = () => {
         setSelectedMonth(null); // Resetting the selected month to null
+        setDetailedData({}); // Resetting the detailed data
+    };
+
+    // Function to generate and download the PDF for the selected month's detailed report
+    const downloadPDF = () => {
+        if (!selectedMonth) return;
+
+        const doc = new jsPDF();
+        doc.setFontSize(16);
+        doc.text(`Detailed Report for ${selectedMonth.month}, ${selectedMonth.year}`, 10, 20);
+        doc.setFontSize(12);
+        doc.text(`Number of Bookings: ${detailedData.number_of_bookings}`, 10, 40);
+        doc.text(`Total Booking Amount: $${detailedData.total_booking_amount}`, 10, 50);
+        doc.text(`Total Revenue: $${detailedData.total_revenue}`, 10, 60);
+        if (detailedData.detailed_bookings) {
+            detailedData.detailed_bookings.forEach((booking, index) => {
+                doc.text(`Booking ${index + 1}:`, 10, 80 + index * 20);
+                doc.text(`- ID: ${booking.id}`, 20, 90 + index * 20);
+                doc.text(`- Customer: ${booking.customer_name}`, 20, 100 + index * 20);
+                doc.text(`- Amount: $${booking.amount}`, 20, 110 + index * 20);
+            });
+        }
+        doc.save(`Report_${selectedMonth.month}_${selectedMonth.year}.pdf`);
     };
 
 return (
@@ -223,16 +243,56 @@ return (
                             <div className="w-full space-y-4">
                                 <div className="bg-main-background p-4 rounded-md">
                                     <p className="font-bold text-gray-600">Number of Bookings</p>
-                                    <p className="text-xl text-gray-800">{numberOfBookings}</p>
+                                    <p className="text-xl text-gray-800">{detailedData.number_of_bookings}</p>
                                 </div>
                                 <div className="bg-main-background p-4 rounded-md">
                                     <p className="font-bold text-gray-600">Total Booking Amount</p>
-                                    <p className="text-xl text-gray-800">${totalBookingAmount}</p>
+                                    <p className="text-xl text-gray-800">${detailedData.total_booking_amount}</p>
                                 </div>
                                 <div className="bg-main-background p-4 rounded-md">
                                     <p className="font-bold text-gray-600">Total Revenue</p>
-                                    <p className="text-xl text-gray-800">${totalRevenue}</p>
+                                    <p className="text-xl text-gray-800">${detailedData.total_revenue}</p>
                                 </div>
+                                {detailedData.detailed_bookings && detailedData.detailed_bookings.length > 0 && (
+                                    <div className="bg-main-background p-4 rounded-md">
+                                        <p className="font-bold text-gray-600">Detailed Bookings</p>
+                                        {detailedData.detailed_bookings.map((booking, index) => (
+                                            <div key={index} className="text-gray-800">
+                                                <p className="font-bold">Booking {index + 1}:</p>
+                                                <ul className="list-disc ml-6">
+                                                    <li><span className="font-semibold">ID:</span> {booking.id}</li>
+                                                    <li><span className="font-semibold">Customer Name:</span> {booking.customer_name}</li>
+                                                    <li><span className="font-semibold">Booking Date:</span> {booking.booking_date}</li>
+                                                    <li><span className="font-semibold">Service Provided:</span> {booking.service_provided}</li>
+                                                    <li><span className="font-semibold">Amount:</span> ${booking.amount}</li>
+                                                    <li><span className="font-semibold">Status:</span> {booking.status}</li>
+                                                </ul>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                {detailedData.detailed_bookings && detailedData.detailed_bookings.length > 0 && (
+                                    <div className="bg-main-background p-4 rounded-md mt-4">
+                                        <p className="font-bold text-gray-600">Booking Amounts Breakdown</p>
+                                        <ul className="list-disc ml-6">
+                                            {detailedData.detailed_bookings.map((booking, index) => (
+                                                <li key={index} className="text-gray-800">
+                                                    Booking {index + 1}: ${booking.amount}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        <p className="font-bold text-gray-600 mt-4">Total Amount for All Bookings</p>
+                                        <p className="text-xl text-gray-800">
+                                            ${detailedData.detailed_bookings.reduce((total, booking) => total + parseFloat(booking.amount), 0).toFixed(2)}
+                                        </p>
+                                    </div>
+                                )}
+                                <button
+                                    onClick={downloadPDF}
+                                    className="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-200 mt-4"
+                                >
+                                    Download PDF
+                                </button>
                             </div>
                         )}
                     </div>
