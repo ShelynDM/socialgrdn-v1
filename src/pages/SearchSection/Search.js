@@ -311,6 +311,7 @@ export default function Search() {
     // Trigger search or fallback results on Enter key press
     const handleKeyDown = (event) => {
         if (event.key === "Enter" && searchQuery.trim()) {
+            setSuggestions([]);
             navigate(`/Search?query=${encodeURIComponent(searchQuery.trim())}`);
         }
     };   

@@ -44,7 +44,6 @@ import ViewMyProperty from './pages/RentPropertySection/ViewMyProperty';
 
 // Listing Section
 import Listing from './pages/RentPropertySection/Listing';
-import PropertyLists from './pages/ListingSection/PropertyLists';
 import DeletionConfirmation from './pages/ListingSection/DeletionConfirmation';
 import ListingConfirmation from './pages/ListingSection/ListingConfirmation';
 import ViewMyListings from './pages/ListingSection/ViewMyListings';
@@ -213,14 +212,6 @@ export default function App() {
 							/>
 
 							{/* Listing Section */}
-							<Route
-								path="/PropertyLists"
-								element={
-									<ProtectedRoute allowedRoles={[0, 1, 2]}>
-										<PropertyLists />
-									</ProtectedRoute>
-								}
-							/>
 							<Route
 								path="/DeletionConfirmation"
 								element={

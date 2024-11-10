@@ -129,10 +129,10 @@ export default function GrossEarnings() {
 					<InAppLogo />
 				</div>
 			</header>
-			<div className="mt-8">
+			<div className="pt-2">
 				<BackMoreButton />
 			</div>
-			<div className="flex flex-col items-center justify-start m-6">
+			<div className="flex flex-col items-center justify-start px-4">
 				<div className=" block w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3">
 					<div className="pb-6">
 						<p className="text-2xl font-bold text-center">Past Earnings</p>

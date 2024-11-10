@@ -347,12 +347,12 @@ const ViewProperty = () => {
 								<div>
 									<h3 className="font-medium text-gray-900">Owner</h3>
 									<div className='flex'>
-										<p className="text-green-600" 
+										<button className="text-green-600" 
 										onClick={() => handleOtherUserProfileClick(property.userID)}>
 										{property.owner?.firstName && property.owner?.lastName
 											? `${property.owner.firstName} ${property.owner.lastName}`
 											: 'Not specified'}
-										</p>
+										</button>
 									</div>
 								</div>
 							</section>
