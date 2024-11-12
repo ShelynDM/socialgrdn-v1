@@ -117,7 +117,6 @@ export default function ViewProfile() {
                 setCity(userData.city);
                 setProvince(userData.province);
 				setEmail(userData.email);
-                //setPhoneNumber(userData.phone_number);
                 setProfession(userData.profession);
     
                 const date = new Date(userData.created_at);
@@ -247,14 +246,15 @@ export default function ViewProfile() {
 								className="w-64 flex-shrink-0 bg-white rounded-lg shadow-lg p-4 relative"
 								onClick={() => handlePropertyClick(listing.property_id)}
 							>
-								<div className="flex justify-between items-center mb-2">
+								<div className="flex justify-between items-center">
 									<h2 className="text-lg font-semibold">{listing.property_name}</h2>
 									<button className="text-sm font-bold text-green-600 py-1 px-2"
 										onClick={() => handlePropertyClick(listing.property_id)}>
 										View
 									</button>
 								</div>
-								<p className="text-sm text-gray-500 mb-2">{listing.address_line1} {listing.city}, {listing.province}</p>
+								<p className="text-xs text-gray-500 mb-2">{listing.address_line1} {listing.city}, {listing.province}</p>
+								<p className="font-bold text-sm text-gray-500 mb-2">{listing.rent_base_price}/month CAD</p>
 								<img
 									src={listing.propertyImage}
 									alt={listing.property_name}
