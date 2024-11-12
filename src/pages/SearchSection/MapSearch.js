@@ -343,6 +343,7 @@ export default function MapSearch() {
                 addressLine1={selectedPlace.address_line1} // Pass address line 1
                 city={selectedPlace.city} // Pass city
                 province={selectedPlace.province} // Pass province
+                rentBasePrice={selectedPlace.rent_base_price} // Pass base price
                 first_name={selectedPlace.first_name} // Pass first name of owner
                 last_name={selectedPlace.last_name} // Pass last name of owner
                 propertyCrop={selectedPlace.crop} // Pass type of crop
@@ -364,6 +365,7 @@ export default function MapSearch() {
                   addressLine1={result.address_line1} // Pass address line 1
                   city={result.city} // Pass city
                   province={result.province} // Pass province
+                  rentBasePrice={result.rent_base_price} // Pass base price
                   first_name={result.first_name} // Pass first name of owner
                   last_name={result.last_name} // Pass last name of owner
                   growthZone={result.growth_zone} // Pass growth zone

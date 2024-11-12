@@ -81,7 +81,7 @@ export default function Payouts() {
                 </div>
             </header>
 
-            <div className="mt-8"> {/* Reduced margin-top for BackMoreButton */}
+            <div className="pt-2"> {/* Reduced margin-top for BackMoreButton */}
                 <BackMoreButton />
             </div>
             <div className="flex flex-col items-center justify-start gap-2"> {/* Removed min-h-screen and adjusted justify-content */}

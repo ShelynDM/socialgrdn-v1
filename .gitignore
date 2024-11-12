@@ -8,6 +8,8 @@
 
 #backend
 /backend/node_modules
+/backend/_credentials.js
+
 
 # testing
 /coverage
@@ -37,6 +39,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# DB Credentials
-/backend/_credentials.js

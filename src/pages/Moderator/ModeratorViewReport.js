@@ -6,6 +6,7 @@ import InAppLogo from "../../components/Logo/inAppLogo"; // Importing a logo com
 import NavBarModerator from "../../components/Navbar/navbarmoderator"; // Importing the navigation bar for the moderator view
 import Users from "../../components/SearchComponents/userResults"; // Importing the Users component
 import SearchBar from "../../components/SearchComponents/search";
+import watermarkImage from "../../assets/logo/SocialGRDN_Watermark.png";
 import jsPDF from "jspdf"; // Importing jsPDF for generating PDFs
 
 // Array to hold month names for easier reference
@@ -121,8 +122,12 @@ export default function ModeratorViewReport() {
         if (!selectedMonth) return;
 
         const doc = new jsPDF();
+
+        // Add the watermark with low opacity
+        doc.addImage(watermarkImage, 'PNG', 50, 100, 100, 100, '', 'NONE', 0.1);
+
         doc.setFontSize(16);
-        doc.text(`Detailed Report for ${selectedMonth.month}, ${selectedMonth.year}`, 10, 20);
+        doc.text(`SocialGRDN's Detailed Report for ${selectedMonth.month}, ${selectedMonth.year}`, 10, 20);
         doc.setFontSize(12);
         doc.text(`Number of Bookings: ${detailedData.number_of_bookings}`, 10, 40);
         doc.text(`Total Booking Amount: $${detailedData.total_booking_amount}`, 10, 50);
@@ -135,7 +140,7 @@ export default function ModeratorViewReport() {
                 doc.text(`- Amount: $${booking.amount}`, 20, 110 + index * 20);
             });
         }
-        doc.save(`Report_${selectedMonth.month}_${selectedMonth.year}.pdf`);
+        doc.save(`SocialGRDN_Report_${selectedMonth.month}_${selectedMonth.year}.pdf`);
     };
 
 return (
