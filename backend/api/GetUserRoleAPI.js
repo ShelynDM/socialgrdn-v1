@@ -16,7 +16,7 @@ router.get('/', (req, res) => {
     }
     
     const query = `
-        SELECT role FROM Userprofile WHERE email = ?`;
+        SELECT role FROM userprofile WHERE email = ?`;
 
     db.query(query, [email], (err, results) => {
         if (err) {

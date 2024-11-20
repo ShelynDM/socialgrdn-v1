@@ -18,7 +18,7 @@ router.patch('/', (req, res) => {
 
   // SQL query to update the rental information with the given fields
   const query = `
-    UPDATE Rental 
+    UPDATE rental 
     SET property_id = ?, renter_ID = ?, start_date = ?, end_date = ?, status = ?, rent_base_price = ?, tax_amount = ?, transaction_fee = ?
     WHERE rental_id = ?
   `;

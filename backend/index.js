@@ -93,24 +93,33 @@ app.get('*', (req, res) => {
 
 // Server and database setup
 app.listen(port, (err) => {
-	if (err) {
-		console.error('Error starting the server:', err);
-	} else {
-		const db = mysql.createConnection({
-			host: credentials.host,
-			user: credentials.user,
-			password: credentials.password,
-			database: credentials.database,
-		});
+    if (err) {
+        console.error('Error starting the server:', err);
+    } else {
+        const db = mysql.createConnection({
+            host: credentials.host,
+            user: credentials.user,
+            password: credentials.password,
+            database: credentials.database,
+        });
 
-		db.connect((err) => {
-			if (err) {
-				console.error('Error connecting to MySQL: ', err);
-				return;
-			}
-		});
+        // Use db.connect() instead of connection.connect()
+        db.connect((err) => {
+            if (err) {
+                console.error('❌ Database Connection Failed:', err.message);
+                return;
+            }
+            console.log('Successfully Connected to Database');
+			// Add this block to show available tables
+            db.query("SHOW TABLES", (err, results) => {
+                if (err) {
+                    console.error('Error showing tables:', err);
+                    return;
+                }
+                console.log('Available Tables:', results);
+            });
+        });
 
-		//
-		global.db = db;
-	}
+        global.db = db;
+    }
 });

@@ -33,13 +33,13 @@ router.get('/', (req, res) => {
       pl.rent_base_price,
       MIN(ppi.image_url) AS propertyImage
   FROM 
-      UserProfile up
+      userprofile up
   JOIN 
-      PropertyListing pl ON up.userID = pl.userID
+      propertylisting pl ON up.userID = pl.userID
   JOIN 
-      PropertyLocation plo ON pl.location_id = plo.location_id
+      propertylocation plo ON pl.location_id = plo.location_id
   JOIN 
-      PropertyCrops pc ON pl.property_id = pc.property_id
+      propertycrops pc ON pl.property_id = pc.property_id
   LEFT JOIN 
       propertyprimaryimages ppi ON pl.property_id = ppi.property_id
   WHERE 

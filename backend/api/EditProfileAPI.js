@@ -20,7 +20,7 @@ router.patch('/', (req, res) => {
 
   // SQL query to update the user profile with the given fields
   const query = `
-    UPDATE UserProfile 
+    UPDATE userprofile 
     SET first_name = ?, last_name = ?, username = ?, address_line1 = ?, city = ?, province = ?, postal_code = ?,  phone_number = ?, profession = ?
     WHERE userID = ?
   `;

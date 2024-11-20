@@ -19,7 +19,7 @@ router.patch('/:propertyId', async (req, res) => {
 
     // Verify if property exists and belongs to the user
     const verifyQuery = `
-      SELECT * FROM PropertyListing 
+      SELECT * FROM propertylisting 
       WHERE property_id = ? AND userID = ?
     `;
 
@@ -39,7 +39,7 @@ router.patch('/:propertyId', async (req, res) => {
 
       // Prepare the update queries with proper data validation
       const updateListingQuery = `
-        UPDATE PropertyListing 
+        UPDATE propertylisting 
         SET 
           userID = ?, 
           property_name = ?, 
@@ -83,7 +83,7 @@ router.patch('/:propertyId', async (req, res) => {
 
         // Update location
         const updateLocationQuery = `
-          UPDATE PropertyLocation SET 
+          UPDATE propertylocation SET 
             address_line1 = ?,
             city = ?,
             province = ?,
@@ -92,7 +92,7 @@ router.patch('/:propertyId', async (req, res) => {
             latitude = ?,
             longitude = ?
           WHERE location_id = (
-            SELECT location_id FROM PropertyListing WHERE property_id = ?
+            SELECT location_id FROM propertylisting WHERE property_id = ?
           )
         `;
 
@@ -118,7 +118,7 @@ router.patch('/:propertyId', async (req, res) => {
           // Update PropertyCrops table
           const updateCropsPromise = new Promise((resolve, reject) => {
             // First delete existing crops for this property
-            const deleteCropsQuery = `DELETE FROM PropertyCrops WHERE property_id = ?`;
+            const deleteCropsQuery = `DELETE FROM propertycrops WHERE property_id = ?`;
             
             db.query(deleteCropsQuery, [propertyId], (err) => {
               if (err) {
@@ -133,7 +133,7 @@ router.patch('/:propertyId', async (req, res) => {
                 
                 // Insert new crops
                 const insertCropsQuery = `
-                  INSERT INTO PropertyCrops (property_id, crop_name) 
+                  INSERT INTO propertycrops (property_id, crop_name) 
                   VALUES ?
                 `;
 
@@ -153,7 +153,7 @@ router.patch('/:propertyId', async (req, res) => {
           // Update primary image if provided
           if (propertyData.primaryImageUrl) {
             const updatePrimaryImageQuery = `
-              UPDATE PropertyPrimaryImages 
+              UPDATE propertyprimaryimages 
               SET image_url = ?, updated_at = CURRENT_TIMESTAMP
               WHERE property_id = ?
             `;
@@ -171,7 +171,7 @@ router.patch('/:propertyId', async (req, res) => {
           if (propertyData.otherImageUrls && propertyData.otherImageUrls.length > 0) {
             const deleteOtherImagesQuery = `DELETE FROM PropertyOtherImages WHERE property_id = ?`;
             const insertOtherImagesQuery = `
-              INSERT INTO PropertyOtherImages (property_id, image_url) 
+              INSERT INTO propertyotherimages (property_id, image_url) 
               VALUES ?
             `;
 

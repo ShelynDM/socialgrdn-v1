@@ -19,7 +19,7 @@ router.get('/', (req, res) => {
 
 	// SQL query to select the status and property name from the PropertyListing table
 	const query = `
-        SELECT status, property_name FROM PropertyListing WHERE property_id = ?`;
+        SELECT status, property_name FROM propertylisting WHERE property_id = ?`;
 
 	db.query(query, [property_id], (err, results) => {
 		// If there is an error during the database operation, log it and return a 500 Internal Server Error response

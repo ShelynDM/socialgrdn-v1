@@ -33,9 +33,9 @@ JOIN
 JOIN
     propertylocation loc ON pl.location_id = loc.location_id
 LEFT JOIN
-    PropertyPrimaryImages p ON pl.property_id = p.property_id
+    propertyprimaryimages p ON pl.property_id = p.property_id
 LEFT JOIN
-    PropertyCrops pc ON pl.property_id = pc.property_id
+    propertycrops pc ON pl.property_id = pc.property_id
 WHERE
     r.rental_ID = ?
 `;
