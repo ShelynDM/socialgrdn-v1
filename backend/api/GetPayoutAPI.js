@@ -29,6 +29,7 @@ router.get('/', (req, res) => {
     WHERE
       pl.userID = ?
       AND p.payout_date IS NOT NULL
+	  AND p.payout_date >= CURDATE()
     GROUP BY
       year, month
     ORDER BY
