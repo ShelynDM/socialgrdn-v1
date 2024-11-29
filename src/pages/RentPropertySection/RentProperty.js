@@ -9,7 +9,7 @@
 
 // Importing necessary libraries
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { format, parse, endOfMonth } from 'date-fns';
 
 import InAppLogo from '../../components/Logo/inAppLogo';
@@ -33,6 +33,9 @@ export default function RentProperty() {
 	const [startDate, setStartDate] = useState('');
 	const [endDate, setEndDate] = useState('');
 	const [durationMonths, setDurationMonths] = useState('');
+
+	const navigate = useNavigate();
+
 
 	useEffect(() => {
 		setStartDate(from);
@@ -222,7 +225,7 @@ export default function RentProperty() {
 				{/* Top Bar Section (Back Button, Search, Filter) */}
 				<div className="flex items-center justify-between fixed top-0 left-0 right-0 mt-10 px-4 bg-main-background">
 					<button>
-						<IoArrowBackSharp size={25} />
+						<IoArrowBackSharp onClick={() => navigate(-1)} className='text-lg' />
 					</button>
 					<div className="flex-grow w-full">
 						<SearchBar className="w-full" />
