@@ -30,17 +30,17 @@ router.get('/', (req, res) => {
       GROUP_CONCAT(DISTINCT poi.image_url) AS other_image_urls,
       u.first_name, u.last_name
   FROM 
-      PropertyListing p
+      propertylisting p
   JOIN 
-      PropertyLocation l ON p.location_id = l.location_id
+      propertylocation l ON p.location_id = l.location_id
   LEFT JOIN 
-      PropertyCrops c ON p.property_id = c.property_id
+      propertycrops c ON p.property_id = c.property_id
   LEFT JOIN
-      PropertyPrimaryImages ppi ON p.property_id = ppi.property_id
+      propertyprimaryimages ppi ON p.property_id = ppi.property_id
   LEFT JOIN
-      PropertyOtherImages poi ON p.property_id = poi.property_id
+      propertyotherimages poi ON p.property_id = poi.property_id
   LEFT JOIN
-      UserProfile u ON p.userid = u.userid
+      userprofile u ON p.userid = u.userid
   WHERE 
       p.property_id = ?
   GROUP BY 

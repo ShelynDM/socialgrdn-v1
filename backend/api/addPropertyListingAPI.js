@@ -45,7 +45,7 @@ router.post('/', (req, res) => {
 
     // Insert into PropertyLocation table
     const locationQuery = `
-      INSERT INTO PropertyLocation (address_line1, city, province, postal_code,country, latitude, longitude)
+      INSERT INTO propertylocation (address_line1, city, province, postal_code,country, latitude, longitude)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
     db.query(locationQuery, [addressLine1, city, province, postalCode,country, latitude, longitude], (err, locationResult) => {
@@ -60,7 +60,7 @@ router.post('/', (req, res) => {
 
       // Insert into PropertyListing table
       const listingQuery = `
-        INSERT INTO PropertyListing (
+        INSERT INTO propertylisting (
           property_id, userID, property_name, location_id, growth_zone, description,
           dimensions_length, dimensions_width, dimensions_height,
           soil_type, amenities, restrictions, rent_base_price
@@ -80,7 +80,7 @@ router.post('/', (req, res) => {
 
         // Insert into PropertyCrops table
         const cropsQuery = `
-          INSERT INTO PropertyCrops (property_id, crop_name)
+          INSERT INTO propertycrops (property_id, crop_name)
           VALUES ?
         `;
         const cropValues = possibleCrops.map(crop => [propertyId, crop]);
@@ -94,7 +94,7 @@ router.post('/', (req, res) => {
 
           // Insert primary image into PropertyPrimaryImages table
           const primaryImageQuery = `
-            INSERT INTO PropertyPrimaryImages (property_id, image_url)
+            INSERT INTO propertyprimaryimages (property_id, image_url)
             VALUES (?, ?)
           `;
           db.query(primaryImageQuery, [propertyId, primaryImageUrl], (err) => {
@@ -108,7 +108,7 @@ router.post('/', (req, res) => {
             // Insert other images into PropertyOtherImages table
             if (otherImageUrls && otherImageUrls.length > 0) {
               const otherImagesQuery = `
-                INSERT INTO PropertyOtherImages (property_id, image_url)
+                INSERT INTO propertyotherimages (property_id, image_url)
                 VALUES ?
               `;
               const otherImageValues = otherImageUrls.map(url => [propertyId, url]);

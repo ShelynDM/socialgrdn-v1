@@ -18,7 +18,7 @@ router.get('/', (req, res) => {
   }
 
   // SQL query to retrieve user profile using userID
-  const query = 'SELECT * FROM UserProfile WHERE userID = ?';
+  const query = 'SELECT * FROM userprofile WHERE userID = ?';
   db.query(query, [userID], (err, results) => {
     if (err) {
       console.error('Database error:', err);

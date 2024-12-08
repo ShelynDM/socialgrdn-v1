@@ -22,7 +22,7 @@ router.patch('/', (req, res) => {
     }
   
     // SQL query to update the user status
-    const query = `UPDATE UserProfile SET status = ? WHERE userID = ?`;
+    const query = `UPDATE userprofile SET status = ? WHERE userID = ?`;
   
     // Execute the SQL query with callback
     db.query(query, [status, userID], (err, result) => {

@@ -19,7 +19,7 @@ router.post('/register', (req, res) => {
 
 // SQL query to insert a new user profile into the database
   const query = `
-    INSERT INTO UserProfile (
+    INSERT INTO userprofile (
       email, first_name, last_name, username, profession, phone_number, 
       address_line1, city, province, postal_code, role, status
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '1', '1')
@@ -46,7 +46,7 @@ router.post('/check-user', async (req, res) => {
   const { email } = req.body;
   console.log('Checking for user with email:', email);
   try {
-    const result = await db.query('SELECT * FROM UserProfile WHERE email = ?', [email]);
+    const result = await db.query('SELECT * FROM userprofile WHERE email = ?', [email]);
     console.log('Query result:', result);
     if (result.length > 0) {
       return res.status(200).json({ exists: true });
