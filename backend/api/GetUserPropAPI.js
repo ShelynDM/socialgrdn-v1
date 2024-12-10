@@ -21,9 +21,9 @@ router.get('/', (req, res) => {
     SELECT p.property_id, p.property_name, 
            l.address_line1, l.city, l.province, l.postal_code,
            ppi.image_url
-    FROM PropertyListing p
-    JOIN PropertyLocation l ON p.location_id = l.location_id
-    LEFT JOIN PropertyPrimaryImages ppi ON p.property_id = ppi.property_id
+    FROM propertylisting p
+    JOIN propertylocation l ON p.location_id = l.location_id
+    LEFT JOIN propertyprimaryimages ppi ON p.property_id = ppi.property_id
     WHERE p.userID = ? AND p.status = 1`; // Only retrieve active properties
 
 	// Execute the SQL query to fetch properties for the given userID

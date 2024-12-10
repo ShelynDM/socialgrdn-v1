@@ -17,7 +17,7 @@ router.post('/', (req, res) => {
   }
 
   const query = `
-    INSERT INTO Rental (
+    INSERT INTO rental (
        property_id, renter_ID, start_date, end_date, status, rent_base_price, tax_amount, transaction_fee
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ? )
   `;

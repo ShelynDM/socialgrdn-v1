@@ -623,12 +623,13 @@ const EditProperty = () => {
 								className="p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
 							/>
 							<label className="text-sm font-semibold">Postal Code</label>
+							<label className="text-sm font-semibold">Postal Code</label>
 							<input
 								type="text"
 								value={postalCode}
-								readOnly
+								onChange={(e) => setPostalCode(e.target.value)}
 								placeholder="Postal Code"
-								className="p-2 border border-gray-400 rounded-lg shadow-lg bg-gray-100"
+								className="p-2 border border-gray-400 rounded-lg shadow-lg bg-white"
 							/>
 							<label className="text-sm font-semibold">Country</label>
 							<input

@@ -20,7 +20,7 @@ router.post('/', (req, res) => {
 	}
 
 	// SQL query to update the status of the property based on its property ID
-	const query = 'UPDATE PropertyListing SET status = ? WHERE property_id = ?';
+	const query = 'UPDATE propertylisting SET status = ? WHERE property_id = ?';
 	const values = [status, property_id];
 
 	// Execute the SQL query

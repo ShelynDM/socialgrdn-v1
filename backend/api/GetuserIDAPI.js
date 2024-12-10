@@ -17,7 +17,7 @@ router.get('/', (req, res) => {
   }
 
   //execution part
-  const query = 'SELECT * FROM UserProfile WHERE email = ?';
+  const query = 'SELECT * FROM userprofile WHERE email = ?';
   db.query(query, [email], (err, results) => {
     if (err) {
       console.error('Database error:', err);
